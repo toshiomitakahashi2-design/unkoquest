@@ -1,0 +1,1081 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>うんこクエスト</title>
+<link rel="manifest" href="./manifest.json">
+<meta name="theme-color" content="#0a1a3f">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="うんこQ">
+<link rel="apple-touch-icon" href="./icon-180.png">
+<link rel="icon" href="./favicon.png">
+<link href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;background:#000;color:#fff;font-family:'DotGothic16',monospace;
+  overflow:hidden;overscroll-behavior:none;position:fixed;width:100%;-webkit-tap-highlight-color:transparent;touch-action:manipulation;}
+#app{height:100dvh;display:flex;flex-direction:column;align-items:center;
+  justify-content:flex-start;gap:6px;padding:6px;max-width:640px;margin:0 auto;}
+
+/* ── ファミコン画面（256x224 = 8:7） ── */
+#screen{width:100%;aspect-ratio:256/224;position:relative;background:#000;
+  border:2px solid #333;container-type:inline-size;flex:0 0 auto;}
+#game{width:100%;height:100%;display:block;image-rendering:pixelated;}
+
+/* ── FC風ウィンドウ ── */
+.fcwin{position:absolute;background:#000;border:1.2cqw solid #fff;color:#fff;
+  padding:1.6cqw 2.2cqw;font-size:4.1cqw;line-height:1.5;display:none;
+  box-shadow:0 0 0 1.2cqw #000;}
+.fcwin.show{display:block;}
+#wStatus{top:2.5cqw;left:2.5cqw;min-width:20cqw;font-size:3.8cqw;line-height:1.45;}
+#wStatus b{color:#fff;font-weight:normal;}
+#wStatus .low{color:#ff5a5a;}
+#wMsg{left:2.5cqw;right:2.5cqw;bottom:2.5cqw;min-height:20cqw;}
+#wMsg.cursor::after{content:'▼';position:absolute;right:2.5cqw;bottom:1.5cqw;
+  animation:bl .7s steps(1) infinite;}
+@keyframes bl{50%{opacity:0}}
+#wCmd{left:2.5cqw;top:36cqw;min-width:26cqw;}
+#wCmd.right{left:auto;right:2.5cqw;}
+.mtitle{color:#ffd23f;margin-bottom:.8cqw;font-size:3.6cqw;}
+.mi{white-space:nowrap;padding:.1cqw 0;cursor:pointer;}
+.mi::before{content:'　';}
+.mi.sel::before{content:'▶';}
+.mi .pr{color:#8fd0ff;}
+.mi.dis{color:#777;}
+
+/* ── コントローラ ── */
+#pad{width:100%;display:flex;justify-content:space-between;align-items:center;
+  padding:0 4px;flex:1 1 auto;min-height:0;}
+#dpad{display:grid;grid-template-columns:repeat(3,clamp(38px,13vw,52px));
+  grid-template-rows:repeat(3,clamp(38px,13vw,52px));}
+#dpad button{background:#1a1f2e;border:2px solid #3a4358;color:#ddd;font-size:17px;
+  border-radius:7px;cursor:pointer;}
+#dpad button:active{background:#ffd23f;color:#000;}
+#dpad .u{grid-area:1/2}#dpad .l{grid-area:2/1}#dpad .r{grid-area:2/3}#dpad .d{grid-area:3/2}
+#dpad .c{grid-area:2/2;border:none;background:transparent}
+#btns{display:flex;gap:10px;align-items:center;}
+.ab{width:clamp(52px,17vw,68px);height:clamp(52px,17vw,68px);border-radius:50%;
+  border:3px solid #3a4358;background:#1a1f2e;color:#ffd23f;font-size:15px;
+  cursor:pointer;font-family:'DotGothic16',monospace;}
+.ab:active{background:#ffd23f;color:#000;}
+.ab small{display:block;font-size:8px;color:#888;}
+.ab:active small{color:#000;}
+
+/* ══ 横持ち（ランドスケープ）＝ゲーム機レイアウト ══ */
+@media (orientation:landscape){
+  #app{flex-direction:row;align-items:center;justify-content:center;
+    gap:min(2.2vw,22px);padding:3px 6px;max-width:none;height:100dvh;}
+  #pad{display:contents;}
+  #dpad{order:1;flex:0 0 auto;
+    grid-template-columns:repeat(3,clamp(34px,10.5dvh,58px));
+    grid-template-rows:repeat(3,clamp(34px,10.5dvh,58px));}
+  #screen{order:2;flex:0 1 auto;width:auto;height:min(94dvh,48vw);min-width:0;}
+  #btns{order:3;flex:0 0 auto;flex-direction:row;gap:min(2vw,16px);
+    align-items:flex-end;}
+  #btns .ab{width:clamp(46px,13dvh,74px);height:clamp(46px,13dvh,74px);}
+  #btnA{margin-bottom:min(5dvh,34px);}
+}
+/* ── タイトル ── */
+#title{position:absolute;inset:0;background:#000;z-index:10;display:flex;
+  flex-direction:column;align-items:center;justify-content:center;gap:3cqw;text-align:center;}
+#title.hide{display:none;}
+#title h1{font-size:9cqw;color:#ffd23f;letter-spacing:.4cqw;line-height:1.3;}
+#title p{font-size:3.4cqw;color:#bbb;line-height:1.8;}
+#title .tm{border:1cqw solid #fff;background:#000;color:#fff;padding:1.5cqw 5cqw;
+  font-size:4.2cqw;font-family:'DotGothic16',monospace;cursor:pointer;}
+#title .tm.sel{background:#fff;color:#000;}
+#title .tm.dis{color:#666;border-color:#666;}
+
+#pencil,#fs{position:absolute;top:2.5cqw;z-index:11;width:8cqw;height:8cqw;
+  background:rgba(0,0,0,.6);border:.8cqw solid #fff;color:#fff;font-size:4cqw;
+  cursor:pointer;border-radius:1cqw;line-height:1;padding:0;}
+#pencil{right:2.5cqw;} #fs{right:12cqw;}
+#toast{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:30;
+  background:#000;border:1cqw solid #fff;color:#fff;padding:2.5cqw 3cqw;font-size:3.6cqw;
+  line-height:1.7;text-align:center;max-width:80%;display:none;white-space:pre-line;}
+#toast.show{display:block;}
+
+/* ── ドットエディタ ── */
+#editor{position:fixed;inset:0;z-index:60;background:#0d0f16;display:none;flex-direction:column;}
+#editor.show{display:flex;}
+#ed-head{display:flex;align-items:center;gap:8px;padding:8px 10px;background:#151a26;
+  border-bottom:2px solid #2a3244;}
+#ed-head h2{font-size:13px;color:#ffd23f;flex:1;}
+.ebtn{border:2px solid #3a4458;background:#1e2534;color:#eee;padding:6px 9px;font-size:11px;
+  cursor:pointer;font-family:'DotGothic16',monospace;border-radius:3px;}
+.ebtn:active,.ebtn.on{background:#ffd23f;color:#000;border-color:#ffd23f;}
+#ed-body{flex:1;overflow-y:auto;padding:10px;}
+#ed-body .inner{max-width:520px;margin:0 auto;}
+#assetList{display:grid;grid-template-columns:repeat(auto-fill,minmax(70px,1fr));gap:6px;}
+.asset{border:2px solid #2a3244;background:#151a26;padding:4px 2px;text-align:center;
+  cursor:pointer;border-radius:4px;}
+.asset.sel{border-color:#ffd23f;background:#22283a;}
+.asset canvas{width:40px;height:40px;image-rendering:pixelated;background:#0a0d14;
+  border:1px solid #333;display:block;margin:0 auto 3px;}
+.asset span{font-size:8.5px;color:#9aa8c0;display:block;line-height:1.25;}
+.asset.sel span{color:#ffd23f;}
+#grid-wrap{display:flex;justify-content:center;margin:10px 0;}
+#gridCv{image-rendering:pixelated;border:2px solid #3a4458;cursor:crosshair;
+  touch-action:none;max-width:100%;
+  background:repeating-conic-gradient(#242b3a 0 25%,#1b2130 0 50%) 0 0/16px 16px;}
+#palette{display:flex;flex-wrap:wrap;gap:5px;margin:8px 0;justify-content:center;}
+.sw{width:28px;height:28px;border:2px solid #3a4458;cursor:pointer;border-radius:3px;}
+.sw.sel{border-color:#ffd23f;box-shadow:0 0 0 2px #ffd23f;}
+.sw.eraser{background:repeating-conic-gradient(#555 0 25%,#333 0 50%) 0 0/8px 8px;
+  display:flex;align-items:center;justify-content:center;font-size:13px;}
+.toolrow{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin:7px 0;}
+#colorPick{width:36px;height:28px;border:2px solid #3a4458;background:none;padding:0;}
+.hint{font-size:10px;color:#7a8598;text-align:center;line-height:1.7;margin-top:6px;}
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="screen">
+    <canvas id="game" width="256" height="224"></canvas>
+    <button id="pencil">✏️</button>
+    <button id="fs">⛶</button>
+    <div id="toast"></div>
+    <div class="fcwin" id="wStatus"></div>
+    <div class="fcwin" id="wCmd"></div>
+    <div class="fcwin" id="wMsg"></div>
+    <div id="title">
+      <h1>うんこ<br>クエスト</h1>
+      <p>りゅうおうの うんこが よみがえり<br>くには くさい やみに つつまれた…</p>
+      <button class="tm sel" id="tmNew">はじめから</button>
+      <button class="tm dis" id="tmCont">つづきから</button>
+      <p style="font-size:2.8cqw;color:#777;">十字キー＝いどう／Ａ＝はなす・しらべる／Ｂ＝メニュー</p>
+    </div>
+  </div>
+  <div id="pad">
+    <div id="dpad">
+      <button class="u" data-dir="up">▲</button><button class="l" data-dir="left">◀</button>
+      <button class="c"></button><button class="r" data-dir="right">▶</button>
+      <button class="d" data-dir="down">▼</button>
+    </div>
+    <div id="btns">
+      <button class="ab" id="btnB">Ｂ<small>メニュー</small></button>
+      <button class="ab" id="btnA">Ａ<small>けってい</small></button>
+    </div>
+  </div>
+</div>
+
+<div id="editor">
+  <div id="ed-head"><h2 id="ed-title">ドット絵</h2>
+    <button class="ebtn" id="edClose">もどる</button></div>
+  <div id="ed-body"><div class="inner">
+    <div id="assetList"></div>
+    <div id="grid-wrap"><canvas id="gridCv"></canvas></div>
+    <div id="palette"></div>
+    <div class="toolrow">
+      <input type="color" id="colorPick" value="#ff6b6b">
+      <button class="ebtn" id="addColor">色をたす</button>
+      <button class="ebtn" id="btnFill">ぬりつぶし</button>
+      <button class="ebtn" id="btnFlip">左右はんてん</button>
+    </div>
+    <div class="toolrow">
+      <button class="ebtn" id="btnUndo">もどす</button>
+      <button class="ebtn" id="btnClear">ぜんぶけす</button>
+      <button class="ebtn" id="btnRestore">元にもどす</button>
+    </div>
+    <p class="hint">なぞって かけます。描いた絵は すぐゲームに 反映され<br>この端末に 保存されます。</p>
+  </div></div>
+</div>
+
+<script>
+/* ═══════════════════════════════════════════════
+   1. ドット絵（すべて ✏️ で編集できます）
+   ═══════════════════════════════════════════════ */
+function mk(w,h,f){return Array.from({length:h},()=>Array.from({length:w},()=>f||null));}
+function paint(a,rows,pal){rows.forEach((r,y)=>[...r].forEach((c,x)=>{
+  if(c!=='.'&&pal[c])a[y][x]=pal[c];}));return a;}
+function rct(a,x,y,w,h,c){for(let j=y;j<y+h;j++)for(let i=x;i<x+w;i++)
+  if(a[j]&&a[j][i]!==undefined)a[j][i]=c;}
+function dots(a,pts,c){pts.forEach(([x,y])=>{if(a[y]&&a[y][x]!==undefined)a[y][x]=c;});}
+
+/* ── うんこの形（全キャラ共通・ここを変えると全員変わる） ── */
+const UNKO=[
+".....BB.....","....BLBB....","...BBBBBB...","....BBBB....","..BBBBBBBB..","..BLBBBBBB..",
+".BBBBBBBBBB.","..BBBBBBBB..",".BWKBBBWKBB.","BBBBBBBBBBBB","BBBBKKKKBBBB",".dddddddddd."];
+function unko(b,l,d){return paint(mk(12,12),UNKO,{B:b,L:l,d:d,K:'#2a1a08',W:'#fff'});}
+
+const ART={};
+function initArt(){
+  /* ── キャラ（色ちがいの うんこ） ── */
+  ART.hero  =unko('#d8a03c','#f0c46a','#a06e18'); // ゆうしゃ＝きん
+  ART.npc   =unko('#a0682e','#c68a45','#7a4a20'); // むらびと
+  ART.king  =unko('#c05a9a','#e08ac0','#8a3068'); // おうさま
+  ART.shop  =unko('#3a8ab0','#5ab0d8','#256a88'); // みせのひと
+  ART.e1    =unko('#8a5a2a','#b07a44','#6a4018'); // ちゃうんこ
+  ART.e2    =unko('#e8e0d0','#ffffff','#b0a898'); // しろうんこ
+  ART.e3    =unko('#4a7a3a','#6a9a52','#345a28'); // みどりうんこ
+  ART.e4    =unko('#3050b8','#5878e0','#1e3280'); // あおうんこ
+  ART.e5    =unko('#b03030','#d85858','#7a1c1c'); // あかうんこ
+  ART.e6    =unko('#e8c020','#ffe870','#a88000'); // きんうんこ
+  ART.boss  =unko('#6a3878','#9058a0','#3f2044'); // りゅうおう
+
+  /* ── 地形 ── */
+  ART.grass=mk(16,16,'#3a8c3a');
+  dots(ART.grass,[[3,10],[4,10],[9,5],[10,5],[13,13],[6,2],[1,7],[12,8]],'#2f7a2f');
+  ART.bush=mk(16,16,'#2f7030');
+  [[2,3],[7,2],[12,4],[4,8],[10,9],[14,12],[6,13],[1,11]].forEach(([x,y])=>{
+    dots(ART.bush,[[x,y],[x+1,y],[x,y+1],[x+1,y+1]],'#4aa04a');
+    dots(ART.bush,[[x,y+2],[x+1,y+2]],'#215a22');});
+  ART.tree=mk(16,16,'#3a8c3a');
+  rct(ART.tree,3,1,10,10,'#1c5220');rct(ART.tree,5,3,6,6,'#2a7a2e');
+  rct(ART.tree,4,2,3,2,'#39a03e');rct(ART.tree,7,11,2,4,'#5a3a1a');
+  ART.water=mk(16,16,'#2452c8');
+  [[2,3],[3,3],[4,3],[9,6],[10,6],[11,6],[5,10],[6,10],[12,12],[13,12],[1,13]].forEach(p=>
+    dots(ART.water,[p],'#4a80e8'));
+  ART.mount=mk(16,16,'#3a8c3a');
+  for(let i=0;i<7;i++)rct(ART.mount,7-i,3+i*2,2+i*2,2,'#7a7264');
+  rct(ART.mount,6,3,4,3,'#a89c8a');rct(ART.mount,1,13,14,2,'#5f584c');
+  ART.road=mk(16,16,'#c2a06a');
+  dots(ART.road,[[2,4],[9,2],[13,9],[5,12],[11,14],[7,7]],'#a8874e');
+  ART.bridge=mk(16,16,'#2452c8');
+  rct(ART.bridge,0,3,16,10,'#8a5a2a');
+  for(let x=0;x<16;x+=3)rct(ART.bridge,x,3,1,10,'#6a4018');
+  rct(ART.bridge,0,3,16,1,'#c08a4a');rct(ART.bridge,0,12,16,1,'#c08a4a');
+  ART.floor=mk(16,16,'#9a8a78');
+  rct(ART.floor,0,0,16,1,'#867766');rct(ART.floor,0,8,16,1,'#867766');
+  rct(ART.floor,0,0,1,16,'#867766');rct(ART.floor,8,0,1,16,'#867766');
+  ART.wall=mk(16,16,'#6a6f80');
+  rct(ART.wall,0,0,16,1,'#4a4f5e');rct(ART.wall,0,7,16,1,'#4a4f5e');
+  rct(ART.wall,0,15,16,1,'#4a4f5e');rct(ART.wall,3,0,1,8,'#4a4f5e');
+  rct(ART.wall,11,8,1,8,'#4a4f5e');rct(ART.wall,1,1,2,2,'#828798');
+  ART.door=mk(16,16,'#7a5a2a');
+  rct(ART.door,2,1,12,14,'#5a3a1a');rct(ART.door,3,2,10,12,'#8a6030');
+  rct(ART.door,7,2,2,12,'#5a3a1a');dots(ART.door,[[5,8],[10,8]],'#ffd23f');
+  ART.carpet=mk(16,16,'#a02a2a');
+  rct(ART.carpet,0,0,16,1,'#d85050');rct(ART.carpet,0,15,16,1,'#701818');
+  dots(ART.carpet,[[3,4],[12,4],[3,11],[12,11],[7,7],[8,8]],'#ffd23f');
+  ART.counter=mk(16,16,'#9a8a78');
+  rct(ART.counter,0,4,16,9,'#8a5a2a');rct(ART.counter,0,4,16,2,'#c08a4a');
+  rct(ART.counter,0,12,16,1,'#5a3a1a');
+  ART.stairs=mk(16,16,'#4a4f5e');
+  for(let i=0;i<4;i++){rct(ART.stairs,i*4,i*4,16-i*4,3,'#9aa0b0');
+    rct(ART.stairs,i*4,i*4+3,16-i*4,1,'#5a606e');}
+  ART.chest=mk(16,16,null);
+  rct(ART.chest,2,4,12,9,'#8a5f14');rct(ART.chest,3,5,10,7,'#d8a030');
+  rct(ART.chest,2,7,12,2,'#6a4510');dots(ART.chest,[[7,8],[8,8]],'#fff2a0');
+  /* ── 大地図のアイコン ── */
+  ART.castle=mk(16,16,'#3a8c3a');
+  rct(ART.castle,2,5,12,10,'#b8b0a0');rct(ART.castle,2,3,3,3,'#d8d0c0');
+  rct(ART.castle,11,3,3,3,'#d8d0c0');rct(ART.castle,6,2,4,4,'#d8d0c0');
+  rct(ART.castle,7,10,2,5,'#5a3a1a');dots(ART.castle,[[4,8],[11,8],[7,6],[8,6]],'#2a3040');
+  ART.town=mk(16,16,'#3a8c3a');
+  rct(ART.town,1,7,6,7,'#c8a878');rct(ART.town,0,5,8,3,'#a03030');
+  rct(ART.town,9,8,6,6,'#c8a878');rct(ART.town,8,6,8,3,'#a03030');
+  dots(ART.town,[[3,10],[4,10],[11,11],[12,11]],'#5a3a1a');
+  ART.cave=mk(16,16,'#3a8c3a');
+  for(let i=0;i<6;i++)rct(ART.cave,7-i,4+i*2,2+i*2,2,'#7a7264');
+  rct(ART.cave,5,9,6,6,'#141018');rct(ART.cave,6,8,4,2,'#141018');
+  ART.dcastle=mk(16,16,'#4a4a5a');
+  rct(ART.dcastle,2,5,12,10,'#3a2a4a');rct(ART.dcastle,2,3,3,3,'#5a3a6a');
+  rct(ART.dcastle,11,3,3,3,'#5a3a6a');rct(ART.dcastle,6,1,4,5,'#5a3a6a');
+  rct(ART.dcastle,7,10,2,5,'#140a18');
+  dots(ART.dcastle,[[4,8],[11,8],[7,7],[8,7]],'#e5484d');
+  ART.dwall=mk(16,16,'#3a3048');
+  rct(ART.dwall,0,0,16,1,'#241c30');rct(ART.dwall,0,7,16,1,'#241c30');
+  rct(ART.dwall,0,15,16,1,'#241c30');rct(ART.dwall,3,0,1,8,'#241c30');
+  rct(ART.dwall,11,8,1,8,'#241c30');
+  ART.dfloor=mk(16,16,'#5a4a6a');
+  rct(ART.dfloor,0,0,16,1,'#463854');rct(ART.dfloor,0,8,16,1,'#463854');
+  rct(ART.dfloor,0,0,1,16,'#463854');rct(ART.dfloor,8,0,1,16,'#463854');
+  ART.cwall=mk(16,16,'#4a4238');
+  rct(ART.cwall,0,0,16,1,'#2e2820');rct(ART.cwall,0,7,16,1,'#2e2820');
+  rct(ART.cwall,0,15,16,1,'#2e2820');rct(ART.cwall,5,0,1,8,'#2e2820');
+  rct(ART.cwall,10,8,1,8,'#2e2820');
+  ART.cfloor=mk(16,16,'#6a5f4a');
+  dots(ART.cfloor,[[3,3],[9,6],[12,11],[5,13],[1,8]],'#544a38');
+}
+initArt();
+const PRISTINE=JSON.parse(JSON.stringify(ART));
+try{const sv=localStorage.getItem('unkoq-art');
+  if(sv){const o=JSON.parse(sv);Object.keys(o).forEach(k=>{if(ART[k])ART[k]=o[k];});}}catch(e){}
+function saveArt(){try{localStorage.setItem('unkoq-art',JSON.stringify(ART));}catch(e){}}
+
+const ART_LABEL={hero:"ゆうしゃ",npc:"むらびと",king:"おうさま",shop:"みせのひと",
+ e1:"ちゃうんこ",e2:"しろうんこ",e3:"みどりうんこ",e4:"あおうんこ",e5:"あかうんこ",
+ e6:"きんうんこ",boss:"りゅうおう",grass:"くさ",bush:"くさむら",tree:"き",water:"みず",
+ mount:"やま",road:"みち",bridge:"はし",floor:"ゆか",wall:"かべ",door:"とびら",
+ carpet:"じゅうたん",counter:"カウンター",stairs:"かいだん",chest:"たからばこ",
+ castle:"しろ",town:"まち",cave:"どうくつ",dcastle:"まおうじょう",
+ dwall:"まおうのかべ",dfloor:"まおうのゆか",cwall:"どうくつのかべ",cfloor:"どうくつのゆか"};
+
+/* ═══════════════════════════════════════════════
+   2. マップ
+   ═══════════════════════════════════════════════ */
+const TILE={'.':'grass',',':'bush','#':'tree','~':'water','^':'mount','=':'road',
+ '-':'bridge','_':'floor','B':'wall','+':'door','%':'carpet','K':'counter',
+ '>':'stairs','C':'castle','T':'town','t':'town','O':'cave','R':'dcastle',
+ 'W':'dwall','F':'dfloor','X':'cwall','f':'cfloor'};
+const BLOCKED=new Set(['#','~','^','B','K','W','X']);
+
+const WORLD=[
+"~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+"~~~~~~~~~~~~~~~~~~~~~~~~~^^^~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+"~~.~~~...~~..~~.~~..~.~^^^^^...~~...~..~.....~~~..~~~~~~",
+"~~~~~.~~.~.~..~..~..~..^^^^^^^.~...~...,...........~~~~~",
+"~~...........#..##......^^^^^........,,.,,,.........~.~~",
+"~~~............####....^^^^^^.........,,,,,...........~~",
+"~~~~.........#######.^^^^^^^^~~.~~...,,,,,,,..........~~",
+"~~~..........#####.#^.^^^...^~~~~....,,,,,,,..#.......~~",
+"~~~.....C==============^^..~~~~~~........,,,##.#.....~~~",
+"~~.~.......####......^=....~~~~~~.........#####.......~~",
+"~~~~....=..#####.....^=.....~~~~^~....O========#....~.~~",
+"~~~~.....########.....=.......~^^.^...=....###=.....~~~~",
+"~~~~....#.######......=.......^^^^^...=....#..=...^.~.~~",
+"~~.~.....########.....=..##....^^^^...=....#..=..^^^~~~~",
+"~~~~....#..######.....=##...........,,=,......t..^^^^.~~",
+"~~~........##.##.....#=####........,,,=,,........^^^~.~~",
+"~~.......#.#..#......#=####..,,,....,,=,,,.......^....~~",
+"~~....................=###.,.,,,,..,,,=,,,.~..........~~",
+"~~~...................=###..,,,,,,,.,,=,,,~~~~~.......~~",
+"~~.~.....#............=..#.,,,,,,,,..,=,..~~~~~~....~~~~",
+"~~~...#.##............=.....,,,,,,....=..~~~~~~.....~~~~",
+"~~~....####...........=....,,,,,,,,...=...~~~~~.......~~",
+"~~~~..######..........T================....~~~~......~~~",
+"~~~..#######.............,...,,,..=###.....~,,.......~~~",
+"~~....#####..............,,..,####=###...,.,,,,......~~~",
+"~~~....#..#..........,,,,,......##=##.....,,,,,,.....~~~",
+"~~...................#,,,,,,..####=##....,,,,,,......~~~",
+"~~~~........~.....###,,,,,,,..####=^#^^..,,,,,,......~~~",
+"~~~~........~.~~######,,,.,....###=#^^^....,,,,.....~~~~",
+"~~...........~~~~########.......#^=^^^^^...,,#,#......~~",
+"~~..........~~~~#########.......,,=^^^^^....####....~.~~",
+"~~.~^^..^..~~~~~~.######.........,=^^^.....^##^##.....~~",
+"~~~..^.^.....~~~..#######.....,,,,=^^^^..^^^^^#^##....~~",
+"~~..^^^^^..,.~~~.##.###........,,,=,,....^^^^^^^##...~~~",
+"~~.^^^^^^,,,,.......##.........,,,===========^^^^^^^^^~~",
+"~~..^^^^^^,,,,,..^..^..........,,,,,,.----^^=^^^^^^^^^~~",
+"~~~^^^^^...,,,,..^.^^.....####.#,,,,,,#.^^.^=^.^,,...~~~",
+"~~~.^.^^.,.,,,,.^^^^^.....####,.,,,,,###^^..=,,,,,,,..~~",
+"~~........,,,,.^^^^^^^.....####...,,####^^..=====..,~.~~",
+"~~.........,.,...^^^.....######....#####^^...,..=..,..~~",
+"~~.~~.~.~~~....^~.^^.....~.#~##....~####^^.~~~..R..~~.~~",
+"~~~~~~~.~...~....^.^...~....##.~~...~~##^^...~......~~~~",
+"~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+"~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"];
+
+const CASTLE=[
+"BBBBBBBBBBBBBBBBBBBBBBBB",
+"B______________________B",
+"B_BBBBBBBB____BBBBBBBB_B",
+"B_B%%%%%%B____B______B_B",
+"B_B%%%%%%B____B______B_B",
+"B_B%%%%%%+____+______B_B",
+"B_BBBBBBBB____BBBBBBBB_B",
+"B______________________B",
+"B______________________B",
+"B_BBBBBBBB____BBBBBBBB_B",
+"B_B______B____B______B_B",
+"B_B______+____+______B_B",
+"B_BBBBBBBB____BBBBBBBB_B",
+"B______________________B",
+"B______________________B",
+"BBBBBBBBBB_==_BBBBBBBBBB",
+"BBBBBBBBBB_==_BBBBBBBBBB",
+"BBBBBBBBBB_==_BBBBBBBBBB"];
+
+const TOWN=[
+"BBBBBBBBBBBBBBBBBBBBBBBB",
+"B......................B",
+"B.BBBBBB......BBBBBB...B",
+"B.BKKKKB......BKKKKB...B",
+"B.B....B......B....B...B",
+"B.BBB+BB......BBB+BB...B",
+"B......=========.......B",
+"B......=.......=.......B",
+"B======================B",
+"B......=.......=.......B",
+"B.BBBBBB......BBBBBB...B",
+"B.BKKKKB......B____B...B",
+"B.B....B......B____B...B",
+"B.BBB+BB......BBB+BB...B",
+"B......................B",
+"B......................B",
+"BBBBBBBBBB_==_BBBBBBBBBB",
+"BBBBBBBBBB_==_BBBBBBBBBB"];
+
+const TOWN2=[
+"BBBBBBBBBBBBBBBBBBBBBBBB",
+"B......................B",
+"B..BBBBBB....BBBBBB....B",
+"B..BKKKKB....BKKKKB....B",
+"B..B....B....B....B....B",
+"B..BBB+BB....BBB+BB....B",
+"B......================B",
+"B......=...............B",
+"B=======...BBBBBB......B",
+"B......=...BKKKKB......B",
+"B......=...B....B......B",
+"B......=...BBB+BB......B",
+"B......=...............B",
+"B......=...............B",
+"B......................B",
+"B......................B",
+"BBBBBBBBBB_==_BBBBBBBBBB",
+"BBBBBBBBBB_==_BBBBBBBBBB"];
+
+const CAVE=[
+"XXXXXXXXXXXXXXXXXXXX",
+"XffffffffffXXXXXXXXX",
+"XXXXXXXXXfXXXXXXXXXX",
+"XXXXXXXXXfXXXXXXXXXX",
+"XffffXXXXfXXXXffffXX",
+"XfXXfXXXXfXXXXfXXfXX",
+"XfXXffffffffffffXXfX",
+"XfXXfXXXXfXXXXfXXfXX",
+"XfXXfXXXXfXXXXfXXfXX",
+"XffffffffffffffffffX",
+"XXXfXXXXXXfXXXXXXfXX",
+"XfffffXfffffffXffffX",
+"XfXXXfXfXXXXXfXfXXfX",
+"XfffffXfffffffXffffX",
+"XXXXXXXXXXffXXXXXXXX",
+"XXXXXXXXXXffXXXXXXXX"];
+
+const DRAGON=[
+"WWWWWWWWWWWWWWWWWWWWWWWW",
+"W%%%%%%%%%%%%%%%%%%%%%%W",
+"W%WWWWWWWW%%%%WWWWWWWW%W",
+"W%WFFFFFFW%%%%WFFFFFFW%W",
+"W%WFFFFFFW%%%%WFFFFFFW%W",
+"W%WFFFFFF+%%%%+FFFFFFW%W",
+"W%WWWWWWWW%%%%WWWWWWWW%W",
+"W%%%%%%%%%%%%%%%%%%%%%%W",
+"W%%%%%%%%%%%%%%%%%%%%%%W",
+"WWWWWWWW%%%%%%%%WWWWWWWW",
+"WFFFFFFW%%%%%%%%WFFFFFFW",
+"WFFFFFF+%%%%%%%%+FFFFFFW",
+"WFFFFFFW%%%%%%%%WFFFFFFW",
+"WWWWWWWW%%%%%%%%WWWWWWWW",
+"W%%%%%%%%%%%%%%%%%%%%%%W",
+"W%%%%%%%%%%%%%%%%%%%%%%W",
+"WWWWWWWWWW%==%WWWWWWWWWW",
+"WWWWWWWWWW%==%WWWWWWWWWW"];
+
+const MAPS={
+ world:{d:WORLD,enc:true},
+ castle:{d:CASTLE,enc:false,name:"ラダうんこ城"},
+ town:{d:TOWN,enc:false,name:"うんこの まち"},
+ town2:{d:TOWN2,enc:false,name:"みなとまち ウンコット"},
+ cave:{d:CAVE,enc:true,pool:['e4','e5','e3'],name:"うんこの どうくつ"},
+ dragon:{d:DRAGON,enc:true,pool:['e5','e6','e4'],name:"りゅうおうの しろ"},
+};
+
+/* ワープ（乗ると移動） */
+const WARPS={
+ world:[{x:8,y:8,to:'castle',tx:11,ty:17},{x:22,y:22,to:'town',tx:11,ty:17},
+   {x:46,y:14,to:'town2',tx:11,ty:17},{x:38,y:10,to:'cave',tx:10,ty:15},
+   {x:48,y:40,to:'dragon',tx:11,ty:17}],
+ castle:[{x:11,y:17,to:'world',tx:8,ty:9},{x:12,y:17,to:'world',tx:8,ty:9}],
+ town:[{x:11,y:17,to:'world',tx:22,ty:23},{x:12,y:17,to:'world',tx:22,ty:23}],
+ town2:[{x:11,y:17,to:'world',tx:46,ty:15},{x:12,y:17,to:'world',tx:46,ty:15}],
+ cave:[{x:10,y:15,to:'world',tx:38,ty:11},{x:11,y:15,to:'world',tx:38,ty:11}],
+ dragon:[{x:11,y:17,to:'world',tx:48,ty:41},{x:12,y:17,to:'world',tx:48,ty:41}],
+};
+
+/* NPC */
+const NPCS={
+ castle:[
+  {x:5,y:4,art:'king',name:"うんこおう",lines:[
+   "おお ゆうしゃうんこよ！ よくぞ ながれてきた。",
+   "りゅうおうの うんこが せかいを くさく そめておる。",
+   "みなみの まちで そうびを ととのえ、たびに でるがよい。",
+   "そなたに 100ゴールドを さずけよう。"],gold:100},
+  {x:11,y:8,art:'npc',lines:["しろの そとには まものの うんこが おる。","くさむらは とくに あぶないぞ。"]},
+  {x:17,y:4,art:'npc',lines:["レベルが あがると HPと ちからが のびる。","まずは しろの まわりで ねりねり つよくなれ。"]},
+  {x:6,y:11,art:'npc',lines:["ひがしの どうくつに おたからが ねむって おるらしい。","くらいから きをつけてな。"]},
+ ],
+ town:[
+  {x:4,y:3,art:'shop',shop:'item',lines:["どうぐやへ ようこそ！"]},
+  {x:16,y:3,art:'shop',shop:'weapon1',lines:["ぶきやだ。いいのが あるよ。"]},
+  {x:4,y:11,art:'shop',shop:'inn',lines:["やどやへ ようこそ。"]},
+  {x:10,y:7,art:'npc',lines:["きたの しろの おうさまは やさしいお方だよ。"]},
+  {x:19,y:8,art:'npc',lines:["ひがしの みなとまちには つよい ぶきが あるらしい。","でも たかいんだ…"]},
+  {x:7,y:15,art:'npc',lines:["きんうんこは にげあしが はやいけど","たおすと どっさり けいけんちが もらえるよ！"]},
+  {x:17,y:11,art:'npc',lines:["りゅうおうの しろは みなみひがしの はてに あるって。","やまと うみに かこまれた ばしょさ。"]},
+ ],
+ town2:[
+  {x:5,y:3,art:'shop',shop:'item',lines:["みなとの どうぐやだよ。"]},
+  {x:15,y:3,art:'shop',shop:'weapon2',lines:["いい ぶきが そろってるぜ！"]},
+  {x:13,y:9,art:'shop',shop:'inn2',lines:["みなとの やど。ゆっくり やすんでいきな。"]},
+  {x:8,y:13,art:'npc',lines:["りゅうおうは つよい。","レベル10は ほしいところだね。"]},
+  {x:19,y:6,art:'npc',lines:["どうくつの おくに ちからの みなもとが あるとか。"]},
+ ],
+ dragon:[
+  {x:11,y:1,art:'boss',boss:true,lines:[
+   "…よくぞ ここまで ながれついた。",
+   "われこそは りゅうおうの うんこ。",
+   "せかいは このまま くさいままで よいのだ！"]},
+ ],
+};
+
+/* たからばこ */
+const CHESTS={
+ castle:[{x:17,y:11,gold:60}],
+ cave:[{x:2,y:11,gold:250},{x:18,y:11,item:'herb',n:3},
+   {x:1,y:1,gold:400},{x:18,y:13,item:'wing',n:2}],
+ dragon:[{x:3,y:3,gold:500},{x:20,y:11,item:'herb',n:5}],
+ town2:[{x:17,y:12,gold:30}],
+};
+
+/* ═══════════════════════════════════════════════
+   3. てき・そうび・みせ
+   ═══════════════════════════════════════════════ */
+const ENEMY={
+ e1:{name:"ちゃうんこ",hp:12,atk:7,def:3,exp:5,gold:6,art:'e1'},
+ e2:{name:"しろうんこ",hp:20,atk:10,def:6,exp:13,gold:16,art:'e2'},
+ e3:{name:"みどりうんこ",hp:44,atk:22,def:13,exp:30,gold:34,art:'e3'},
+ e4:{name:"あおうんこ",hp:78,atk:36,def:22,exp:62,gold:72,art:'e4'},
+ e5:{name:"あかうんこ",hp:130,atk:55,def:34,exp:120,gold:140,art:'e5'},
+ e6:{name:"きんうんこ",hp:60,atk:18,def:50,exp:400,gold:650,art:'e6'},
+ boss:{name:"りゅうおうのうんこ",hp:560,atk:76,def:48,exp:0,gold:0,art:'boss',boss:true},
+};
+const WEAPONS=[{name:"すあし",atk:0},{name:"きのぼう",atk:6},{name:"どうのつるぎ",atk:16},
+ {name:"はがねのつるぎ",atk:30},{name:"ほのおのつるぎ",atk:48}];
+const ARMORS=[{name:"ぬののふく",def:0},{name:"かわのよろい",def:6},{name:"くさりかたびら",def:14},
+ {name:"はがねのよろい",def:26},{name:"まほうのよろい",def:42}];
+const SHOPS={
+ item:{title:"どうぐや",list:[
+   {t:'item',key:'herb',name:"やくそう",price:24},
+   {t:'item',key:'wing',name:"きえさりのつばさ",price:80}]},
+ weapon1:{title:"ぶきや",list:[
+   {t:'w',i:1,price:70},{t:'w',i:2,price:280},
+   {t:'a',i:1,price:90},{t:'a',i:2,price:340}]},
+ weapon2:{title:"ぶきや",list:[
+   {t:'w',i:3,price:900},{t:'w',i:4,price:1800},
+   {t:'a',i:3,price:1100},{t:'a',i:4,price:2000}]},
+ inn:{title:"やどや",inn:8},
+ inn2:{title:"やどや",inn:20},
+};
+const SPELLS=[{name:"ホイミ",mp:4,type:'heal',power:40},
+ {name:"ブリブリ",mp:5,type:'atk',power:30},
+ {name:"ベホイミ",mp:10,type:'heal',power:90,lv:8},
+ {name:"ブリブリオン",mp:12,type:'atk',power:80,lv:12}];
+
+function nextExp(lv){return Math.floor(lv*lv*7+lv*10);}
+function statFor(lv){return{hpMax:24+lv*11,mpMax:5+lv*3,atk:4+lv*2,def:3+lv*2};}
+
+/* ═══════════════════════════════════════════════
+   4. エンジン
+   ═══════════════════════════════════════════════ */
+const TS=16,VW=16,VH=14;
+const cv=document.getElementById('game'),ctx=cv.getContext('2d');
+ctx.imageSmoothingEnabled=false;
+const $=id=>document.getElementById(id);
+const wStatus=$('wStatus'),wMsg=$('wMsg'),wCmd=$('wCmd');
+
+let G={map:'castle',x:11,y:14,dir:'down',lv:1,exp:0,hp:0,mp:0,gold:0,
+  weapon:0,armor:0,items:{herb:3,wing:0},chests:{},bossDead:false,
+  kingGift:false,steps:0,thr:8};
+let mode='title',anim=0;
+
+function stats(){const s=statFor(G.lv);
+  return{hpMax:s.hpMax,mpMax:s.mpMax,
+    atk:s.atk+WEAPONS[G.weapon].atk,def:s.def+ARMORS[G.armor].def};}
+function resetHpMp(){const s=stats();G.hp=s.hpMax;G.mp=s.mpMax;}
+
+function curMap(){return MAPS[G.map].d;}
+function tileAt(x,y){const m=curMap();
+  if(y<0||x<0||y>=m.length||x>=m[0].length)return 'B';return m[y][x];}
+function blocked(x,y){
+  if(BLOCKED.has(tileAt(x,y)))return true;
+  if((NPCS[G.map]||[]).some(n=>n.x===x&&n.y===y&&!(n.boss&&G.bossDead)))return true;
+  if((CHESTS[G.map]||[]).some(c=>c.x===x&&c.y===y&&!got(c)))return true;
+  return false;}
+function got(c){return G.chests[G.map+':'+c.x+','+c.y];}
+
+/* ── 描画 ── */
+function drawArt(k,dx,dy,s){const a=ART[k];if(!a)return;
+  for(let y=0;y<a.length;y++)for(let x=0;x<a[y].length;x++){
+    const c=a[y][x];if(!c)continue;ctx.fillStyle=c;ctx.fillRect(dx+x*s,dy+y*s,s,s);}}
+function drawMap(){
+  const m=curMap(),MW=m[0].length,MH=m.length;
+  let cx=G.x-(VW>>1),cy=G.y-(VH>>1);
+  cx=Math.max(0,Math.min(cx,MW-VW));cy=Math.max(0,Math.min(cy,MH-VH));
+  if(MW<VW)cx=-Math.floor((VW-MW)/2);
+  if(MH<VH)cy=-Math.floor((VH-MH)/2);
+  ctx.fillStyle='#000';ctx.fillRect(0,0,256,224);
+  for(let vy=0;vy<VH;vy++)for(let vx=0;vx<VW;vx++){
+    const mx=cx+vx,my=cy+vy;
+    if(mx<0||my<0||my>=MH||mx>=MW)continue;
+    drawArt(TILE[m[my][mx]]||'grass',vx*TS,vy*TS,1);}
+  (CHESTS[G.map]||[]).forEach(c=>{if(got(c))return;
+    drawArt('chest',(c.x-cx)*TS,(c.y-cy)*TS,1);});
+  (NPCS[G.map]||[]).forEach(n=>{
+    if(n.boss&&G.bossDead)return;
+    drawArt(n.art,(n.x-cx)*TS+2,(n.y-cy)*TS+2,1);});
+  const bob=Math.sin(anim*.15)>0?0:1;
+  drawArt('hero',(G.x-cx)*TS+2,(G.y-cy)*TS+2+bob,1);
+}
+let battle=null,flash=false;
+function drawBattle(){
+  ctx.fillStyle=flash?'#fff':'#000';ctx.fillRect(0,0,256,224);
+  if(flash)return;
+  ctx.fillStyle='#101018';ctx.fillRect(0,150,256,74);
+  const s=battle.boss?9:8,w=12*s;
+  drawArt(battle.art,(256-w)/2,150-12*s+10,s);
+}
+function render(){
+  if(mode==='title')return;
+  if(battle&&(mode==='battle'||mode==='bmsg'||mode==='bcmd'))drawBattle();
+  else drawMap();}
+
+/* ── ステータス窓 ── */
+function updStatus(){
+  const s=stats();
+  wStatus.innerHTML=`ゆうしゃ<br>Ｌ <b>${G.lv}</b><br>
+    <span class="${G.hp<=s.hpMax*.25?'low':''}">Ｈ ${G.hp}</span><br>
+    Ｍ ${G.mp}<br>Ｇ ${G.gold}`;
+  wStatus.classList.toggle('show',mode!=='title');}
+
+/* ── メッセージ ── */
+let mq=[],mDone=null,prevMode='field';
+function say(lines,done){
+  mq=Array.isArray(lines)?[...lines]:[lines];mDone=done||null;
+  prevMode=(mode==='battle'||mode==='bmsg'||mode==='bcmd')?'bmsg':'msg';
+  mode=prevMode;wCmd.classList.remove('show');step(true);}
+function step(first){
+  if(!first)mq.shift();
+  if(!mq.length){wMsg.classList.remove('show','cursor');
+    const cb=mDone;mDone=null;
+    if(cb)cb(); else if(mode==='msg'||mode==='bmsg')mode=(prevMode==='bmsg')?'bcmd':'field';
+    if(mode==='bcmd'&&!cb)battleCmd();
+    return;}
+  wMsg.textContent=mq[0];wMsg.classList.add('show','cursor');}
+function nextMsg(){if(mq.length)step();}
+
+/* ── メニュー ── */
+let mi=[],mIdx=0,mPick=null;
+function menu(title,items,onPick,right){
+  mi=items;mIdx=0;mPick=onPick;
+  wCmd.classList.toggle('right',!!right);
+  renderMenu();wCmd.classList.add('show');}
+function renderMenu(){
+  let h=mi.title?`<div class="mtitle">${mi.title}</div>`:'';
+  h+=mi.map((it,i)=>`<div class="mi ${i===mIdx?'sel':''} ${it.dis?'dis':''}" data-i="${i}">
+    ${it.label}${it.price!==undefined?` <span class="pr">${it.price}Ｇ</span>`:''}</div>`).join('');
+  wCmd.innerHTML=h;
+  wCmd.querySelectorAll('.mi').forEach(e=>e.onclick=()=>{mIdx=+e.dataset.i;pickMenu();});}
+function moveMenu(d){if(!wCmd.classList.contains('show'))return;
+  mIdx=(mIdx+d+mi.length)%mi.length;renderMenu();}
+function pickMenu(){const it=mi[mIdx];if(it.dis)return;
+  wCmd.classList.remove('show');if(mPick)mPick(it.id,it);}
+function closeMenu(){wCmd.classList.remove('show');}
+
+/* ── いどう ── */
+function move(dir){
+  if(mode!=='field')return;
+  G.dir=dir;let nx=G.x,ny=G.y;
+  if(dir==='up')ny--;if(dir==='down')ny++;if(dir==='left')nx--;if(dir==='right')nx++;
+  const m=curMap();
+  if(ny<0||nx<0||ny>=m.length||nx>=m[0].length)return;
+  if(blocked(nx,ny)){ // ボスに ぶつかったら せんとう
+    const n=(NPCS[G.map]||[]).find(n=>n.x===nx&&n.y===ny&&n.boss&&!G.bossDead);
+    if(n)talkTo(n);return;}
+  G.x=nx;G.y=ny;
+  const w=(WARPS[G.map]||[]).find(w=>w.x===nx&&w.y===ny);
+  if(w){doWarp(w);return;}
+  if(MAPS[G.map].enc){
+    G.steps++;
+    if(G.steps>=G.thr){G.steps=0;G.thr=6+Math.floor(Math.random()*10);
+      const t=tileAt(nx,ny);
+      if(t!=='='&&t!=='-'){startBattle(pickEnemy(t));save();return;}}}
+  if(G.steps%12===0)save();}
+function doWarp(w){
+  G.map=w.to;G.x=w.tx;G.y=w.ty;G.steps=0;
+  const nm=MAPS[w.to].name;
+  save();
+  if(nm)say([nm+" に ついた。"]);}
+function pickEnemy(t){
+  const mp=MAPS[G.map];
+  if(mp.pool)return mp.pool[Math.floor(Math.random()*mp.pool.length)];
+  const d=Math.abs(G.x-8)+Math.abs(G.y-8);
+  let pool;
+  if(d<10)pool=['e1','e1','e1','e1'];
+  else if(d<20)pool=['e1','e1','e2','e2'];
+  else if(d<32)pool=['e2','e2','e3','e3'];
+  else if(d<44)pool=['e3','e3','e4','e4'];
+  else pool=['e4','e4','e5','e5'];
+  if(t===',')pool=pool.slice(1).concat(pool[pool.length-1]);
+  if(Math.random()<0.02)return 'e6';
+  return pool[Math.floor(Math.random()*pool.length)];}
+
+/* ── しらべる／はなす ── */
+function action(){
+  if(mode!=='field')return;
+  let tx=G.x,ty=G.y;
+  if(G.dir==='up')ty--;if(G.dir==='down')ty++;
+  if(G.dir==='left')tx--;if(G.dir==='right')tx++;
+  const n=(NPCS[G.map]||[]).find(n=>n.x===tx&&n.y===ty&&!(n.boss&&G.bossDead));
+  if(n){talkTo(n);return;}
+  const c=(CHESTS[G.map]||[]).find(c=>c.x===tx&&c.y===ty&&!got(c));
+  if(c){openChest(c);return;}
+  say(["なにも みつからなかった。"]);}
+function talkTo(n){
+  if(n.boss){say(n.lines,()=>startBattle('boss'));return;}
+  if(n.shop){say(n.lines,()=>openShop(n.shop));return;}
+  if(n.gold&&!G.kingGift){
+    G.kingGift=true;G.gold+=n.gold;updStatus();save();
+    say(n.lines.concat([`${n.gold}Ｇを もらった！`]));return;}
+  say(n.lines);}
+function openChest(c){
+  G.chests[G.map+':'+c.x+','+c.y]=1;
+  let msg;
+  if(c.gold){G.gold+=c.gold;msg=`たからばこを あけた！ ${c.gold}Ｇを てにいれた！`;}
+  else{G.items[c.item]=(G.items[c.item]||0)+c.n;
+    const nm=c.item==='herb'?'やくそう':'きえさりのつばさ';
+    msg=`たからばこを あけた！ ${nm}を ${c.n}こ てにいれた！`;}
+  updStatus();save();say([msg]);}
+
+/* ── みせ ── */
+function openShop(key){
+  const sh=SHOPS[key];
+  if(sh.inn){
+    const cost=sh.inn*G.lv;
+    say([`やどやへ ようこそ。 １ぱく ${cost}Ｇです。`],()=>{
+      mode='shop';
+      menu(null,[{id:'y',label:'とまる'},{id:'n',label:'とまらない'}],id=>{
+        if(id==='n'){mode='field';say(["また どうぞ。"]);return;}
+        if(G.gold<cost){mode='field';say(["おかねが たりないようですね…"]);return;}
+        G.gold-=cost;resetHpMp();updStatus();save();
+        mode='field';say(["おやすみなさい…","zzz…","ぐっすり ねむれましたか？","HPと MPが かんぜんに かいふくした！"]);});});
+    return;}
+  mode='shop';
+  const list=sh.list.map((it,i)=>{
+    let label,price=it.price;
+    if(it.t==='item')label=it.name;
+    else if(it.t==='w')label=WEAPONS[it.i].name;
+    else label=ARMORS[it.i].name;
+    return{id:i,label,price};});
+  list.push({id:'x',label:'やめる'});
+  list.title=sh.title;
+  menu(null,list,id=>{
+    if(id==='x'){mode='field';say(["まいど ありがとう！"]);return;}
+    const it=sh.list[id];
+    if(G.gold<it.price){mode='field';say(["おかねが たりないよ！"]);return;}
+    G.gold-=it.price;
+    let nm;
+    if(it.t==='item'){G.items[it.key]=(G.items[it.key]||0)+1;nm=it.name;}
+    else if(it.t==='w'){G.weapon=Math.max(G.weapon,it.i);nm=WEAPONS[it.i].name;}
+    else{G.armor=Math.max(G.armor,it.i);nm=ARMORS[it.i].name;}
+    updStatus();save();
+    mode='field';say([`${nm}を てにいれた！`],()=>openShop(key));});}
+
+/* ── フィールドメニュー ── */
+function fieldMenu(){
+  if(mode!=='field')return;
+  mode='menu';
+  menu(null,[{id:'sp',label:'じゅもん'},{id:'it',label:'どうぐ'},
+    {id:'st',label:'つよさ'},{id:'x',label:'とじる'}],id=>{
+    if(id==='x'){mode='field';return;}
+    if(id==='st'){const s=stats();mode='field';
+      say([`ゆうしゃ Ｌｖ${G.lv}`,
+        `ちから ${s.atk}／みのまもり ${s.def}`,
+        `ぶき：${WEAPONS[G.weapon].name}`,
+        `よろい：${ARMORS[G.armor].name}`,
+        `つぎのレベルまで あと ${Math.max(0,nextExp(G.lv)-G.exp)}`]);return;}
+    if(id==='it'){itemMenu(false);return;}
+    if(id==='sp'){spellMenu(false);return;}});}
+function itemMenu(inBattle){
+  const list=[];
+  if(G.items.herb>0)list.push({id:'herb',label:`やくそう(${G.items.herb})`});
+  if(G.items.wing>0&&!inBattle)list.push({id:'wing',label:`きえさりのつばさ(${G.items.wing})`});
+  if(!list.length){if(inBattle){say(["どうぐを もっていない！"],battleCmd);}
+    else{mode='field';say(["どうぐを もっていない。"]);}return;}
+  list.push({id:'x',label:'やめる'});
+  menu(null,list,id=>{
+    if(id==='x'){if(inBattle)battleCmd();else mode='field';return;}
+    if(id==='herb'){G.items.herb--;const s=stats(),b=G.hp;
+      G.hp=Math.min(s.hpMax,G.hp+45);updStatus();save();
+      if(inBattle)say(["やくそうを つかった！",`HPが ${G.hp-b} かいふくした！`],enemyTurn);
+      else{mode='field';say(["やくそうを つかった！",`HPが ${G.hp-b} かいふくした！`]);}return;}
+    if(id==='wing'){G.items.wing--;G.map='castle';G.x=11;G.y=14;G.steps=0;updStatus();save();
+      mode='field';say(["つばさを つかった！","からだが きえさり…","ラダうんこ城に もどってきた！"]);}
+  },inBattle);}
+function spellMenu(inBattle){
+  const av=SPELLS.filter(s=>!s.lv||G.lv>=s.lv);
+  const list=av.map((s,i)=>({id:i,label:`${s.name}(${s.mp})`}));
+  list.push({id:'x',label:'やめる'});
+  menu(null,list,id=>{
+    if(id==='x'){if(inBattle)battleCmd();else mode='field';return;}
+    const sp=av[id];
+    if(G.mp<sp.mp){if(inBattle)say(["ＭＰが たりない！"],battleCmd);
+      else{mode='field';say(["ＭＰが たりない。"]);}return;}
+    if(sp.type==='heal'){G.mp-=sp.mp;const s=stats(),b=G.hp;
+      G.hp=Math.min(s.hpMax,G.hp+sp.power);updStatus();save();
+      const l=[`ゆうしゃは ${sp.name}を となえた！`,`HPが ${G.hp-b} かいふくした！`];
+      if(inBattle)say(l,enemyTurn);else{mode='field';say(l);}return;}
+    if(!inBattle){mode='field';say(["ここでは つかえない。"]);return;}
+    G.mp-=sp.mp;updStatus();
+    const dmg=Math.max(1,sp.power+rnd(-4,4));battle.hp-=dmg;
+    hit();say([`ゆうしゃは ${sp.name}を となえた！`,`${battle.name}に ${dmg}の ダメージ！`],
+      ()=>battle.hp<=0?win():enemyTurn());
+  },inBattle);}
+
+/* ── せんとう ── */
+function startBattle(key){
+  const e=ENEMY[key];
+  battle={key,name:e.name,hp:e.hp,hpMax:e.hp,atk:e.atk,def:e.def,
+    exp:e.exp,gold:e.gold,art:e.art,boss:!!e.boss};
+  mode='bmsg';closeMenu();
+  say([`${e.name}が あらわれた！`],battleCmd);}
+function battleCmd(){
+  mode='bcmd';
+  menu(null,[{id:'f',label:'たたかう'},{id:'s',label:'じゅもん'},
+    {id:'i',label:'どうぐ'},{id:'r',label:'にげる'}],id=>{
+    if(id==='f')attack();else if(id==='s')spellMenu(true);
+    else if(id==='i')itemMenu(true);else run();});}
+function hit(){flash=true;setTimeout(()=>{flash=false;},70);}
+function attack(){
+  const s=stats();
+  const base=Math.max(1,Math.floor((s.atk-battle.def/2)*(0.85+Math.random()*0.3)));
+  const crit=Math.random()<0.07,dmg=crit?base*2:base;
+  battle.hp-=dmg;hit();
+  const l=["ゆうしゃの こうげき！"];
+  if(crit)l.push("かいしんの いちげき！！");
+  l.push(`${battle.name}に ${dmg}の ダメージ！`);
+  say(l,()=>battle.hp<=0?win():enemyTurn());}
+function enemyTurn(){
+  if(battle.hp<=0){win();return;}
+  if(battle.key==='e6'&&Math.random()<0.35){
+    say([`${battle.name}は にげだした！`],endBattle);return;}
+  const s=stats();
+  const dmg=Math.max(1,Math.floor((battle.atk-s.def/2)*(0.85+Math.random()*0.3)));
+  G.hp-=dmg;updStatus();
+  const l=[`${battle.name}の こうげき！`,`ゆうしゃは ${dmg}の ダメージ！`];
+  if(battle.boss&&Math.random()<0.35){
+    const d2=Math.max(1,Math.floor(battle.atk*0.85));G.hp-=d2;updStatus();
+    l.push("りゅうおうは くさいいきを はいた！",`ゆうしゃは ${d2}の ダメージ！`);}
+  say(l,()=>G.hp<=0?dead():battleCmd());}
+function run(){
+  if(battle.boss){say(["…にげられない！"],enemyTurn);return;}
+  if(Math.random()<0.65)say(["うまく にげきった！"],endBattle);
+  else say(["しかし まわりこまれた！"],enemyTurn);}
+function win(){
+  const l=[`${battle.name}を たおした！`];
+  if(battle.exp)l.push(`${battle.exp}の けいけんちを かくとく！`);
+  if(battle.gold)l.push(`${battle.gold}Ｇを てにいれた！`);
+  G.exp+=battle.exp;G.gold+=battle.gold;updStatus();
+  const boss=battle.boss;
+  say(l,()=>lvUp(()=>{if(boss){G.bossDead=true;save();clear();}else endBattle();}));}
+function lvUp(done){
+  if(G.exp>=nextExp(G.lv)){
+    const o=statFor(G.lv);G.lv++;const n=statFor(G.lv);
+    G.hp+=n.hpMax-o.hpMax;G.mp+=n.mpMax-o.mpMax;updStatus();
+    const l=[`レベルが ${G.lv}に あがった！`,
+      `さいだいHP＋${n.hpMax-o.hpMax}　ちから＋${n.atk-o.atk}`];
+    SPELLS.forEach(s=>{if(s.lv===G.lv)l.push(`じゅもん「${s.name}」を おぼえた！`);});
+    say(l,()=>lvUp(done));}
+  else done();}
+function endBattle(){battle=null;mode='field';wMsg.classList.remove('show','cursor');save();}
+function dead(){
+  say(["ゆうしゃうんこは ながされた…"],()=>{
+    G.gold=Math.floor(G.gold/2);G.map='castle';G.x=11;G.y=14;G.dir='down';
+    resetHpMp();battle=null;updStatus();save();mode='msg';
+    say(["…しろの トイレで めをさました。",
+      "うんこおう「しんでしまうとは なにごとじゃ！」",
+      "「もういちど ねりねり つよくなって まいれ。」"],()=>{mode='field';});});}
+function clear(){
+  mode='clear';
+  const t=$('title');
+  t.innerHTML=`<h1>りゅうおうを<br>ながした！</h1>
+    <p>せかいに さわやかな かぜが もどった。<br>
+    ゆうしゃうんこの なは えいえんに かたりつがれる――</p>
+    <p style="color:#ffd23f;font-size:5cqw;">Ｌｖ${G.lv}　クリア！</p>
+    <button class="tm sel" onclick="localStorage.removeItem('unkoq-save');location.reload()">もういちど</button>`;
+  t.classList.remove('hide');
+  wMsg.classList.remove('show');wStatus.classList.remove('show');}
+
+/* ── セーブ ── */
+function save(){try{localStorage.setItem('unkoq-save',JSON.stringify(G));}catch(e){}}
+function load(){try{const s=localStorage.getItem('unkoq-save');
+  if(s){G=Object.assign(G,JSON.parse(s));return true;}}catch(e){}return false;}
+
+/* ── ゲーム開始 ── */
+function begin(cont){
+  if(!cont){G={map:'castle',x:11,y:14,dir:'down',lv:1,exp:0,hp:0,mp:0,gold:0,
+    weapon:0,armor:0,items:{herb:3,wing:0},chests:{},bossDead:false,
+    kingGift:false,steps:0,thr:8};resetHpMp();save();}
+  $('title').classList.add('hide');
+  mode='field';updStatus();
+  if(!cont)say(["ゆうしゃうんこは たびだった。","しろの ひとに はなしかけて じょうほうを あつめよう。"]);}
+
+/* ── タイトル操作 ── */
+let tIdx=0;const hasSave=!!localStorage.getItem('unkoq-save');
+if(hasSave)$('tmCont').classList.remove('dis');
+function tRender(){$('tmNew').classList.toggle('sel',tIdx===0);
+  $('tmCont').classList.toggle('sel',tIdx===1);}
+$('tmNew').onclick=()=>begin(false);
+$('tmCont').onclick=()=>{if(hasSave&&load())begin(true);};
+
+/* ── 入力 ── */
+function onA(){
+  if(mode==='title'){tIdx===0?begin(false):(hasSave&&load()&&begin(true));return;}
+  if(mode==='msg'||mode==='bmsg'){nextMsg();return;}
+  if(mode==='menu'||mode==='bcmd'||mode==='shop'){pickMenu();return;}
+  if(mode==='field')action();}
+function onB(){
+  if(mode==='msg'||mode==='bmsg'){nextMsg();return;}
+  if(mode==='menu'){closeMenu();mode='field';return;}
+  if(mode==='shop'){closeMenu();mode='field';return;}
+  if(mode==='field')fieldMenu();}
+function onDir(d){
+  if(mode==='title'){if(hasSave){tIdx=(d==='up'||d==='left')?0:1;tRender();}return;}
+  if(mode==='field'){move(d);return;}
+  if(mode==='menu'||mode==='bcmd'||mode==='shop')moveMenu(d==='up'||d==='left'?-1:1);}
+document.addEventListener('keydown',e=>{
+  if($('editor').classList.contains('show'))return;
+  const k=e.key;
+  if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight',' '].includes(k))e.preventDefault();
+  if(k==='ArrowUp')onDir('up');else if(k==='ArrowDown')onDir('down');
+  else if(k==='ArrowLeft')onDir('left');else if(k==='ArrowRight')onDir('right');
+  else if(k==='Enter'||k===' '||k==='z')onA();else if(k==='x'||k==='Escape')onB();});
+document.querySelectorAll('#dpad button[data-dir]').forEach(b=>{
+  const dir=b.dataset.dir;let iv=null;
+  const go=e=>{e.preventDefault();onDir(dir);
+    if(mode==='field')iv=setInterval(()=>onDir(dir),150);};
+  const stop=()=>{if(iv){clearInterval(iv);iv=null;}};
+  b.addEventListener('touchstart',go,{passive:false});
+  b.addEventListener('touchend',stop);b.addEventListener('touchcancel',stop);
+  b.addEventListener('mousedown',go);b.addEventListener('mouseup',stop);
+  b.addEventListener('mouseleave',stop);});
+$('btnA').onclick=onA;$('btnB').onclick=onB;
+let toastT=null;
+function toast(msg,ms){
+  const t=$('toast');t.textContent=msg;t.classList.add('show');
+  clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),ms||2800);}
+const fsEl=()=>document.fullscreenElement||document.webkitFullscreenElement||null;
+function syncFsIcon(){$('fs').textContent=fsEl()?'⛶':'⛶';}
+document.addEventListener('fullscreenchange',syncFsIcon);
+document.addEventListener('webkitfullscreenchange',syncFsIcon);
+$('fs').onclick=async()=>{
+  try{
+    if(fsEl()){
+      const ex=document.exitFullscreen||document.webkitExitFullscreen;
+      if(ex)await ex.call(document);
+      try{screen.orientation&&screen.orientation.unlock&&screen.orientation.unlock();}catch(e){}
+      return;}
+    const el=document.documentElement;
+    const req=el.requestFullscreen||el.webkitRequestFullscreen;
+    if(!req||document.fullscreenEnabled===false){
+      toast('この がめんでは ぜんがめんに できません。\nファイルを ブラウザで ひらくと つかえます。',3800);
+      return;}
+    await req.call(el);
+    try{
+      if(screen.orientation&&screen.orientation.lock)
+        await screen.orientation.lock('landscape');
+    }catch(e){}
+  }catch(err){
+    toast('ぜんがめんに できませんでした。\nファイルを ブラウザで ひらくと つかえます。',3800);
+  }
+};
+/* ── PWA：ホーム画面から起動しているときは ⛶ を隠す ── */
+const standalone = window.matchMedia('(display-mode: fullscreen)').matches
+  || window.matchMedia('(display-mode: standalone)').matches
+  || window.navigator.standalone === true;
+if(standalone) $('fs').style.display='none';
+
+/* ── オフライン対応 ── */
+if('serviceWorker' in navigator && location.protocol.startsWith('http')){
+  window.addEventListener('load',()=>{
+    navigator.serviceWorker.register('./sw.js').catch(()=>{});
+  });
+}
+function rnd(a,b){return Math.floor(Math.random()*(b-a+1))+a;}
+function loop(){anim++;render();requestAnimationFrame(loop);}
+loop();
+
+/* ═══════════════════════════════════════════════
+   5. ドットエディタ
+   ═══════════════════════════════════════════════ */
+const ED={target:'hero',color:'#e5484d',erase:false,hist:[]};
+const gridCv=$('gridCv'),gx=gridCv.getContext('2d');
+const BASEC=['#000000','#ffffff','#f0c090','#e0a060','#8a5a2a','#5a3a1a','#e5484d',
+ '#ff9a3c','#ffd23f','#3a8c3a','#2a7a2a','#1f5a1f','#3aa0ff','#2a5fd0','#1e3aa0',
+ '#a03cff','#6a1fb0','#d8c8ff','#9a8a78','#555a66','#43485a','#1a1a2e'];
+function used(k){const s=new Set();(ART[k]||[]).forEach(r=>r.forEach(c=>{if(c)s.add(c);}));return[...s];}
+function buildAssets(){
+  const el=$('assetList');el.innerHTML='';
+  Object.keys(ART).forEach(k=>{
+    const a=ART[k],d=document.createElement('div');
+    d.className='asset'+(k===ED.target?' sel':'');
+    const c=document.createElement('canvas');c.width=a[0].length;c.height=a.length;
+    thumb(c.getContext('2d'),k);
+    const s=document.createElement('span');s.textContent=ART_LABEL[k]||k;
+    d.appendChild(c);d.appendChild(s);
+    d.onclick=()=>{ED.target=k;ED.hist=[];buildAssets();buildPal();drawGrid();
+      $('ed-title').textContent='ドット絵：'+(ART_LABEL[k]||k);};
+    el.appendChild(d);});}
+function thumb(c,k){const a=ART[k];c.clearRect(0,0,99,99);
+  for(let y=0;y<a.length;y++)for(let x=0;x<a[y].length;x++){
+    if(!a[y][x])continue;c.fillStyle=a[y][x];c.fillRect(x,y,1,1);}}
+function buildPal(){
+  const p=$('palette');p.innerHTML='';
+  const e=document.createElement('div');e.className='sw eraser'+(ED.erase?' sel':'');
+  e.textContent='✕';e.onclick=()=>{ED.erase=true;buildPal();};p.appendChild(e);
+  [...new Set([...used(ED.target),...BASEC])].forEach(c=>{
+    const d=document.createElement('div');
+    d.className='sw'+(!ED.erase&&c===ED.color?' sel':'');d.style.background=c;
+    d.onclick=()=>{ED.color=c;ED.erase=false;$('colorPick').value=c;buildPal();};
+    p.appendChild(d);});}
+function cs(){const a=ART[ED.target];
+  return Math.max(9,Math.floor(Math.min(window.innerWidth-40,400)/a[0].length));}
+function drawGrid(){
+  const a=ART[ED.target],s=cs();
+  gridCv.width=a[0].length*s;gridCv.height=a.length*s;
+  gx.clearRect(0,0,gridCv.width,gridCv.height);
+  for(let y=0;y<a.length;y++)for(let x=0;x<a[y].length;x++)
+    if(a[y][x]){gx.fillStyle=a[y][x];gx.fillRect(x*s,y*s,s,s);}
+  gx.strokeStyle='rgba(255,255,255,.14)';
+  for(let x=0;x<=a[0].length;x++){gx.beginPath();gx.moveTo(x*s+.5,0);gx.lineTo(x*s+.5,gridCv.height);gx.stroke();}
+  for(let y=0;y<=a.length;y++){gx.beginPath();gx.moveTo(0,y*s+.5);gx.lineTo(gridCv.width,y*s+.5);gx.stroke();}
+  const i=Object.keys(ART).indexOf(ED.target);
+  const c=$('assetList').children[i]?.querySelector('canvas');
+  if(c)thumb(c.getContext('2d'),ED.target);}
+function push(){ED.hist.push(JSON.parse(JSON.stringify(ART[ED.target])));
+  if(ED.hist.length>40)ED.hist.shift();}
+function pos(e){const r=gridCv.getBoundingClientRect(),s=cs(),t=e.touches?e.touches[0]:e;
+  const k=gridCv.width/r.width;
+  return{x:Math.floor((t.clientX-r.left)*k/s),y:Math.floor((t.clientY-r.top)*k/s)};}
+let painting=false,fillMode=false;
+function put(x,y){const a=ART[ED.target];
+  if(y<0||x<0||y>=a.length||x>=a[0].length)return;
+  const v=ED.erase?null:ED.color;if(a[y][x]===v)return;a[y][x]=v;drawGrid();}
+function fill(x,y){const a=ART[ED.target],t=a[y][x],v=ED.erase?null:ED.color;
+  if(t===v)return;const st=[[x,y]];
+  while(st.length){const[cx,cy]=st.pop();
+    if(cy<0||cx<0||cy>=a.length||cx>=a[0].length)continue;
+    if(a[cy][cx]!==t)continue;a[cy][cx]=v;
+    st.push([cx+1,cy],[cx-1,cy],[cx,cy+1],[cx,cy-1]);}drawGrid();}
+gridCv.addEventListener('mousedown',st);gridCv.addEventListener('touchstart',st,{passive:false});
+function st(e){e.preventDefault();push();painting=true;const{x,y}=pos(e);
+  if(fillMode){fill(x,y);fillMode=false;$('btnFill').classList.remove('on');
+    painting=false;saveArt();return;}put(x,y);}
+function mv(e){if(!painting)return;e.preventDefault();const{x,y}=pos(e);put(x,y);}
+gridCv.addEventListener('mousemove',mv);gridCv.addEventListener('touchmove',mv,{passive:false});
+window.addEventListener('mouseup',()=>{if(painting){painting=false;saveArt();}});
+window.addEventListener('touchend',()=>{if(painting){painting=false;saveArt();}});
+$('colorPick').oninput=e=>{ED.color=e.target.value;ED.erase=false;buildPal();};
+$('addColor').onclick=()=>{ED.color=$('colorPick').value;ED.erase=false;
+  if(!BASEC.includes(ED.color))BASEC.unshift(ED.color);buildPal();};
+$('btnFill').onclick=e=>{fillMode=!fillMode;e.target.classList.toggle('on',fillMode);};
+$('btnFlip').onclick=()=>{push();ART[ED.target]=ART[ED.target].map(r=>[...r].reverse());
+  drawGrid();saveArt();};
+$('btnUndo').onclick=()=>{if(ED.hist.length){ART[ED.target]=ED.hist.pop();drawGrid();saveArt();}};
+$('btnClear').onclick=()=>{push();ART[ED.target]=ART[ED.target].map(r=>r.map(()=>null));
+  drawGrid();saveArt();};
+$('btnRestore').onclick=()=>{push();ART[ED.target]=JSON.parse(JSON.stringify(PRISTINE[ED.target]));
+  drawGrid();buildPal();saveArt();};
+$('pencil').onclick=()=>{$('editor').classList.add('show');
+  buildAssets();buildPal();drawGrid();
+  $('ed-title').textContent='ドット絵：'+(ART_LABEL[ED.target]||ED.target);};
+$('edClose').onclick=()=>{$('editor').classList.remove('show');saveArt();};
+window.addEventListener('resize',()=>{if($('editor').classList.contains('show'))drawGrid();});
+</script>
+</body>
+</html>
