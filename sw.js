@@ -1,6 +1,6 @@
 /* うんこクエスト Service Worker
    一度ひらけば、つぎからは オフラインでも あそべます。 */
-const CACHE = 'unkoq-v1';
+const CACHE = 'unkoq-v2';
 const ASSETS = [
   './',
   './index.html',
