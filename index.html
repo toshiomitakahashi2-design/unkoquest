@@ -164,7 +164,7 @@ html,body{height:100%;background:#000;color:#fff;font-family:'DotGothic16',monos
       <button class="tm sel" id="tmNew">はじめから</button>
       <button class="tm dis" id="tmCont">つづきから</button>
       <p style="font-size:2.8cqw;color:#777;">十字キー＝いどう／Ａ＝はなす・しらべる／Ｂ＝メニュー</p>
-      <p id="ver">ver 2.0</p>
+      <p id="ver">ver 2.1</p>
     </div>
   </div>
   <div id="pad">
@@ -818,7 +818,9 @@ function move(dir){
       if(t!=='='&&t!=='-'){startBattle(pickEnemy(t));save();return;}}}
   if(G.steps%12===0)save();}
 function doWarp(w){
+  const from=G.map;
   G.map=w.to;G.x=w.tx;G.y=w.ty;G.steps=0;
+  LOG.ev('エリア移動',from+'→'+w.to);
   const nm=MAPS[w.to].name;
   save();
   if(nm)say([nm+" に ついた。"]);}
@@ -856,6 +858,7 @@ function findNpc(x,y){
   return (NPCS[G.map]||[]).find(n=>n.x===x&&n.y===y
     &&!(n.boss&&G.bossDead)&&!(n.boss2&&G.boss2Dead));}
 function talkTo(n){
+  LOG.ev('はなす',G.map+(n.shop?'/'+n.shop:''));
   if(n.boss){say(n.lines,()=>startBattle('boss'));return;}
   if(n.boss2){say(n.lines,()=>startBattle('guard'));return;}
   if(n.shop){say(n.lines,()=>openShop(n.shop));return;}
@@ -873,7 +876,7 @@ function openChest(c){
   else{G.items[c.item]=(G.items[c.item]||0)+c.n;
     const nm=c.item==='herb'?'やくそう':'きえさりのつばさ';
     msg=`たからばこを あけた！ ${nm}を ${c.n}こ てにいれた！`;}
-  updStatus();save();say([msg]);}
+  updStatus();save();LOG.ev('たからばこ',G.map);say([msg]);}
 
 /* ── みせ ── */
 function openShop(key){
@@ -886,7 +889,7 @@ function openShop(key){
       menu(null,[{id:'y',label:'とまる'},{id:'n',label:'とまらない'}],id=>{
         if(id==='n'){mode='field';say(["また どうぞ。"]);return;}
         if(G.gold<cost){mode='field';say(["おかねが たりないようですね…"]);return;}
-        G.gold-=cost;resetHpMp();updStatus();save();
+        G.gold-=cost;resetHpMp();updStatus();save();LOG.ev('やどや',cost+'G');
         mode='field';say(["おやすみなさい…","zzz…","ぐっすり ねむれましたか？","HPと MPが かんぜんに かいふくした！"]);});});
     return;}
   mode='shop';
@@ -918,7 +921,7 @@ function buyMenu(key){
       G.weapon=it.i;nm=WEAPONS[it.i].name;}
     else{if(!G.haveA.includes(it.i))G.haveA.push(it.i);
       G.armor=it.i;nm=ARMORS[it.i].name;}
-    updStatus();save();
+    updStatus();save();LOG.ev('こうにゅう',nm+'/'+it.price+'G');
     mode='field';say([`${nm}を てにいれた！ そうびした。`],()=>openShop(key));});}
 
 /* ── うる（ぶき・よろい）── */
@@ -954,6 +957,7 @@ function sellMenu(key){
         G.haveA=G.haveA.filter(x=>x!==i);
         if(G.armor===i)G.armor=Math.max(...G.haveA);}
       G.gold+=pr;updStatus();save();
+      LOG.ev('うった',(t==='w'?WEAPONS[i].name:ARMORS[i].name)+'/'+pr+'G');
       say([`${pr}Ｇで うれました。`],()=>sellMenu(key));});});}
 
 /* ── そうび（つけかえ）── */
@@ -990,7 +994,7 @@ function fieldMenu(){
         `つぎのレベルまで あと ${Math.max(0,nextExp(G.lv)-G.exp)}`,
         G.lv>=20?"りゅうおうと たたかえる ちからが ある！"
           :`りゅうおうに いどむなら Ｌｖ20は ほしい。`,
-        `うんこクエスト ver 2.0`]);return;}
+        `うんこクエスト ver 2.1`]);return;}
     if(id==='it'){itemMenu(false);return;}
     if(id==='sp'){spellMenu(false);return;}});}
 function itemMenu(inBattle){
@@ -1034,6 +1038,7 @@ function startBattle(key){
   const e=ENEMY[key];
   battle={key,name:e.name,hp:e.hp,hpMax:e.hp,atk:e.atk,def:e.def,
     exp:e.exp,gold:e.gold,art:e.art,boss:!!e.boss,rage:!!e.rage};
+  LOG.ev('戦闘開始',e.name);
   mode='bmsg';closeMenu();
   say([`${e.name}が あらわれた！`],battleCmd);}
 function battleCmd(){
@@ -1070,17 +1075,18 @@ function enemyTurn(){
   say(l,()=>G.hp<=0?dead():battleCmd());}
 function run(){
   if(battle.boss||battle.key==='guard'){say(["…にげられない！"],enemyTurn);return;}
-  if(Math.random()<0.65)say(["うまく にげきった！"],endBattle);
+  if(Math.random()<0.65){LOG.ev('にげる成功',battle.name);say(["うまく にげきった！"],endBattle);}
   else say(["しかし まわりこまれた！"],enemyTurn);}
 function win(){
   const l=[`${battle.name}を たおした！`];
   if(battle.exp)l.push(`${battle.exp}の けいけんちを かくとく！`);
   if(battle.gold)l.push(`${battle.gold}Ｇを てにいれた！`);
   G.exp+=battle.exp;G.gold+=battle.gold;updStatus();
+  LOG.ev('戦闘勝利',battle.name);
   const boss=battle.boss,g2=battle.key==='guard';
   say(l,()=>lvUp(()=>{
     if(boss){G.bossDead=true;save();clear();return;}
-    if(g2){G.boss2Dead=true;
+    if(g2){G.boss2Dead=true;LOG.ev('さいごのつるぎ入手','Lv'+G.lv);
       if(!G.haveW.includes(5))G.haveW.push(5);
       G.weapon=5;updStatus();save();
       say(["ぬしは きえさった…",
@@ -1090,7 +1096,7 @@ function win(){
     endBattle();}));}
 function lvUp(done){
   if(G.exp>=nextExp(G.lv)){
-    const o=statFor(G.lv);G.lv++;const n=statFor(G.lv);
+    const o=statFor(G.lv);G.lv++;const n=statFor(G.lv);LOG.ev('レベルアップ','Lv'+G.lv);
     G.hp+=n.hpMax-o.hpMax;G.mp+=n.mpMax-o.mpMax;updStatus();
     const l=[`レベルが ${G.lv}に あがった！`,
       `さいだいHP＋${n.hpMax-o.hpMax}　ちから＋${n.atk-o.atk}`];
@@ -1099,6 +1105,7 @@ function lvUp(done){
   else done();}
 function endBattle(){battle=null;mode='field';wMsg.classList.remove('show','cursor');save();}
 function dead(){
+  LOG.ev('ぜんめつ',battle?battle.name:'');
   say(["ゆうしゃうんこは ながされた…"],()=>{
     G.gold=Math.floor(G.gold/2);G.map='castle';G.x=11;G.y=14;G.dir='down';
     resetHpMp();battle=null;updStatus();save();mode='msg';
@@ -1106,16 +1113,71 @@ function dead(){
       "うんこおう「しんでしまうとは なにごとじゃ！」",
       "「もういちど ねりねり つよくなって まいれ。」"],()=>{mode='field';});});}
 function clear(){
+  LOG.ev('クリア','Lv'+G.lv);LOG.flush(true);
   mode='clear';
   const t=$('title');
   t.innerHTML=`<h1>りゅうおうを<br>ながした！</h1>
     <p>せかいに さわやかな かぜが もどった。<br>
     ゆうしゃうんこの なは えいえんに かたりつがれる――</p>
     <p style="color:#ffd23f;font-size:5cqw;">Ｌｖ${G.lv}　クリア！</p>
-    <p id="ver">ver 2.0</p>
+    <p id="ver">ver 2.1</p>
     <button class="tm sel" onclick="localStorage.removeItem('unkoq-save');location.reload()">もういちど</button>`;
   t.classList.remove('hide');
   wMsg.classList.remove('show');wStatus.classList.remove('show');}
+
+/* ══════════════════════════════════════════════
+   ぷれいログ（あそび方の きろく）
+   ★ ANALYTICS_URL に GAS の URL を いれると 送信されます
+      からっぽ の ままなら 何も 送信されません
+   ══════════════════════════════════════════════ */
+const ANALYTICS_URL = "https://script.google.com/macros/s/AKfycbxLy8cxUMR0QF8DR3FBNepBZ885Zh92R0Hdhhc-MhLMWgenUL0jjb3vf0cwDEZEKUNA/exec";   // ← ここに GASのウェブアプリURLを貼る
+
+const LOG={
+  on:false, pid:'', sid:'', t0:0, queue:[], sending:false, lastFlush:0,
+  init(){
+    if(!ANALYTICS_URL)return;
+    this.on=true;
+    try{
+      let p=localStorage.getItem('unkoq-pid');
+      if(!p){p='p'+Math.random().toString(36).slice(2,10);localStorage.setItem('unkoq-pid',p);}
+      this.pid=p;
+    }catch(e){this.pid='p-anon';}
+    this.sid='s'+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+    this.t0=Date.now();
+    // タブを とじる ときに のこりを おくる
+    document.addEventListener('visibilitychange',()=>{
+      if(document.visibilityState==='hidden')this.flush(true);});
+    window.addEventListener('pagehide',()=>this.flush(true));
+    this._iv=setInterval(()=>this.flush(),15000);
+  },
+  ev(type,detail){
+    if(!this.on)return;
+    const s=stats();
+    this.queue.push({
+      pid:this.pid, sid:this.sid, type,
+      detail:detail===undefined?'':String(detail),
+      sec:Math.round((Date.now()-this.t0)/1000),
+      lv:G.lv, hp:G.hp, hpMax:s.hpMax, gold:G.gold, exp:G.exp,
+      map:G.map, x:G.x, y:G.y,
+      weapon:WEAPONS[G.weapon].name, armor:ARMORS[G.armor].name,
+      ver:'2.1', ts:new Date().toISOString()
+    });
+    if(this.queue.length>=12)this.flush();
+  },
+  flush(final){
+    if(!this.on||this.sending||!this.queue.length)return;
+    const batch=this.queue.splice(0,50);
+    const body=JSON.stringify({rows:batch});
+    if(final&&navigator.sendBeacon){
+      try{navigator.sendBeacon(ANALYTICS_URL,new Blob([body],{type:'text/plain'}));}catch(e){}
+      return;}
+    this.sending=true;
+    fetch(ANALYTICS_URL,{method:'POST',mode:'no-cors',
+      headers:{'Content-Type':'text/plain;charset=utf-8'},body})
+      .catch(()=>{this.queue=batch.concat(this.queue);})
+      .finally(()=>{this.sending=false;});
+  }
+};
 
 /* ── セーブ ── */
 function save(){try{localStorage.setItem('unkoq-save',JSON.stringify(G));}catch(e){}}
@@ -1133,6 +1195,7 @@ function begin(cont){
     weapon:0,armor:0,haveW:[0],haveA:[0],items:{herb:3,wing:0},chests:{},
     bossDead:false,boss2Dead:false,kingGift:false,steps:0,thr:8};resetHpMp();save();}
   $('title').classList.add('hide');
+  LOG.init();LOG.ev(cont?'つづきから':'はじめから');
   mode='field';updStatus();
   if(!cont)say(["ゆうしゃうんこは たびだった。","しろの ひとに はなしかけて じょうほうを あつめよう。"]);}
 
