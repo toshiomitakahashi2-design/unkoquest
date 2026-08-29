@@ -213,6 +213,9 @@ function initArt(){
   ART.e4    =unko('#3050b8','#5878e0','#1e3280'); // あおうんこ
   ART.e5    =unko('#b03030','#d85858','#7a1c1c'); // あかうんこ
   ART.e6    =unko('#e8c020','#ffe870','#a88000'); // きんうんこ
+  ART.d1    =unko('#2a2a34','#4a4a5a','#141418'); // くろうんこ
+  ART.d2    =unko('#5a2a6a','#7a4a8a','#341440'); // やみうんこ
+  ART.d3    =unko('#8a8a96','#c0c0cc','#5a5a66'); // うんこナイト（鉄）
   ART.boss  =unko('#6a3878','#9058a0','#3f2044'); // りゅうおう
 
   /* ── 地形 ── */
@@ -298,7 +301,7 @@ function saveArt(){try{localStorage.setItem('unkoq-art',JSON.stringify(ART));}ca
 
 const ART_LABEL={hero:"ゆうしゃ",npc:"むらびと",king:"おうさま",shop:"みせのひと",
  e1:"ちゃうんこ",e2:"しろうんこ",e3:"みどりうんこ",e4:"あおうんこ",e5:"あかうんこ",
- e6:"きんうんこ",boss:"りゅうおう",grass:"くさ",bush:"くさむら",tree:"き",water:"みず",
+ e6:"きんうんこ",d1:"くろうんこ",d2:"やみうんこ",d3:"うんこナイト",boss:"りゅうおう",grass:"くさ",bush:"くさむら",tree:"き",water:"みず",
  mount:"やま",road:"みち",bridge:"はし",floor:"ゆか",wall:"かべ",door:"とびら",
  carpet:"じゅうたん",counter:"カウンター",stairs:"かいだん",chest:"たからばこ",
  castle:"しろ",town:"まち",cave:"どうくつ",dcastle:"まおうじょう",
@@ -463,7 +466,7 @@ const MAPS={
  town:{d:TOWN,enc:false,name:"うんこの まち"},
  town2:{d:TOWN2,enc:false,name:"みなとまち ウンコット"},
  cave:{d:CAVE,enc:true,pool:['e4','e5','e3'],name:"うんこの どうくつ"},
- dragon:{d:DRAGON,enc:true,pool:['e5','e6','e4'],name:"りゅうおうの しろ"},
+ dragon:{d:DRAGON,enc:true,pool:['d1','d1','d2','d2','d3'],name:"りゅうおうの しろ"},
 };
 
 /* ワープ（乗ると移動） */
@@ -481,11 +484,23 @@ const WARPS={
 /* NPC */
 const NPCS={
  castle:[
-  {x:5,y:4,art:'king',name:"うんこおう",lines:[
+  {x:5,y:4,art:'king',name:"うんこおう",gold:100,lines:[
    "おお ゆうしゃうんこよ！ よくぞ ながれてきた。",
    "りゅうおうの うんこが せかいを くさく そめておる。",
    "みなみの まちで そうびを ととのえ、たびに でるがよい。",
-   "そなたに 100ゴールドを さずけよう。"],gold:100},
+   "そなたに 100ゴールドを さずけよう。"],
+   after:[
+   "おお ゆうしゃうんこよ。ぶじで なによりじゃ。",
+   "りゅうおうは みなみひがしの はてに おる。",
+   "きを つけて いくのじゃぞ。"],
+   afterLv:[
+   "ほう… ずいぶん たくましく なったのう。",
+   "そなたなら りゅうおうにも まけまい。",
+   "せかいの さわやかさは そなたに かかっておる！"],
+   afterBoss:[
+   "でかしたぞ ゆうしゃうんこ！",
+   "そなたの おかげで くにに さわやかな かぜが もどった。",
+   "そのなは えいえんに かたりつがれるであろう。"]},
   {x:11,y:8,art:'npc',lines:["しろの そとには まものの うんこが おる。","くさむらは とくに あぶないぞ。"]},
   {x:17,y:4,art:'npc',lines:["レベルが あがると HPと ちからが のびる。","まずは しろの まわりで ねりねり つよくなれ。"]},
   {x:6,y:11,art:'npc',lines:["ひがしの どうくつに おたからが ねむって おるらしい。","くらいから きをつけてな。"]},
@@ -494,7 +509,7 @@ const NPCS={
   {x:4,y:3,art:'shop',shop:'item',lines:["どうぐやへ ようこそ！"]},
   {x:16,y:3,art:'shop',shop:'weapon1',lines:["ぶきやだ。いいのが あるよ。"]},
   {x:4,y:11,art:'shop',shop:'inn',lines:["やどやへ ようこそ。"]},
-  {x:10,y:7,art:'npc',lines:["きたの しろの おうさまは やさしいお方だよ。"]},
+  {x:10,y:7,art:'npc',lines:["きたの しろの おうさまは やさしいお方だよ。","「プリ」を おぼえたら HPが かいふくできる。","MPが きれたら 「やくそう」を つかいな。"]},
   {x:19,y:8,art:'npc',lines:["ひがしの みなとまちには つよい ぶきが あるらしい。","でも たかいんだ…"]},
   {x:7,y:15,art:'npc',lines:["きんうんこは にげあしが はやいけど","たおすと どっさり けいけんちが もらえるよ！"]},
   {x:17,y:11,art:'npc',lines:["りゅうおうの しろは みなみひがしの はてに あるって。","やまと うみに かこまれた ばしょさ。"]},
@@ -503,7 +518,7 @@ const NPCS={
   {x:5,y:3,art:'shop',shop:'item',lines:["みなとの どうぐやだよ。"]},
   {x:15,y:3,art:'shop',shop:'weapon2',lines:["いい ぶきが そろってるぜ！"]},
   {x:13,y:9,art:'shop',shop:'inn2',lines:["みなとの やど。ゆっくり やすんでいきな。"]},
-  {x:8,y:13,art:'npc',lines:["りゅうおうは つよい。","レベル10は ほしいところだね。"]},
+  {x:8,y:13,art:'npc',lines:["りゅうおうは とてつもなく つよい。","レベル20は ほしいところだね。","しろの なかの まものも きょうれつだ。","やくそうを たっぷり もっていきな。"]},
   {x:19,y:6,art:'npc',lines:["どうくつの おくに ちからの みなもとが あるとか。"]},
  ],
  dragon:[
@@ -533,6 +548,9 @@ const ENEMY={
  e4:{name:"あおうんこ",hp:78,atk:36,def:22,exp:62,gold:72,art:'e4'},
  e5:{name:"あかうんこ",hp:130,atk:55,def:34,exp:120,gold:140,art:'e5'},
  e6:{name:"きんうんこ",hp:60,atk:18,def:50,exp:400,gold:650,art:'e6'},
+ d1:{name:"くろうんこ",hp:155,atk:58,def:40,exp:200,gold:220,art:'d1'},
+ d2:{name:"やみうんこ",hp:200,atk:63,def:46,exp:290,gold:310,art:'d2'},
+ d3:{name:"うんこナイト",hp:255,atk:70,def:54,exp:420,gold:440,art:'d3'},
  boss:{name:"りゅうおうのうんこ",hp:560,atk:76,def:48,exp:0,gold:0,art:'boss',boss:true},
 };
 const WEAPONS=[{name:"すあし",atk:0},{name:"きのぼう",atk:6},{name:"どうのつるぎ",atk:16},
@@ -549,13 +567,13 @@ const SHOPS={
  weapon2:{title:"ぶきや",list:[
    {t:'w',i:3,price:900},{t:'w',i:4,price:1800},
    {t:'a',i:3,price:1100},{t:'a',i:4,price:2000}]},
- inn:{title:"やどや",inn:8},
- inn2:{title:"やどや",inn:20},
+ inn:{title:"やどや",inn:2},
+ inn2:{title:"やどや",inn:5},
 };
-const SPELLS=[{name:"ホイミ",mp:4,type:'heal',power:40},
- {name:"ブリブリ",mp:5,type:'atk',power:30},
- {name:"ベホイミ",mp:10,type:'heal',power:90,lv:8},
- {name:"ブリブリオン",mp:12,type:'atk',power:80,lv:12}];
+const SPELLS=[{name:"プリ",mp:4,type:'heal',power:40},
+ {name:"ブリ",mp:5,type:'atk',power:30},
+ {name:"プリプリ",mp:10,type:'heal',power:90,lv:8},
+ {name:"ブリブリ",mp:12,type:'atk',power:80,lv:12}];
 
 function nextExp(lv){return Math.floor(lv*lv*7+lv*10);}
 function statFor(lv){return{hpMax:24+lv*11,mpMax:5+lv*3,atk:4+lv*2,def:3+lv*2};}
@@ -619,11 +637,23 @@ function drawBattle(){
   ctx.fillStyle='#101018';ctx.fillRect(0,150,256,74);
   const s=battle.boss?9:8,w=12*s;
   drawArt(battle.art,(256-w)/2,150-12*s+10,s);
+  // てきの のこりHPゲージ
+  const gw=96,gx0=(256-gw)/2,gy0=158,r=Math.max(0,battle.hp)/battle.hpMax;
+  ctx.fillStyle='#fff';ctx.fillRect(gx0-2,gy0-2,gw+4,10);
+  ctx.fillStyle='#000';ctx.fillRect(gx0,gy0,gw,6);
+  ctx.fillStyle=r>0.5?'#48c048':r>0.22?'#ffd23f':'#e5484d';
+  ctx.fillRect(gx0,gy0,Math.round(gw*r),6);
 }
 function render(){
   if(mode==='title')return;
   if(battle&&(mode==='battle'||mode==='bmsg'||mode==='bcmd'))drawBattle();
-  else drawMap();}
+  else drawMap();
+  // ＨＰが あぶないときは ふちが あかく ひかる
+  const s=stats();
+  if(G.hp>0&&G.hp<=s.hpMax*0.25&&Math.sin(anim*0.18)>0){
+    ctx.fillStyle='#e5484d';
+    ctx.fillRect(0,0,256,3);ctx.fillRect(0,221,256,3);
+    ctx.fillRect(0,0,3,224);ctx.fillRect(253,0,3,224);}}
 
 /* ── ステータス窓 ── */
 function updStatus(){
@@ -722,6 +752,9 @@ function talkTo(n){
   if(n.gold&&!G.kingGift){
     G.kingGift=true;G.gold+=n.gold;updStatus();save();
     say(n.lines.concat([`${n.gold}Ｇを もらった！`]));return;}
+  if(n.afterBoss&&G.bossDead){say(n.afterBoss);return;}
+  if(n.afterLv&&G.lv>=15){say(n.afterLv);return;}
+  if(n.after){say(n.after);return;}
   say(n.lines);}
 function openChest(c){
   G.chests[G.map+':'+c.x+','+c.y]=1;
@@ -736,8 +769,9 @@ function openChest(c){
 function openShop(key){
   const sh=SHOPS[key];
   if(sh.inn){
-    const cost=sh.inn*G.lv;
-    say([`やどやへ ようこそ。 １ぱく ${cost}Ｇです。`],()=>{
+    const cost=sh.inn*G.lv+4;
+    say([`やどやへ ようこそ。 １ぱく ${cost}Ｇです。`,
+      `いま ${G.gold}Ｇ もっていますね。`],()=>{
       mode='shop';
       menu(null,[{id:'y',label:'とまる'},{id:'n',label:'とまらない'}],id=>{
         if(id==='n'){mode='field';say(["また どうぞ。"]);return;}
@@ -749,15 +783,17 @@ function openShop(key){
   const list=sh.list.map((it,i)=>{
     let label,price=it.price;
     if(it.t==='item')label=it.name;
-    else if(it.t==='w')label=WEAPONS[it.i].name;
-    else label=ARMORS[it.i].name;
-    return{id:i,label,price};});
+    else if(it.t==='w'){const d=WEAPONS[it.i].atk-WEAPONS[G.weapon].atk;
+      label=WEAPONS[it.i].name+(d>0?`(力+${d})`:'(もっている)');}
+    else{const d=ARMORS[it.i].def-ARMORS[G.armor].def;
+      label=ARMORS[it.i].name+(d>0?`(守+${d})`:'(もっている)');}
+    return{id:i,label,price,dis:price>G.gold};});
   list.push({id:'x',label:'やめる'});
-  list.title=sh.title;
+  list.title=sh.title+`　もちがね ${G.gold}Ｇ`;
   menu(null,list,id=>{
     if(id==='x'){mode='field';say(["まいど ありがとう！"]);return;}
     const it=sh.list[id];
-    if(G.gold<it.price){mode='field';say(["おかねが たりないよ！"]);return;}
+    if(G.gold<it.price){say(["おかねが たりないよ！"],()=>openShop(key));return;}
     G.gold-=it.price;
     let nm;
     if(it.t==='item'){G.items[it.key]=(G.items[it.key]||0)+1;nm=it.name;}
@@ -774,11 +810,13 @@ function fieldMenu(){
     {id:'st',label:'つよさ'},{id:'x',label:'とじる'}],id=>{
     if(id==='x'){mode='field';return;}
     if(id==='st'){const s=stats();mode='field';
-      say([`ゆうしゃ Ｌｖ${G.lv}`,
+      say([`ゆうしゃ Ｌｖ${G.lv}　ＨＰ${G.hp}/${s.hpMax}　ＭＰ${G.mp}/${s.mpMax}`,
         `ちから ${s.atk}／みのまもり ${s.def}`,
         `ぶき：${WEAPONS[G.weapon].name}`,
         `よろい：${ARMORS[G.armor].name}`,
-        `つぎのレベルまで あと ${Math.max(0,nextExp(G.lv)-G.exp)}`]);return;}
+        `つぎのレベルまで あと ${Math.max(0,nextExp(G.lv)-G.exp)}`,
+        G.lv>=20?"りゅうおうと たたかえる ちからが ある！"
+          :`りゅうおうに いどむなら Ｌｖ20は ほしい。`]);return;}
     if(id==='it'){itemMenu(false);return;}
     if(id==='sp'){spellMenu(false);return;}});}
 function itemMenu(inBattle){
@@ -828,6 +866,7 @@ function battleCmd(){
   mode='bcmd';
   menu(null,[{id:'f',label:'たたかう'},{id:'s',label:'じゅもん'},
     {id:'i',label:'どうぐ'},{id:'r',label:'にげる'}],id=>{
+    G.lastCmd=id;
     if(id==='f')attack();else if(id==='s')spellMenu(true);
     else if(id==='i')itemMenu(true);else run();});}
 function hit(){flash=true;setTimeout(()=>{flash=false;},70);}
@@ -938,13 +977,16 @@ document.addEventListener('keydown',e=>{
 document.querySelectorAll('#dpad button[data-dir]').forEach(b=>{
   const dir=b.dataset.dir;let iv=null;
   const go=e=>{e.preventDefault();onDir(dir);
-    if(mode==='field')iv=setInterval(()=>onDir(dir),150);};
+    if(mode==='field')iv=setInterval(()=>onDir(dir),130);};
   const stop=()=>{if(iv){clearInterval(iv);iv=null;}};
   b.addEventListener('touchstart',go,{passive:false});
   b.addEventListener('touchend',stop);b.addEventListener('touchcancel',stop);
   b.addEventListener('mousedown',go);b.addEventListener('mouseup',stop);
   b.addEventListener('mouseleave',stop);});
 $('btnA').onclick=onA;$('btnB').onclick=onB;
+// がめんタップでも メッセージを おくれる
+$('game').addEventListener('click',()=>{
+  if(mode==='msg'||mode==='bmsg')nextMsg();});
 let toastT=null;
 function toast(msg,ms){
   const t=$('toast');t.textContent=msg;t.classList.add('show');
@@ -975,10 +1017,14 @@ $('fs').onclick=async()=>{
   }
 };
 /* ── PWA：ホーム画面から起動しているときは ⛶ を隠す ── */
-const standalone = window.matchMedia('(display-mode: fullscreen)').matches
-  || window.matchMedia('(display-mode: standalone)').matches
-  || window.navigator.standalone === true;
-if(standalone) $('fs').style.display='none';
+let standalone=false;
+try{
+  const mm=window.matchMedia;
+  standalone = (mm && (mm.call(window,'(display-mode: fullscreen)').matches
+    || mm.call(window,'(display-mode: standalone)').matches))
+    || (window.navigator && window.navigator.standalone === true);
+}catch(e){}
+if(standalone && $('fs')) $('fs').style.display='none';
 
 /* ── オフライン対応 ── */
 if('serviceWorker' in navigator && location.protocol.startsWith('http')){
