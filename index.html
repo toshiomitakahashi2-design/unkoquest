@@ -13,9 +13,12 @@
 <link rel="icon" href="./favicon.png">
 <link href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap" rel="stylesheet">
 <style>
-*{box-sizing:border-box;margin:0;padding:0;}
+*{box-sizing:border-box;margin:0;padding:0;
+  -webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;
+  -webkit-touch-callout:none;-webkit-tap-highlight-color:transparent;}
 html,body{height:100%;background:#000;color:#fff;font-family:'DotGothic16',monospace;
-  overflow:hidden;overscroll-behavior:none;position:fixed;width:100%;-webkit-tap-highlight-color:transparent;touch-action:manipulation;}
+  overflow:hidden;overscroll-behavior:none;position:fixed;width:100%;
+  -webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent;touch-action:manipulation;}
 #app{height:100dvh;display:flex;flex-direction:column;align-items:center;
   justify-content:flex-start;gap:6px;padding:6px;max-width:640px;margin:0 auto;}
 
@@ -47,20 +50,36 @@ html,body{height:100%;background:#000;color:#fff;font-family:'DotGothic16',monos
 
 /* ── コントローラ ── */
 #pad{width:100%;display:flex;justify-content:space-between;align-items:center;
-  padding:0 4px;flex:1 1 auto;min-height:0;}
-#dpad{display:grid;grid-template-columns:repeat(3,clamp(38px,13vw,52px));
-  grid-template-rows:repeat(3,clamp(38px,13vw,52px));}
-#dpad button{background:#1a1f2e;border:2px solid #3a4358;color:#ddd;font-size:17px;
-  border-radius:7px;cursor:pointer;}
-#dpad button:active{background:#ffd23f;color:#000;}
-#dpad .u{grid-area:1/2}#dpad .l{grid-area:2/1}#dpad .r{grid-area:2/3}#dpad .d{grid-area:3/2}
-#dpad .c{grid-area:2/2;border:none;background:transparent}
-#btns{display:flex;gap:10px;align-items:center;}
-.ab{width:clamp(52px,17vw,68px);height:clamp(52px,17vw,68px);border-radius:50%;
-  border:3px solid #3a4358;background:#1a1f2e;color:#ffd23f;font-size:15px;
-  cursor:pointer;font-family:'DotGothic16',monospace;}
-.ab:active{background:#ffd23f;color:#000;}
-.ab small{display:block;font-size:8px;color:#888;}
+  padding:0 6px;flex:1 1 auto;min-height:0;}
+
+/* ── 十字キー：一体型の十字プレート ── */
+#dpad{--k:clamp(48px,16.5vw,66px);
+  display:grid;grid-template-columns:repeat(3,var(--k));grid-template-rows:repeat(3,var(--k));
+  position:relative;filter:drop-shadow(0 3px 0 rgba(0,0,0,.6));}
+#dpad button{background:#20242e;border:0;color:#8f97a8;
+  font-size:calc(var(--k)*.34);line-height:1;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;transition:background .06s,color .06s;}
+#dpad .u{grid-area:1/2;border-radius:10px 10px 0 0;}
+#dpad .l{grid-area:2/1;border-radius:10px 0 0 10px;}
+#dpad .r{grid-area:2/3;border-radius:0 10px 10px 0;}
+#dpad .d{grid-area:3/2;border-radius:0 0 10px 10px;}
+#dpad .c{grid-area:2/2;background:#20242e;border:0;}
+#dpad .c::after{content:'';display:block;width:32%;height:32%;margin:auto;
+  border-radius:50%;background:#2c313d;}
+#dpad button:active{background:#ffd23f;color:#1a1a1a;}
+
+/* ── A/B ボタン ── */
+#btns{display:flex;gap:clamp(12px,4vw,20px);align-items:center;}
+.ab{--b:clamp(62px,20vw,82px);width:var(--b);height:var(--b);border-radius:50%;
+  border:0;background:#20242e;color:#e8ecf4;
+  font-size:calc(var(--b)*.36);line-height:1;letter-spacing:.02em;
+  cursor:pointer;font-family:'DotGothic16',monospace;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 3px 0 rgba(0,0,0,.6),inset 0 0 0 2px #2c313d;
+  transition:background .06s,color .06s,transform .06s,box-shadow .06s;}
+#btnA{background:#242a36;}
+.ab:active{background:#ffd23f;color:#1a1a1a;transform:translateY(3px);
+  box-shadow:0 0 0 rgba(0,0,0,.6),inset 0 0 0 2px #d9a900;}
 .ab:active small{color:#000;}
 
 /* ══ 横持ち（ランドスケープ）＝ゲーム機レイアウト ══ */
@@ -68,13 +87,11 @@ html,body{height:100%;background:#000;color:#fff;font-family:'DotGothic16',monos
   #app{flex-direction:row;align-items:center;justify-content:center;
     gap:min(2.2vw,22px);padding:3px 6px;max-width:none;height:100dvh;}
   #pad{display:contents;}
-  #dpad{order:1;flex:0 0 auto;
-    grid-template-columns:repeat(3,clamp(34px,10.5dvh,58px));
-    grid-template-rows:repeat(3,clamp(34px,10.5dvh,58px));}
-  #screen{order:2;flex:0 1 auto;width:auto;height:min(94dvh,48vw);min-width:0;}
-  #btns{order:3;flex:0 0 auto;flex-direction:row;gap:min(2vw,16px);
+  #dpad{order:1;flex:0 0 auto;--k:clamp(40px,12.5dvh,64px);}
+  #screen{order:2;flex:0 1 auto;width:auto;height:min(92dvh,44vw);min-width:0;}
+  #btns{order:3;flex:0 0 auto;flex-direction:row;gap:min(2.6vw,20px);
     align-items:flex-end;}
-  #btns .ab{width:clamp(46px,13dvh,74px);height:clamp(46px,13dvh,74px);}
+  #btns .ab{--b:clamp(54px,16dvh,86px);}
   #btnA{margin-bottom:min(5dvh,34px);}
 }
 /* ── タイトル ── */
@@ -87,6 +104,7 @@ html,body{height:100%;background:#000;color:#fff;font-family:'DotGothic16',monos
   font-size:4.2cqw;font-family:'DotGothic16',monospace;cursor:pointer;}
 #title .tm.sel{background:#fff;color:#000;}
 #title .tm.dis{color:#666;border-color:#666;}
+#ver{position:absolute;right:2.5cqw;bottom:2cqw;font-size:2.6cqw;color:#5a6070;}
 
 #pencil,#fs{position:absolute;top:2.5cqw;z-index:11;width:8cqw;height:8cqw;
   background:rgba(0,0,0,.6);border:.8cqw solid #fff;color:#fff;font-size:4cqw;
@@ -146,6 +164,7 @@ html,body{height:100%;background:#000;color:#fff;font-family:'DotGothic16',monos
       <button class="tm sel" id="tmNew">はじめから</button>
       <button class="tm dis" id="tmCont">つづきから</button>
       <p style="font-size:2.8cqw;color:#777;">十字キー＝いどう／Ａ＝はなす・しらべる／Ｂ＝メニュー</p>
+      <p id="ver">ver 1.3</p>
     </div>
   </div>
   <div id="pad">
@@ -155,8 +174,8 @@ html,body{height:100%;background:#000;color:#fff;font-family:'DotGothic16',monos
       <button class="d" data-dir="down">▼</button>
     </div>
     <div id="btns">
-      <button class="ab" id="btnB">Ｂ<small>メニュー</small></button>
-      <button class="ab" id="btnA">Ａ<small>けってい</small></button>
+      <button class="ab" id="btnB">B</button>
+      <button class="ab" id="btnA">A</button>
     </div>
   </div>
 </div>
@@ -816,7 +835,8 @@ function fieldMenu(){
         `よろい：${ARMORS[G.armor].name}`,
         `つぎのレベルまで あと ${Math.max(0,nextExp(G.lv)-G.exp)}`,
         G.lv>=20?"りゅうおうと たたかえる ちからが ある！"
-          :`りゅうおうに いどむなら Ｌｖ20は ほしい。`]);return;}
+          :`りゅうおうに いどむなら Ｌｖ20は ほしい。`,
+        `うんこクエスト ver 1.3`]);return;}
     if(id==='it'){itemMenu(false);return;}
     if(id==='sp'){spellMenu(false);return;}});}
 function itemMenu(inBattle){
@@ -926,6 +946,7 @@ function clear(){
     <p>せかいに さわやかな かぜが もどった。<br>
     ゆうしゃうんこの なは えいえんに かたりつがれる――</p>
     <p style="color:#ffd23f;font-size:5cqw;">Ｌｖ${G.lv}　クリア！</p>
+    <p id="ver">ver 1.3</p>
     <button class="tm sel" onclick="localStorage.removeItem('unkoq-save');location.reload()">もういちど</button>`;
   t.classList.remove('hide');
   wMsg.classList.remove('show');wStatus.classList.remove('show');}
@@ -983,7 +1004,25 @@ document.querySelectorAll('#dpad button[data-dir]').forEach(b=>{
   b.addEventListener('touchend',stop);b.addEventListener('touchcancel',stop);
   b.addEventListener('mousedown',go);b.addEventListener('mouseup',stop);
   b.addEventListener('mouseleave',stop);});
+// ── ながおしで メニューや もじの せんたくが でないように ──
+['contextmenu','selectstart','dragstart'].forEach(ev=>
+  document.addEventListener(ev,e=>e.preventDefault()));
+// ダブルタップでの ズームを ふせぐ
+let lastTap=0;
+document.addEventListener('touchend',e=>{
+  const now=Date.now();
+  if(now-lastTap<320)e.preventDefault();
+  lastTap=now;},{passive:false});
+// ボタンの上での タッチ移動は 無効化
+document.querySelectorAll('#dpad button,.ab').forEach(b=>{
+  b.addEventListener('touchmove',e=>e.preventDefault(),{passive:false});});
+
 $('btnA').onclick=onA;$('btnB').onclick=onB;
+// A/B は タッチした瞬間に はんのうさせる
+[['btnA',onA],['btnB',onB]].forEach(([id,fn])=>{
+  const el=$(id);let touched=false;
+  el.addEventListener('touchstart',e=>{e.preventDefault();touched=true;fn();},{passive:false});
+  el.onclick=()=>{if(touched){touched=false;return;}fn();};});
 // がめんタップでも メッセージを おくれる
 $('game').addEventListener('click',()=>{
   if(mode==='msg'||mode==='bmsg')nextMsg();});
@@ -1029,7 +1068,18 @@ if(standalone && $('fs')) $('fs').style.display='none';
 /* ── オフライン対応 ── */
 if('serviceWorker' in navigator && location.protocol.startsWith('http')){
   window.addEventListener('load',()=>{
-    navigator.serviceWorker.register('./sw.js').catch(()=>{});
+    navigator.serviceWorker.register('./sw.js').then(reg=>{
+      // あたらしい版が あれば すぐ いれかえる
+      reg.update().catch(()=>{});
+      reg.addEventListener('updatefound',()=>{
+        const nw=reg.installing;if(!nw)return;
+        nw.addEventListener('statechange',()=>{
+          if(nw.state==='installed'&&navigator.serviceWorker.controller){
+            nw.postMessage('skipWaiting');}});});
+    }).catch(()=>{});
+    let reloaded=false;
+    navigator.serviceWorker.addEventListener('controllerchange',()=>{
+      if(reloaded)return;reloaded=true;location.reload();});
   });
 }
 function rnd(a,b){return Math.floor(Math.random()*(b-a+1))+a;}
