@@ -28,9 +28,13 @@ html,body{height:100%;background:#000;color:#fff;font-family:'DotGothic16',monos
 #game{width:100%;height:100%;display:block;image-rendering:pixelated;}
 
 /* ── FC風ウィンドウ ── */
-.fcwin{position:absolute;background:#000;border:1.2cqw solid #fff;color:#fff;
+.fcwin{position:absolute;background:rgba(4,8,26,.72);border:1.2cqw solid #fff;color:#fff;
   padding:1.6cqw 2.2cqw;font-size:4.1cqw;line-height:1.5;display:none;
-  box-shadow:0 0 0 1.2cqw #000;}
+  box-shadow:0 0 0 1.2cqw rgba(4,8,26,.72);
+  -webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px);
+  text-shadow:0 1px 2px rgba(0,0,0,.9);}
+#wStatus{background:rgba(4,8,26,.62);}
+#wMsg,#wCmd{background:rgba(4,8,26,.88);box-shadow:0 0 0 1.2cqw rgba(4,8,26,.88);}
 .fcwin.show{display:block;}
 #wStatus{top:2.5cqw;left:2.5cqw;min-width:20cqw;font-size:3.8cqw;line-height:1.45;}
 #wStatus b{color:#fff;font-weight:normal;}
@@ -164,7 +168,7 @@ html,body{height:100%;background:#000;color:#fff;font-family:'DotGothic16',monos
       <button class="tm sel" id="tmNew">はじめから</button>
       <button class="tm dis" id="tmCont">つづきから</button>
       <p style="font-size:2.8cqw;color:#777;">十字キー＝いどう／Ａ＝はなす・しらべる／Ｂ＝メニュー</p>
-      <p id="ver">ver 2.1</p>
+      <p id="ver">ver 3.0</p>
     </div>
   </div>
   <div id="pad">
@@ -215,8 +219,18 @@ function dots(a,pts,c){pts.forEach(([x,y])=>{if(a[y]&&a[y][x]!==undefined)a[y][x
 
 /* ── うんこの形（全キャラ共通・ここを変えると全員変わる） ── */
 const UNKO=[
-".....BB.....","....BLBB....","...BBBBBB...","....BBBB....","..BBBBBBBB..","..BLBBBBBB..",
-".BBBBBBBBBB.","..BBBBBBBB..",".BWKBBBWKBB.","BBBBBBBBBBBB","BBBBKKKKBBBB",".dddddddddd."];
+"....BBBB....",
+"...BLLBBB...",
+"..BBBBBBBB..",
+"...BBBBBB...",
+"..BBBBBBBB..",
+".BBLBBBBBBB.",
+".BBBBBBBBBB.",
+"..BBBBBBBB..",
+".BWKBBBBWKB.",
+"BBBBBBBBBBBB",
+"BBBBKKKKBBBB",
+".dddddddddd."];
 function unko(b,l,d){return paint(mk(12,12),UNKO,{B:b,L:l,d:d,K:'#2a1a08',W:'#fff'});}
 
 const ART={};
@@ -232,6 +246,7 @@ function initArt(){
   ART.e4    =unko('#3050b8','#5878e0','#1e3280'); // あおうんこ
   ART.e5    =unko('#b03030','#d85858','#7a1c1c'); // あかうんこ
   ART.e6    =unko('#e8c020','#ffe870','#a88000'); // きんうんこ
+  ART.nushi =unko('#4a5a30','#6a7a48','#2a3418'); // ぬまのぬし（どろ色）
   ART.d1    =unko('#2a2a34','#4a4a5a','#141418'); // くろうんこ
   ART.d2    =unko('#5a2a6a','#7a4a8a','#341440'); // やみうんこ
   ART.d3    =unko('#8a8a96','#c0c0cc','#5a5a66'); // うんこナイト（鉄）
@@ -278,6 +293,14 @@ function initArt(){
   ART.stairs=mk(16,16,'#4a4f5e');
   for(let i=0;i<4;i++){rct(ART.stairs,i*4,i*4,16-i*4,3,'#9aa0b0');
     rct(ART.stairs,i*4,i*4+3,16-i*4,1,'#5a606e');}
+  // よごれた いずみ
+  ART.mud=mk(16,16,'#4a4230');
+  dots(ART.mud,[[3,4],[4,4],[9,7],[10,7],[6,11],[12,9],[2,12]],'#6a5f42');
+  dots(ART.mud,[[7,3],[11,12],[4,9]],'#3a3424');
+  // きれいな いずみ
+  ART.spring=mk(16,16,'#2a8ad0');
+  dots(ART.spring,[[2,3],[3,3],[4,3],[9,6],[10,6],[11,6],[5,10],[6,10],[12,12],[13,12]],'#7ad0f8');
+  dots(ART.spring,[[6,5],[13,9]],'#bff0ff');
   ART.chest=mk(16,16,null);
   rct(ART.chest,2,4,12,9,'#8a5f14');rct(ART.chest,3,5,10,7,'#d8a030');
   rct(ART.chest,2,7,12,2,'#6a4510');dots(ART.chest,[[7,8],[8,8]],'#fff2a0');
@@ -334,9 +357,9 @@ function saveArt(){try{localStorage.setItem('unkoq-art',JSON.stringify(ART));}ca
 
 const ART_LABEL={hero:"ゆうしゃ",npc:"むらびと",king:"おうさま",shop:"みせのひと",
  e1:"ちゃうんこ",e2:"しろうんこ",e3:"みどりうんこ",e4:"あおうんこ",e5:"あかうんこ",
- e6:"きんうんこ",d1:"くろうんこ",d2:"やみうんこ",d3:"うんこナイト",boss:"りゅうおう",grass:"くさ",bush:"くさむら",tree:"き",water:"みず",
+ e6:"きんうんこ",nushi:"ぬまのぬし",d1:"くろうんこ",d2:"やみうんこ",d3:"うんこナイト",boss:"りゅうおう",grass:"くさ",bush:"くさむら",tree:"き",water:"みず",
  mount:"やま",road:"みち",bridge:"はし",floor:"ゆか",wall:"かべ",door:"とびら",
- carpet:"じゅうたん",counter:"カウンター",stairs:"かいだん",chest:"たからばこ",chestOpen:"あいたはこ",down:"くだりかいだん",up:"のぼりかいだん",
+ carpet:"じゅうたん",counter:"カウンター",stairs:"かいだん",chest:"たからばこ",mud:"よごれたいずみ",spring:"きれいないずみ",chestOpen:"あいたはこ",down:"くだりかいだん",up:"のぼりかいだん",
  castle:"しろ",town:"まち",cave:"どうくつ",dcastle:"まおうじょう",
  dwall:"まおうのかべ",dfloor:"まおうのゆか",cwall:"どうくつのかべ",cfloor:"どうくつのゆか"};
 
@@ -345,67 +368,91 @@ const ART_LABEL={hero:"ゆうしゃ",npc:"むらびと",king:"おうさま",shop
    ═══════════════════════════════════════════════ */
 const TILE={'.':'grass',',':'bush','#':'tree','~':'water','^':'mount','=':'road',
  '-':'bridge','_':'floor','B':'wall','+':'door','%':'carpet','K':'counter',
- '>':'down','<':'up','C':'castle','T':'town','t':'town','O':'cave','o':'cave','R':'dcastle',
+ '>':'down','<':'up','S':'mud','v':'town','C':'castle','T':'town','t':'town','O':'cave','o':'cave','R':'dcastle',
  'W':'dwall','F':'dfloor','X':'cwall','f':'cfloor'};
-const BLOCKED=new Set(['#','~','^','B','K','W','X']);
+const BLOCKED=new Set(['#','~','^','B','K','W','X','S']);
 
 const WORLD=[
-"~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
-"~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
-"~~~~..~..~.~..~..~.~~~~.....~~........~~.~..~~...~~~~..~..~..~.~....~~~~",
-"~~~~~~~.~..~~....~..~.....~.~~...^^...~.~~~.###......~.........~~.~~~.~~",
-"~~~...........................^.^^.........###.......................~~~",
-"~~.................#..#........^^^^......#.####....,.................~~~",
-"~~~...............######.....^^^^^^^.....######.,.,.,...............~.~~",
-"~~~...............#####......^^^^^^^...~..#####,,,,,,...............~~~~",
-"~~................######......^.^^..~~~....####,,,,,,,..............~.~~",
-"~~................#####.........^..~~~~~~~#...#.,,,,....##..........~.~~",
-"~~~.......C================........~~~~~~~.......,,,.,.###..........~.~~",
-"~~...........##.#####.....=.^^......~~~~~~...........######...........~~",
-"~~~.......=..####.#.......=^^^........~~~.....O============..........~~~",
-"~~........#.#######.......=^^^.......~........=.......####=.........~~~~",
-"~~.........#######........=.^^..........^^....=.......####=#...^......~~",
-"~~.~......########........=...........^^^.^...=.........##=....^^^...~~~",
-"~~~.........#####.........=.#..#......^^^^^...=...........=....^^^..~.~~",
-"~~~........#######........=####........^^^^...=,.,........=...#^^^..~.~~",
-"~~~~........#.##.#......##=####.#.......^^....=,,,........t....^^##..~~~",
-"~~........................=######............,=,,,,,..........#####.~~~~",
-"~~......................##=#####.............,=,,,,,.........######...~~",
-"~~.......................#=######............,=,,,,..........######..~~~",
-"~~~~.....................#=######......,......=,,,,...........#.##....~~",
-"~~.~......................=##......,.,,,.,....=.,......~.........#....~~",
-"~~~.....#####.............=#.#....,.,,,,,,,...=........~~~~...........~~",
-"~~.~....#####.............=.......,,,,,,,,,...=.......~~~~~~..........~~",
-"~~.....#######............=........,,,,,,,....=.....^.~~~~~~..........~~",
-"~~......#####......,......=........,,,,,,,....=....^^^^~~~~~....,,,.,.~~",
-"~~.....######...==========T====================...^^^^~~~~~......,,,,.~~",
-"~~.~............=.,,,,,.......,.,.....,,,,,#=#......^.~..~......,,,,,,~~",
-"~~.~............=,,,,,,......,,,,...,..,,###=#......^..........,,,,,,.~~",
-"~~..............=.,,,,,.....,,,,,.....######=#..........,......,,,,,,.~~",
-"~~~.............=...,,,.....,,,,,,....#.####=#........,,,,,,.....,,,,~~~",
-"~~........^^^^..=...,,,....,,,,,,,.....#####=##........,,,,.....,.,,~~~~",
-"~~.........^^^^.=.......###,,,,,.,....#.####=#........,,,,,,.........~~~",
-"~~~~......^^^^.~=.~...####..,,...........###=.^......,,,,,,..####.....~~",
-"~~.........^^.~~~~~..#######............#...=^^^^....,,,,,,.######..~~~~",
-"~~...........~~~~~~..########..............^=^^^^.....,,...######.....~~",
-"~~.~.........~~~~~~.#########............,,^=^^^^..........#######....~~",
-"~~.~....^....~~~~~~.#########............,,,=^^^^..........#######....~~",
-"~~~....^^^^.....~~~~.######............,,,,,=^^^^............####.....~~",
-"~~....^^^^^^....=...#.####,,...........,,,,,=^..........^.....##......~~",
-"~~.~.^^^^^^^....=......,,.,,...........,,,,,=,.##.....^^^^^~..........~~",
-"~~....#^^^^.,,.,=.......,,,,,...........,,,,=,.###.##.^^^^^~~~......~~~~",
-"~~...^^#^^^.,.,,=,......,,,,,...........,,,,=,,#####.^^^^^^^~~~.....~.~~",
-"~~...#^^####,,,,=....^.^^,,,,,...#.....,.,,,=########..^^^^~~~........~~",
-"~~...#..#.#,,,,,=...^^^^^,,,....#.###.....,,===================^^^^^^^~~",
-"~~.....###...,,,=..^^^^^^~~......####.......######----^^^^^^^^=^^^^^^^~~",
-"~~..........,,..=...^^^^^~~....#######......#.######^^......,,=,....~.~~",
-"~~...........,..=..^^^^^^~.....######.........####..^^......,,=,,...~~~~",
-"~~.~............o...^^^^~~~.....####..........#.##..^^........=..,..~.~~",
-"~~.~.................^~~~~.........#^...............^^........=.....~~~~",
-"~~...~.~...~.........~~~~~.~~..~.~^^^~^^~....~~~...~^^~.~.....R....~.~~~",
-"~~~.~..~.~~.........~~..~.~...~~.^^^^^^^...~~~.....~^^.~.........~~.~~~~",
-"~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
-"~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~^^^^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"];
+"~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+"~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+"~~..~..~..~..~...~..~..~~.....~...~..~~.....~...~~.~~.....~.~...~...~......~~..~~..~...~.....~..~~.~~~",
+"~~~~.~..~..~.~~...~...~....~.......~.....~......~..~~~.....~~.~.~.....~.....~~~...~~~....~~~~~.~.~~~~~",
+"~~~~..~~...~....~....~.~..~.~~~..~.~....~~...~.......~........####~..~~..~...~........~~..~~.~~~....~~",
+"~~..~......................................................#.###.................................~..~~",
+"~~...........................#.#.............^^.^...........#####.................................~~~~",
+"~~........................##..##..............^^...........########..............................~~.~~",
+"~~~......................######.............^^^^^..........########...,,,...........................~~",
+"~~.~~....................######............^^^^^^^^........########..,.,,,,.,......................~~~",
+"~~......................########..........^^^^^^^^^.....~.#.####....,.,,,,.......................~~~~~",
+"~~~~~....................######.#..........^^^^^^^..~~~~~~~#.###.....,,,,,,,........................~~",
+"~~~.~....................######.#..........^^^^^^^.~~~~~~....#.#.....,,,,,,,...###..................~~",
+"~~.~.......................###.............^.^^^..~.~~~~~~~.........,,,,,,,.,.####.#................~~",
+"~~..~.........C========================......^.^...~~~~~~............,,,,,,,..#######...............~~",
+"~~..~.............#.####..............=..^^.........~~~~~~.............,,,.,#########............~~.~~",
+"~~~...........=..#.##.#.#............^=^^..^.......~~~~~~~............,,.,,..########..............~~~",
+"~~.............########.##...........^=^^^^.........~~~~~....................########,.,,........~.~~~",
+"~~...............########............^=^^^^^...........~..........O==================,,,.........~..~~",
+"~~.~...........###########............=^^^^^.......##.#...........=..........#.####,=,,,,..........~~~",
+"~~.............#.#########............=.^^^.........#.#...........=...........#.###,=,,,,........~..~~",
+"~~~.............#########.............=^.^........#####.^.........=................,=,,,.....^...~..~~",
+"~~..~...........#########^^^^.........=...........######^^^^.^....=.................=.,...^^^.^.....~~",
+"~~................#####^^^^^^^........=..........#######^^^^^.....=.................=,...^^^^^^.....~~",
+"~~................####..^^^^^^........=####.......#####.^^^^^^....=,................=....^^^^^^..~.~~~",
+"~~..............###...#^^^^^^........#=#.#........#.....^^^^^^....=.,,.,####........=....^^^^^^...~.~~",
+"~~.~....................^.^^^,.......#=####.#...........^^^^^.....=,,,,,,####.......t......^^^^^.~..~~",
+"~~........................^^,,,,....#.=######............^..^.....=,,,,.,####...........####^#^##...~~",
+"~~..~.....~.~~...........,,,,,,......#=#####....................,,=,,,,,,#####...........#######....~~",
+"~~.........~~~~...........,,,,,,.....#=######.....................=,,,,,#####...........#########...~~",
+"~~~~.....~~~~~~~........,,,,,,,,,....#=####.#...................,,=,,,,,###.............#.#####.#...~~",
+"~~........~~~~~..........,,,,,,,....#.=###........................=,,,,.,.#..............#####.....~~~",
+"~~~.......~~~~~~.........,,,,,,,......=#..#.......................=.,.,..................#.####..~.~~~",
+"~~.........~..............,,,,,.,.....=............,.,,,.,........=.................................~~",
+"~~.~.......#.#.#.........,.,..........=............,,.,..,,.......=.............~~~.................~~",
+"~~..........######....................=...........,.,,,,,,........=............~~.~.~............~.~~~",
+"~~~........#.####.....................=..........,,,,,,,,,,.......=.........~.~~~~.~.............~~.~~",
+"~~~........########...................=.......#..,.,,,,,,,,.......=......^^...~~~~~~~.............~.~~",
+"~~.........########...................=.....###.#.,,,,,,,,,.......=....^^^^^^~~~~~~~................~~",
+"~~.........######......#.##...........=....######..,,,,,,,.,......=.....^^^^^^~~~~~............,,...~~",
+"~~.........#######...#######..........T============================.....^^^^^~~~~~~~...........,,,,.~~",
+"~~..~.........###.#..#####.................#####...,,,,,,,=,####........^^^^^^~.~~...........,,,,,,~~~",
+"~~.~........#.##.....#######..............,######...,,..,,=###...........^^^.^~...............,,,,,,~~",
+"~~...................#######..........,,.,,,,,#.#.....,#.#=#######.......^^^^.................,,,,,.~~",
+"~~.~..................#####............,,,,,.,..........##=#######.............,,,...........,,,,,..~~",
+"~~~................^.....##...........,,,,,,,,.........#.#=######...........,...,,.............,,...~~",
+"~~.~...........^^.^^^^.................,,,,,,,...........#=######.............,,,,,................~~~",
+"~~~...........,^^^^^^..................,,,,,,,,........###=######.............,,,,,.,............~..~~",
+"~~~.~.........,,^^^^^^..................,,,,,.,...........=..####.............,,,,,.,...............~~",
+"~~.............,,^^^^...........##.#...,..,,....,.........=..#.##...........,.,,,,,,..............~.~~",
+"~~............,,^^^^^.~~~=================================v======^^...........,,,,,................~~~",
+"~~.~~.........,,,^,,~~~~~.~..#.#####.##.........,,,,,,........#^=^^^^...........,,.,....###......~~~~~",
+"~~~~...........,,,~~~~~~~~....########..........,,,,,.........^^=^^^^^.........,.,,...#######.#....~~~",
+"~~~.~...........,,~.~~~~~~.....#########........,,,,...........^=^^^^^^................#######.....~~~",
+"~~.~...............~~~~~~~~..#########.#.........,,,.,.........^=^^^^..................######.......~~",
+"~~.~~..............~~~~~~~....#########............,,...,,.,,.,.=^^^^^.................#######.^....~~",
+"~~.......^^.......~.~~~~.~....#########..................,,,.,,,=^^^^^.................#######^^^^^.~~",
+"~~~~.......^^.^.^...~.~..~.....########.................,.,,,,.,=^^^^...................####..^^^^^.~~",
+"~~......^^^^^^^......~~........###.##.#.................,,,,,,,,=^^^.............^.^.....####^^^^^^^~~",
+"~~~.....#^^^^^^^^.....=........#.###.....................,,,,,,,=~~...........^^^^............^^^^^~~~",
+"~~.....##^^^^^^^......=..........,.....,...............,,,,,,,,,=~~~........^^^^^^^^..........^^^^~^~~",
+"~~~~~.###^^^^^^^......=...........,.,..,...............,,,,,,,,,~~#~##.......^^^^^^^^..~.........^^.~~",
+"~~..~.###^^^^^^^.,..,.=.........,,,,,,,................,.,,,,,,,=~######.....^^^^^^^~~~~~~.........~~~",
+"~~~...####^^^#...,.,,,=,.........,,,,,,,...............,,,,,,,,,=######..#...^^^^^^^~~~~............~~",
+"~~..~.#.###^#^^^.,,,,,=,......^^^^,,,,,,,.....#...#.....,,,,,.,.=====================~~~~~=......~~~~~",
+"~~....#..###.#..,,,,,,=,,...^.^^^^,^,,,.,...###.####.....,,,,..###########...^.^^^.^~~~~~.=.........~~",
+"~~~~....#.##.....,,,,,=,,....^^^^^^^,,,,,....#######...........##########.^^^^^^^^^^^^^^^^=^^^^^^^^^~~",
+"~~...............,,,,,=,....^^^^^^^^,,,,......#####............#######------^^^^^^^^^^^^^^=^^^^^^^^^~~",
+"~~~..............,,,,,=,,.....^^^^^.^,.......########............########.^^.............,=,.......~~~",
+"~~..~.................=,.....^^^^^^~^.......########...........#########..^^......###.,.,,=,,,,..~..~~",
+"~~..~.................=.....^^^^^^^^~.......#######.^.^.........#.####.##.^^......#####,,,=,,,...~.~~~",
+"~~....................=......^^^^^^^~........#.#^^#^.^^............#.##...^^......#####,,,=,,.,....~~~",
+"~~~.~.................o.......^~~~~~~.........#..#^^^^^...................^^.....#####,,..=..,,....~~~",
+"~~~............................~~~~~.............^^^^^^^..................^^.....######,..=..,,.....~~",
+"~~..~..........................~~~~~.~..........^^^^^^^^..................^^.......####,..R..,,.....~~",
+"~~~~~.~~~~.....~~.~.~~.~.~..~~...~~.....~...~~..^.^^^^^^.......~.~.~...~..^^.....~..#.~~.....~..~~.~~~",
+"~~..~.~.~.~...~.~~..~.~..~......~.~..~....~.~....^^^^^.^~.~~....~.....~..~^^...~....~.~,............~~",
+"~~..~~......~..~~......~~...~..........~..~..~..~^^^^^~~...~~...~.~~......^^...~.~......~.~.~.~..~.~~~",
+"~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+"~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"];
 
 const CASTLE=[
 "BBBBBBBBBBBBBBBBBBBBBBBB",
@@ -540,6 +587,26 @@ const CAVE2B=[
 "XXX<XXXXXXXXXXXXXXXX",
 "XXXXXXXXXXXXXXXXXXXX"];
 
+const VILLAGE=[
+"BBBBBBBBBBBBBBBBBBBBBBBB",
+"B......................B",
+"B..BBBBBB......BBBB....B",
+"B..B____B......B__B....B",
+"B..BKKKKB......B__B....B",
+"B..B....B......BB+B....B",
+"B..BBB+BB..............B",
+"B......=====SSS........B",
+"B......=====SSS........B",
+"B=======....SS.........B",
+"B......=....S..........B",
+"B......=...BBBBBB......B",
+"B......=...B____B......B",
+"B......=...BBB+BB......B",
+"B......................B",
+"B......................B",
+"BBBBBBBBBB_==_BBBBBBBBBB",
+"BBBBBBBBBB_==_BBBBBBBBBB"];
+
 const MAPS={
  world:{d:WORLD,enc:true},
  castle:{d:CASTLE,enc:false,name:"ラダうんこ城"},
@@ -549,21 +616,24 @@ const MAPS={
  dragon:{d:DRAGON,enc:true,pool:['d1','d1','d2','d2','d3'],name:"りゅうおうの しろ"},
  cave2a:{d:CAVE2A,enc:true,pool:['e4','e4','e5'],name:"ちからの どうくつ　地下１かい"},
  cave2b:{d:CAVE2B,enc:true,pool:['e5','e5','d1'],name:"ちからの どうくつ　地下２かい"},
+ village:{d:VILLAGE,enc:false,name:"いずみの むら"},
 };
 
 /* ワープ（乗ると移動） */
 const WARPS={
- world:[{x:10,y:10,to:'castle',tx:11,ty:17},{x:26,y:28,to:'town',tx:11,ty:17},
-   {x:58,y:18,to:'town2',tx:11,ty:17},{x:46,y:12,to:'cave',tx:10,ty:15},
-   {x:16,y:50,to:'cave2a',tx:10,ty:15},{x:62,y:52,to:'dragon',tx:11,ty:17}],
- castle:[{x:11,y:17,to:'world',tx:10,ty:11},{x:12,y:17,to:'world',tx:10,ty:11}],
- town:[{x:11,y:17,to:'world',tx:26,ty:29},{x:12,y:17,to:'world',tx:26,ty:29}],
- town2:[{x:11,y:17,to:'world',tx:58,ty:19},{x:12,y:17,to:'world',tx:58,ty:19}],
- cave:[{x:10,y:15,to:'world',tx:46,ty:13},{x:11,y:15,to:'world',tx:46,ty:13}],
- cave2a:[{x:10,y:15,to:'world',tx:16,ty:51},
+ world:[{x:14,y:14,to:'castle',tx:11,ty:17},{x:38,y:40,to:'town',tx:11,ty:17},
+   {x:84,y:26,to:'town2',tx:11,ty:17},{x:66,y:18,to:'cave',tx:10,ty:15},
+   {x:22,y:72,to:'cave2a',tx:10,ty:15},{x:58,y:50,to:'village',tx:11,ty:17},
+   {x:90,y:74,to:'dragon',tx:11,ty:17}],
+ castle:[{x:11,y:17,to:'world',tx:14,ty:15},{x:12,y:17,to:'world',tx:14,ty:15}],
+ town:[{x:11,y:17,to:'world',tx:38,ty:41},{x:12,y:17,to:'world',tx:38,ty:41}],
+ town2:[{x:11,y:17,to:'world',tx:84,ty:27},{x:12,y:17,to:'world',tx:84,ty:27}],
+ village:[{x:11,y:17,to:'world',tx:58,ty:51},{x:12,y:17,to:'world',tx:58,ty:51}],
+ cave:[{x:10,y:15,to:'world',tx:66,ty:19},{x:11,y:15,to:'world',tx:66,ty:19}],
+ cave2a:[{x:10,y:15,to:'world',tx:22,ty:73},
    {x:4,y:14,to:'cave2b',tx:3,ty:14}],
  cave2b:[{x:3,y:14,to:'cave2a',tx:4,ty:13}],
- dragon:[{x:11,y:17,to:'world',tx:62,ty:53},{x:12,y:17,to:'world',tx:62,ty:53}],
+ dragon:[{x:11,y:17,to:'world',tx:90,ty:75},{x:12,y:17,to:'world',tx:90,ty:75}],
 };
 
 /* NPC */
@@ -597,7 +667,8 @@ const NPCS={
   {x:10,y:7,art:'npc',lines:["きたの しろの おうさまは やさしいお方だよ。","「プリ」を おぼえたら HPが かいふくできる。"]},
   {x:19,y:9,art:'npc',lines:["ひがしの みなとまちには つよい ぶきが あるらしい。","でも たかいんだ…"]},
   {x:7,y:15,art:'npc',lines:["きんうんこは にげあしが はやいけど","たおすと どっさり けいけんちが もらえるよ！"]},
-  {x:17,y:13,art:'npc',lines:["りゅうおうの しろは みなみひがしの はてに あるって。","やまと うみに かこまれた ばしょさ。"]},
+  {x:17,y:13,art:'npc',move:true,lines:["りゅうおうの しろは みなみひがしの はてに あるって。","やまと うみに かこまれた ばしょさ。"]},
+  {x:20,y:6,art:'npc',move:true,lines:["ひがしの ほうに 「いずみの むら」が あってね。","でも いずみが にごって こまってるらしいよ。","たすけて あげたら どうだい？"]},
   {x:3,y:6,art:'npc',lines:["いらなくなった ぶきや よろいは","みせで うることが できるよ。"]},
  ],
  town2:[
@@ -607,6 +678,29 @@ const NPCS={
   {x:8,y:13,art:'npc',lines:["りゅうおうは とてつもなく つよい。","レベル20は ほしいところだね。","しろの なかの まものも きょうれつだ。","やくそうを たっぷり もっていきな。"]},
   {x:20,y:14,art:'npc',lines:["みなみにしの はてに 「ちからの どうくつ」が あるらしい。","ちかにかいの おくに ちからの みなもとが あって","「さいごのつるぎ」が ねむって いるとか…","ぬしは とほうもなく つよいそうだ。"]},
   {x:3,y:14,art:'npc',lines:["どうくつの ぬしを たおせば","この よで いちばんの つるぎが てにはいる。"]},
+ ],
+ village:[
+  {x:5,y:3,art:'shop',shop:'item2',lines:["いらっしゃい…","といっても もう ろくな しなが なくてね。"],
+   after:["いずみが もどってから しなものが そろったよ！","ゆっくり みていっとくれ。"]},
+  {x:17,y:4,art:'king',elder:true,lines:[
+   "…よくぞ きなすった、ゆうしゃどの。",
+   "この むらの いずみは むかしから きよらかで",
+   "たびびとの のどを うるおして きました。",
+   "ところが ひとつきまえ 「ぬまのぬし」が すみつき",
+   "いずみは にごり きたない どろに なってしもうた。",
+   "どうか… ぬしを たおして いずみを もどして くだされ！"],
+   after:["おお ゆうしゃどの！ いずみが きよらかに もどった！",
+   "むらの みんなが よろこんで おります。",
+   "いずみは いつでも おつかいくだされ。",
+   "からだも こころも いやして くれましょうぞ。"]},
+  {x:13,y:12,art:'npc',move:true,lines:["いずみが にごってから みずが のめないの。","とおくまで くみに いくのは たいへんよ…"],
+   after:["いずみが きれいに なったわ！","もう みずくみに とおくへ いかなくて いいの。"]},
+  {x:9,y:14,art:'npc',move:true,lines:["ぬまのぬしって やつは いずみの なかに いるんだ。","いずみを しらべたら でてくるらしいぜ。"],
+   after:["あんたが ぬしを たおしたんだって！？","むらの えいゆうだ！"]},
+  {x:16,y:8,art:'npc',move:true,lines:["むかしは この いずみで HPも MPも","すっかり かいふくしたもんさ。"],
+   after:["ほら、また かいふくできるように なった。","ありがたや ありがたや。"]},
+  {x:4,y:15,art:'npc',move:true,lines:["ぬまのぬしは どくを はいてくるって きいた。","やくそうを もっていったほうが いいよ。"],
+   after:["いずみの みずは まほうみたいだね。","つかれが すーっと とれるよ。"]},
  ],
  cave2b:[
   {x:8,y:8,art:'d3',boss2:true,lines:[
@@ -637,17 +731,18 @@ const CHESTS={
    3. てき・そうび・みせ
    ═══════════════════════════════════════════════ */
 const ENEMY={
- e1:{name:"ちゃうんこ",hp:12,atk:7,def:3,exp:5,gold:6,art:'e1'},
- e2:{name:"しろうんこ",hp:20,atk:10,def:6,exp:13,gold:16,art:'e2'},
- e3:{name:"みどりうんこ",hp:44,atk:22,def:13,exp:30,gold:34,art:'e3'},
- e4:{name:"あおうんこ",hp:78,atk:36,def:22,exp:62,gold:72,art:'e4'},
- e5:{name:"あかうんこ",hp:130,atk:55,def:34,exp:120,gold:140,art:'e5'},
- e6:{name:"きんうんこ",hp:60,atk:18,def:50,exp:400,gold:650,art:'e6'},
- d1:{name:"くろうんこ",hp:155,atk:58,def:40,exp:200,gold:220,art:'d1'},
- d2:{name:"やみうんこ",hp:200,atk:63,def:46,exp:290,gold:310,art:'d2'},
- d3:{name:"うんこナイト",hp:255,atk:70,def:54,exp:420,gold:440,art:'d3'},
- guard:{name:"ちからのぬし",hp:420,atk:72,def:54,exp:600,gold:500,art:'d3',rage:true},
- boss:{name:"りゅうおうのうんこ",hp:560,atk:76,def:48,exp:0,gold:0,art:'boss',boss:true},
+ e1:{name:"スライムのうんこ",hp:16,atk:8,def:3,exp:5,gold:6,art:'e1'},
+ e2:{name:"ゴブリンのうんこ",hp:27,atk:12,def:6,exp:13,gold:16,art:'e2'},
+ e3:{name:"ゴーストのうんこ",hp:59,atk:26,def:14,exp:30,gold:34,art:'e3'},
+ e4:{name:"ウルフのうんこ",hp:105,atk:43,def:24,exp:62,gold:72,art:'e4'},
+ e5:{name:"ゴーレムのうんこ",hp:176,atk:66,def:37,exp:120,gold:140,art:'e5'},
+ e6:{name:"メタルスライムのうんこ",hp:80,atk:22,def:56,exp:400,gold:650,art:'e6'},
+ nushi:{name:"ぬまのぬしのうんこ",hp:320,atk:42,def:36,exp:260,gold:320,art:'nushi',poison:true},
+ d1:{name:"リッチのうんこ",hp:209,atk:70,def:43,exp:200,gold:220,art:'d1'},
+ d2:{name:"ワイバーンのうんこ",hp:270,atk:76,def:50,exp:290,gold:310,art:'d2'},
+ d3:{name:"デスナイトのうんこ",hp:344,atk:84,def:58,exp:420,gold:440,art:'d3'},
+ guard:{name:"ちからのぬしのうんこ",hp:460,atk:56,def:46,exp:600,gold:500,art:'d3',rage:true},
+ boss:{name:"ドラゴンロードのうんこ",hp:760,atk:54,def:56,exp:0,gold:0,art:'boss',boss:true},
 };
 const WEAPONS=[{name:"すあし",atk:0},{name:"きのぼう",atk:6},{name:"どうのつるぎ",atk:16},
  {name:"はがねのつるぎ",atk:30},{name:"ほのおのつるぎ",atk:48},
@@ -664,16 +759,21 @@ const SHOPS={
  weapon2:{title:"ぶきや",list:[
    {t:'w',i:3,price:900},{t:'w',i:4,price:1800},
    {t:'a',i:3,price:1100},{t:'a',i:4,price:2000}]},
+ item2:{title:"どうぐや",list:[
+   {t:'item',key:'herb',name:"やくそう",price:28}]},
+ item3:{title:"どうぐや",list:[
+   {t:'item',key:'herb',name:"やくそう",price:20},
+   {t:'item',key:'wing',name:"きえさりのつばさ",price:70}]},
  inn:{title:"やどや",inn:2},
  inn2:{title:"やどや",inn:5},
 };
-const SPELLS=[{name:"プリ",mp:4,type:'heal',power:40},
+const SPELLS=[{name:"プリ",mp:4,type:'heal',power:38},
  {name:"ブリ",mp:5,type:'atk',power:30},
- {name:"プリプリ",mp:10,type:'heal',power:90,lv:8},
+ {name:"プリプリ",mp:10,type:'heal',power:70,lv:8},
  {name:"ブリブリ",mp:12,type:'atk',power:80,lv:12}];
 
 function nextExp(lv){return Math.floor(lv*lv*7+lv*10);}
-function statFor(lv){return{hpMax:24+lv*11,mpMax:5+lv*3,atk:4+lv*2,def:3+lv*2};}
+function statFor(lv){return{hpMax:24+lv*11,mpMax:Math.floor(5+lv*2.5),atk:4+lv*2,def:3+lv*2};}
 
 /* ═══════════════════════════════════════════════
    4. エンジン
@@ -686,7 +786,7 @@ const wStatus=$('wStatus'),wMsg=$('wMsg'),wCmd=$('wCmd');
 
 let G={map:'castle',x:11,y:14,dir:'down',lv:1,exp:0,hp:0,mp:0,gold:0,
   weapon:0,armor:0,haveW:[0],haveA:[0],items:{herb:3,wing:0},chests:{},
-  bossDead:false,boss2Dead:false,kingGift:false,steps:0,thr:8};
+  bossDead:false,boss2Dead:false,kingGift:false,springFixed:false,springQuest:false,steps:0,thr:8};
 let mode='title',anim=0;
 
 function stats(){const s=statFor(G.lv);
@@ -719,22 +819,81 @@ function drawMap(){
   for(let vy=0;vy<VH;vy++)for(let vx=0;vx<VW;vx++){
     const mx=cx+vx,my=cy+vy;
     if(mx<0||my<0||my>=MH||mx>=MW)continue;
-    drawArt(TILE[m[my][mx]]||'grass',vx*TS,vy*TS,1);}
+    let key=TILE[m[my][mx]]||'grass';
+    if(key==='mud'&&G.springFixed)key='spring';
+    drawArt(key,vx*TS,vy*TS,1);}
   (CHESTS[G.map]||[]).forEach(c=>{if(got(c))return;
     drawArt('chest',(c.x-cx)*TS,(c.y-cy)*TS,1);});
   (NPCS[G.map]||[]).forEach(n=>{
     if(n.boss&&G.bossDead)return;
-    drawArt(n.art,(n.x-cx)*TS+2,(n.y-cy)*TS+2,1);});
+    if(n.boss2&&G.boss2Dead)return;
+    if(n.phase===undefined)n.phase=Math.random()*6;
+    const nb=Math.sin(anim*.15+n.phase)>0?0:1;
+    drawArt(n.art,(n.x-cx)*TS+2,(n.y-cy)*TS+2+nb,1);});
   const bob=Math.sin(anim*.15)>0?0:1;
   drawArt('hero',(G.x-cx)*TS+2,(G.y-cy)*TS+2+bob,1);
 }
 let battle=null,flash=false;
+const SCENE={
+  world:{sky:['#1a3a6a','#3a72a8'],ground:'#2f7a2f',g2:'#22601f',kind:'field'},
+  castle:{sky:['#12162a','#242c4c'],ground:'#6a6250',g2:'#4a4438',kind:'room'},
+  town:{sky:['#1a3a6a','#3a72a8'],ground:'#2f7a2f',g2:'#22601f',kind:'field'},
+  town2:{sky:['#1a3a6a','#3a72a8'],ground:'#2f7a2f',g2:'#22601f',kind:'field'},
+  village:{sky:['#1a3a6a','#3a72a8'],ground:'#2f7a2f',g2:'#22601f',kind:'field'},
+  cave:{sky:['#0e0c12','#221c26'],ground:'#3a3428',g2:'#26221a',kind:'cave'},
+  cave2a:{sky:['#0e0c12','#221c26'],ground:'#3a3428',g2:'#26221a',kind:'cave'},
+  cave2b:{sky:['#0c0a14','#1e1a34'],ground:'#33304a',g2:'#232038',kind:'cave'},
+  dragon:{sky:['#160a20','#3a1450'],ground:'#3a2a48',g2:'#281a34',kind:'room'},
+};
+function mix(a,b,t){
+  const p=c=>[parseInt(c.substr(1,2),16),parseInt(c.substr(3,2),16),parseInt(c.substr(5,2),16)];
+  const A=p(a),B=p(b);
+  return 'rgb('+Math.round(A[0]+(B[0]-A[0])*t)+','+Math.round(A[1]+(B[1]-A[1])*t)+','
+    +Math.round(A[2]+(B[2]-A[2])*t)+')';}
+function tri(x1,y1,x2,y2,x3,y3){
+  ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.lineTo(x3,y3);
+  ctx.closePath();ctx.fill();}
+function drawScene(){
+  const sc=SCENE[G.map]||SCENE.world, hz=150;
+  for(let y=0;y<hz;y++)
+    {ctx.fillStyle=mix(sc.sky[0],sc.sky[1],y/hz);ctx.fillRect(0,y,256,1);}
+  if(sc.kind==='field'){
+    ctx.fillStyle='#e8e4c8';ctx.fillRect(208,24,13,13);
+    ctx.fillStyle=mix(sc.sky[0],sc.sky[1],0.2);ctx.fillRect(204,20,11,11);
+    ctx.fillStyle='#1d3450';
+    for(let i=0;i<5;i++){const bx=i*56-14,bw=72,bh=32+((i*37)%22);
+      tri(bx,hz,bx+bw/2,hz-bh,bx+bw,hz);}
+    ctx.fillStyle='#25445f';
+    for(let i=0;i<4;i++){const bx=i*68+10,bw=58,bh=18+((i*29)%16);
+      tri(bx,hz,bx+bw/2,hz-bh,bx+bw,hz);}
+  }else if(sc.kind==='cave'){
+    ctx.fillStyle='#2a2620';
+    for(let i=0;i<9;i++){const bx=i*30+4,bh=16+((i*23)%28);
+      tri(bx,0,bx+11,0,bx+5,bh);}
+    ctx.fillStyle='#1c1914';
+    for(let i=0;i<7;i++){const bx=i*38+20,bh=10+((i*17)%18);
+      tri(bx,0,bx+9,0,bx+4,bh);}
+  }else{
+    ctx.fillStyle=mix(sc.sky[1],'#000',0.45);
+    [14,62,178,226].forEach(bx=>{
+      ctx.fillRect(bx,42,22,108);
+      ctx.fillStyle=mix(sc.sky[1],'#fff',0.12);ctx.fillRect(bx,42,4,108);
+      ctx.fillStyle=mix(sc.sky[1],'#000',0.45);});
+    ctx.fillRect(0,34,256,10);
+  }
+  ctx.fillStyle=sc.ground;ctx.fillRect(0,hz,256,224-hz);
+  ctx.fillStyle=mix(sc.ground,'#fff',0.14);ctx.fillRect(0,hz,256,2);
+  ctx.fillStyle=sc.g2;
+  for(let i=0;i<26;i++){
+    const gx=(i*97)%252, gy=hz+7+((i*53)%58);
+    ctx.fillRect(gx,gy,3,2);}
+}
 function drawBattle(){
-  ctx.fillStyle=flash?'#fff':'#000';ctx.fillRect(0,0,256,224);
-  if(flash)return;
-  ctx.fillStyle='#101018';ctx.fillRect(0,150,256,74);
-  const s=battle.boss?9:8,w=12*s;
-  drawArt(battle.art,(256-w)/2,150-12*s+10,s);
+  if(flash){ctx.fillStyle='#fff';ctx.fillRect(0,0,256,224);return;}
+  drawScene();
+  const s=battle.boss?9:8,w=12*s,bx=(256-w)/2,by=150-12*s+10;
+  ctx.fillStyle='rgba(0,0,0,.3)';ctx.fillRect(bx+s,150-4,w-s*2,7);
+  drawArt(battle.art,bx,by,s);
 }
 function render(){
   if(mode==='title')return;
@@ -813,7 +972,7 @@ function move(dir){
   if(w){doWarp(w);return;}
   if(MAPS[G.map].enc){
     G.steps++;
-    if(G.steps>=G.thr){G.steps=0;G.thr=6+Math.floor(Math.random()*10);
+    if(G.steps>=G.thr){G.steps=0;G.thr=5+Math.floor(Math.random()*9);
       const t=tileAt(nx,ny);
       if(t!=='='&&t!=='-'){startBattle(pickEnemy(t));save();return;}}}
   if(G.steps%12===0)save();}
@@ -827,12 +986,12 @@ function doWarp(w){
 function pickEnemy(t){
   const mp=MAPS[G.map];
   if(mp.pool)return mp.pool[Math.floor(Math.random()*mp.pool.length)];
-  const d=Math.abs(G.x-10)+Math.abs(G.y-10);   // しろ(10,10)からの きょり
+  const d=Math.abs(G.x-14)+Math.abs(G.y-14);   // しろ(14,14)からの きょり
   let pool;
-  if(d<12)pool=['e1','e1','e1','e1'];
-  else if(d<26)pool=['e1','e1','e2','e2'];
-  else if(d<42)pool=['e2','e2','e3','e3'];
-  else if(d<58)pool=['e3','e3','e4','e4'];
+  if(d<16)pool=['e1','e1','e1','e1'];
+  else if(d<38)pool=['e1','e1','e2','e2'];
+  else if(d<62)pool=['e2','e2','e3','e3'];
+  else if(d<88)pool=['e3','e3','e4','e4'];
   else pool=['e4','e4','e5','e5'];
   if(t===',')pool=pool.slice(1).concat(pool[pool.length-1]);
   if(Math.random()<0.02)return 'e6';
@@ -853,7 +1012,42 @@ function action(){
   if(n){talkTo(n);return;}
   const c=(CHESTS[G.map]||[]).find(c=>c.x===tx&&c.y===ty);
   if(c){if(got(c))say(["たからばこは からっぽだ。"]);else openChest(c);return;}
+  if(tileAt(tx,ty)==='S'){checkSpring();return;}
   say(["なにも みつからなかった。"]);}
+function checkSpring(){
+  if(G.springFixed){
+    const st=stats();
+    if(G.hp>=st.hpMax&&G.mp>=st.mpMax){
+      say(["いずみの みずは すみきっている。","いまは かいふくの ひつようが なさそうだ。"]);return;}
+    G.hp=st.hpMax;G.mp=st.mpMax;updStatus();save();LOG.ev('いずみで回復','village');
+    say(["いずみの みずを のんだ。","つかれが すーっと とれていく…","ＨＰと ＭＰが ぜんかいふくした！"]);return;}
+  if(!G.springQuest){
+    say(["いずみは どろで にごっている。","なにか いる きがするが…",
+      "むらの ひとに はなしを きいてみよう。"]);return;}
+  say(["どろの いずみを のぞきこんだ…",
+    "ゴボゴボと あわが たちのぼり",
+    "どろの なかから なにかが せりあがってきた！"],()=>startBattle('nushi'));}
+/* ── むらびとが うろうろ あるく ── */
+function npcCanWalk(x,y,self){
+  if(BLOCKED.has(tileAt(x,y)))return false;
+  if(G.x===x&&G.y===y)return false;
+  if((NPCS[G.map]||[]).some(n=>n!==self&&n.x===x&&n.y===y))return false;
+  if((CHESTS[G.map]||[]).some(c=>c.x===x&&c.y===y))return false;
+  if((WARPS[G.map]||[]).some(w=>w.x===x&&w.y===y))return false;
+  return true;}
+function stepNpcs(){
+  if(mode!=='field')return;
+  (NPCS[G.map]||[]).forEach(n=>{
+    if(!n.move)return;
+    if(n.hx===undefined){n.hx=n.x;n.hy=n.y;}
+    if(Math.random()<0.55)return;
+    const d=[[1,0],[-1,0],[0,1],[0,-1]][Math.floor(Math.random()*4)];
+    const nx=n.x+d[0],ny=n.y+d[1];
+    if(Math.abs(nx-n.hx)>3||Math.abs(ny-n.hy)>3)return;
+    if(!npcCanWalk(nx,ny,n))return;
+    n.x=nx;n.y=ny;});}
+setInterval(stepNpcs,900);
+
 function findNpc(x,y){
   return (NPCS[G.map]||[]).find(n=>n.x===x&&n.y===y
     &&!(n.boss&&G.bossDead)&&!(n.boss2&&G.boss2Dead));}
@@ -865,6 +1059,15 @@ function talkTo(n){
   if(n.gold&&!G.kingGift){
     G.kingGift=true;G.gold+=n.gold;updStatus();save();
     say(n.lines.concat([`${n.gold}Ｇを もらった！`]));return;}
+  if(n.elder){
+    if(G.springFixed){
+      if(!G.springReward){G.springReward=true;G.gold+=800;
+        G.items.herb=(G.items.herb||0)+5;updStatus();save();
+        say(n.after.concat(["おれいに 800Ｇと やくそう５こを うけとって くだされ。"]));return;}
+      say(n.after);return;}
+    G.springQuest=true;save();say(n.lines);return;}
+  if(n.after&&G.springFixed&&G.map==='village'){say(n.after);return;}
+  if(n.shop==='item2'&&G.springFixed){say(n.after||n.lines,()=>openShop('item3'));return;}
   if(n.afterBoss&&G.bossDead){say(n.afterBoss);return;}
   if(n.afterLv&&G.lv>=15){say(n.afterLv);return;}
   if(n.after){say(n.after);return;}
@@ -994,7 +1197,7 @@ function fieldMenu(){
         `つぎのレベルまで あと ${Math.max(0,nextExp(G.lv)-G.exp)}`,
         G.lv>=20?"りゅうおうと たたかえる ちからが ある！"
           :`りゅうおうに いどむなら Ｌｖ20は ほしい。`,
-        `うんこクエスト ver 2.1`]);return;}
+        `うんこクエスト ver 3.0`]);return;}
     if(id==='it'){itemMenu(false);return;}
     if(id==='sp'){spellMenu(false);return;}});}
 function itemMenu(inBattle){
@@ -1007,7 +1210,7 @@ function itemMenu(inBattle){
   menu(null,list,id=>{
     if(id==='x'){if(inBattle)battleCmd();else mode='field';return;}
     if(id==='herb'){G.items.herb--;const s=stats(),b=G.hp;
-      G.hp=Math.min(s.hpMax,G.hp+45);updStatus();save();
+      G.hp=Math.min(s.hpMax,G.hp+40);updStatus();save();
       if(inBattle)say(["やくそうを つかった！",`HPが ${G.hp-b} かいふくした！`],enemyTurn);
       else{mode='field';say(["やくそうを つかった！",`HPが ${G.hp-b} かいふくした！`]);}return;}
     if(id==='wing'){G.items.wing--;G.map='castle';G.x=11;G.y=14;G.steps=0;updStatus();save();
@@ -1037,7 +1240,7 @@ function spellMenu(inBattle){
 function startBattle(key){
   const e=ENEMY[key];
   battle={key,name:e.name,hp:e.hp,hpMax:e.hp,atk:e.atk,def:e.def,
-    exp:e.exp,gold:e.gold,art:e.art,boss:!!e.boss,rage:!!e.rage};
+    exp:e.exp,gold:e.gold,art:e.art,boss:!!e.boss,rage:!!e.rage,poison:!!e.poison};
   LOG.ev('戦闘開始',e.name);
   mode='bmsg';closeMenu();
   say([`${e.name}が あらわれた！`],battleCmd);}
@@ -1063,18 +1266,21 @@ function enemyTurn(){
   if(battle.key==='e6'&&Math.random()<0.35){
     say([`${battle.name}は にげだした！`],endBattle);return;}
   const s=stats();
-  const dmg=Math.max(1,Math.floor((battle.atk-s.def/2)*(0.85+Math.random()*0.3)));
+  const dmg=Math.max(1,Math.floor((battle.atk-s.def/3.5)*(0.85+Math.random()*0.3)));
   G.hp-=dmg;updStatus();
   const l=[`${battle.name}の こうげき！`,`ゆうしゃは ${dmg}の ダメージ！`];
   if(battle.boss&&Math.random()<0.35){
-    const d2=Math.max(1,Math.floor(battle.atk*0.85));G.hp-=d2;updStatus();
-    l.push("りゅうおうは くさいいきを はいた！",`ゆうしゃは ${d2}の ダメージ！`);}
-  if(battle.rage&&Math.random()<0.3){
     const d2=Math.max(1,Math.floor(battle.atk*0.8));G.hp-=d2;updStatus();
+    l.push("りゅうおうは くさいいきを はいた！",`ゆうしゃは ${d2}の ダメージ！`);}
+  if(battle.poison&&Math.random()<0.3){
+    const dp=Math.max(1,Math.floor(battle.atk*0.65));G.hp-=dp;updStatus();
+    l.push("ぬしは どくの あわを はいた！",`ゆうしゃは ${dp}の ダメージ！`);}
+  if(battle.rage&&Math.random()<0.3){
+    const d2=Math.max(1,Math.floor(battle.atk*0.75));G.hp-=d2;updStatus();
     l.push("ぬしは ちからを かいほうした！",`ゆうしゃは ${d2}の ダメージ！`);}
   say(l,()=>G.hp<=0?dead():battleCmd());}
 function run(){
-  if(battle.boss||battle.key==='guard'){say(["…にげられない！"],enemyTurn);return;}
+  if(battle.boss||battle.key==='guard'||battle.key==='nushi'){say(["…にげられない！"],enemyTurn);return;}
   if(Math.random()<0.65){LOG.ev('にげる成功',battle.name);say(["うまく にげきった！"],endBattle);}
   else say(["しかし まわりこまれた！"],enemyTurn);}
 function win(){
@@ -1083,9 +1289,14 @@ function win(){
   if(battle.gold)l.push(`${battle.gold}Ｇを てにいれた！`);
   G.exp+=battle.exp;G.gold+=battle.gold;updStatus();
   LOG.ev('戦闘勝利',battle.name);
-  const boss=battle.boss,g2=battle.key==='guard';
+  const boss=battle.boss,g2=battle.key==='guard',ns=battle.key==='nushi';
   say(l,()=>lvUp(()=>{
     if(boss){G.bossDead=true;save();clear();return;}
+    if(ns){G.springFixed=true;updStatus();save();LOG.ev('いずみを浄化','Lv'+G.lv);
+      say(["ぬしは どろに とけて きえた…",
+        "にごった みずが みるみる すきとおっていく！",
+        "いずみが きよらかさを とりもどした！",
+        "むらの ひとに しらせに いこう。"],endBattle);return;}
     if(g2){G.boss2Dead=true;LOG.ev('さいごのつるぎ入手','Lv'+G.lv);
       if(!G.haveW.includes(5))G.haveW.push(5);
       G.weapon=5;updStatus();save();
@@ -1120,7 +1331,7 @@ function clear(){
     <p>せかいに さわやかな かぜが もどった。<br>
     ゆうしゃうんこの なは えいえんに かたりつがれる――</p>
     <p style="color:#ffd23f;font-size:5cqw;">Ｌｖ${G.lv}　クリア！</p>
-    <p id="ver">ver 2.1</p>
+    <p id="ver">ver 3.0</p>
     <button class="tm sel" onclick="localStorage.removeItem('unkoq-save');location.reload()">もういちど</button>`;
   t.classList.remove('hide');
   wMsg.classList.remove('show');wStatus.classList.remove('show');}
@@ -1130,7 +1341,7 @@ function clear(){
    ★ ANALYTICS_URL に GAS の URL を いれると 送信されます
       からっぽ の ままなら 何も 送信されません
    ══════════════════════════════════════════════ */
-const ANALYTICS_URL = "https://script.google.com/macros/s/AKfycbxLy8cxUMR0QF8DR3FBNepBZ885Zh92R0Hdhhc-MhLMWgenUL0jjb3vf0cwDEZEKUNA/exec";   // ← ここに GASのウェブアプリURLを貼る
+const ANALYTICS_URL = "";   // ← ここに GASのウェブアプリURLを貼る
 
 const LOG={
   on:false, pid:'', sid:'', t0:0, queue:[], sending:false, lastFlush:0,
@@ -1187,13 +1398,16 @@ function load(){try{const s=localStorage.getItem('unkoq-save');
     if(!G.haveW){G.haveW=[];for(let i=0;i<=G.weapon;i++)G.haveW.push(i);}
     if(!G.haveA){G.haveA=[];for(let i=0;i<=G.armor;i++)G.haveA.push(i);}
     if(G.boss2Dead===undefined)G.boss2Dead=false;
+    if(G.springFixed===undefined)G.springFixed=false;
+    if(G.springQuest===undefined)G.springQuest=false;
     return true;}}catch(e){}return false;}
 
 /* ── ゲーム開始 ── */
 function begin(cont){
   if(!cont){G={map:'castle',x:11,y:14,dir:'down',lv:1,exp:0,hp:0,mp:0,gold:0,
     weapon:0,armor:0,haveW:[0],haveA:[0],items:{herb:3,wing:0},chests:{},
-    bossDead:false,boss2Dead:false,kingGift:false,steps:0,thr:8};resetHpMp();save();}
+    bossDead:false,boss2Dead:false,kingGift:false,springFixed:false,springQuest:false,
+    steps:0,thr:8};resetHpMp();save();}
   $('title').classList.add('hide');
   LOG.init();LOG.ev(cont?'つづきから':'はじめから');
   mode='field';updStatus();
