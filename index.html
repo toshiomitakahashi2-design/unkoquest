@@ -168,7 +168,7 @@ html,body{height:100%;background:#000;color:#fff;font-family:'DotGothic16',monos
       <button class="tm sel" id="tmNew">はじめから</button>
       <button class="tm dis" id="tmCont">つづきから</button>
       <p style="font-size:2.8cqw;color:#777;">十字キー＝いどう／Ａ＝はなす・しらべる／Ｂ＝メニュー</p>
-      <p id="ver">ver 3.1</p>
+      <p id="ver">ver 3.2</p>
     </div>
   </div>
   <div id="pad">
@@ -202,6 +202,9 @@ html,body{height:100%;background:#000;color:#fff;font-family:'DotGothic16',monos
       <button class="ebtn" id="btnClear">ぜんぶけす</button>
       <button class="ebtn" id="btnRestore">元にもどす</button>
     </div>
+    <div class="toolrow">
+      <button class="ebtn" id="btnHeroAll">★ ゆうしゃの かたちを ぜんいんに</button>
+    </div>
     <p class="hint">なぞって かけます。描いた絵は すぐゲームに 反映され<br>この端末に 保存されます。</p>
   </div></div>
 </div>
@@ -219,12 +222,12 @@ function dots(a,pts,c){pts.forEach(([x,y])=>{if(a[y]&&a[y][x]!==undefined)a[y][x
 
 /* ── うんこの形（全キャラ共通・ここを変えると全員変わる） ── */
 const UNKO=[
-"....BBBB....",
-"...BLLBBB...",
-"..BBBBBBBB..",
+".....BB.....",
+"....BLBB....",
 "...BBBBBB...",
+"....BBBB....",
 "..BBBBBBBB..",
-".BBLBBBBBBB.",
+"..BLBBBBBB..",
 ".BBBBBBBBBB.",
 "..BBBBBBBB..",
 ".BWKBBBBWKB.",
@@ -234,23 +237,28 @@ const UNKO=[
 function unko(b,l,d){return paint(mk(12,12),UNKO,{B:b,L:l,d:d,K:'#2a1a08',W:'#fff'});}
 
 const ART={};
+/* ── キャラの いろ（本体・ハイライト・かげ）── */
+const CHAR_COLORS={
+  hero :['#d8a03c','#f0c46a','#a06e18'], // ゆうしゃ＝きん
+  npc  :['#a0682e','#c68a45','#7a4a20'], // むらびと
+  king :['#c05a9a','#e08ac0','#8a3068'], // おうさま
+  shop :['#3a8ab0','#5ab0d8','#256a88'], // みせのひと
+  e1   :['#8a5a2a','#b07a44','#6a4018'], // スライム
+  e2   :['#e8e0d0','#ffffff','#b0a898'], // ゴブリン（しろ）
+  e3   :['#4a7a3a','#6a9a52','#345a28'], // ゴースト（みどり）
+  e4   :['#3050b8','#5878e0','#1e3280'], // ウルフ（あお）
+  e5   :['#b03030','#d85858','#7a1c1c'], // ゴーレム（あか）
+  e6   :['#e8c020','#ffe870','#a88000'], // メタルスライム（きん）
+  nushi:['#4a5a30','#6a7a48','#2a3418'], // ぬまのぬし（どろ）
+  d1   :['#2a2a34','#4a4a5a','#141418'], // リッチ（くろ）
+  d2   :['#5a2a6a','#7a4a8a','#341440'], // ワイバーン（やみ）
+  d3   :['#8a8a96','#c0c0cc','#5a5a66'], // デスナイト（てつ）
+  boss :['#6a3878','#9058a0','#3f2044'], // ドラゴンロード
+};
+const CHAR_KEYS=Object.keys(CHAR_COLORS);
 function initArt(){
-  /* ── キャラ（色ちがいの うんこ） ── */
-  ART.hero  =unko('#d8a03c','#f0c46a','#a06e18'); // ゆうしゃ＝きん
-  ART.npc   =unko('#a0682e','#c68a45','#7a4a20'); // むらびと
-  ART.king  =unko('#c05a9a','#e08ac0','#8a3068'); // おうさま
-  ART.shop  =unko('#3a8ab0','#5ab0d8','#256a88'); // みせのひと
-  ART.e1    =unko('#8a5a2a','#b07a44','#6a4018'); // ちゃうんこ
-  ART.e2    =unko('#e8e0d0','#ffffff','#b0a898'); // しろうんこ
-  ART.e3    =unko('#4a7a3a','#6a9a52','#345a28'); // みどりうんこ
-  ART.e4    =unko('#3050b8','#5878e0','#1e3280'); // あおうんこ
-  ART.e5    =unko('#b03030','#d85858','#7a1c1c'); // あかうんこ
-  ART.e6    =unko('#e8c020','#ffe870','#a88000'); // きんうんこ
-  ART.nushi =unko('#4a5a30','#6a7a48','#2a3418'); // ぬまのぬし（どろ色）
-  ART.d1    =unko('#2a2a34','#4a4a5a','#141418'); // くろうんこ
-  ART.d2    =unko('#5a2a6a','#7a4a8a','#341440'); // やみうんこ
-  ART.d3    =unko('#8a8a96','#c0c0cc','#5a5a66'); // うんこナイト（鉄）
-  ART.boss  =unko('#6a3878','#9058a0','#3f2044'); // りゅうおう
+  /* ── キャラ（ぜんいん ゆうしゃと おなじ かたち・いろだけ ちがう） ── */
+  CHAR_KEYS.forEach(k=>{const c=CHAR_COLORS[k];ART[k]=unko(c[0],c[1],c[2]);});
 
   /* ── 地形 ── */
   ART.grass=mk(16,16,'#3a8c3a');
@@ -354,6 +362,37 @@ const PRISTINE=JSON.parse(JSON.stringify(ART));
 try{const sv=localStorage.getItem('unkoq-art-v3');
   if(sv){const o=JSON.parse(sv);Object.keys(o).forEach(k=>{if(ART[k])ART[k]=o[k];});}}catch(e){}
 function saveArt(){try{localStorage.setItem('unkoq-art-v3',JSON.stringify(ART));}catch(e){}}
+
+/* ── ゆうしゃの かたちを ぜんいんに うつす ──
+   ゆうしゃの絵の いろを「本体・ハイライト・かげ・目・白目」に わけ、
+   それを 各キャラの いろに おきかえて つくりなおす。 */
+function hex2rgb(h){return[parseInt(h.substr(1,2),16),parseInt(h.substr(3,2),16),parseInt(h.substr(5,2),16)];}
+function nearestRole(col,pal){
+  const c=hex2rgb(col);let best=null,bd=1e9;
+  for(const role in pal){const p=hex2rgb(pal[role]);
+    const d=(c[0]-p[0])**2+(c[1]-p[1])**2+(c[2]-p[2])**2;
+    if(d<bd){bd=d;best=role;}}
+  return best;}
+function heroTemplate(){
+  const h=ART.hero;const [b,l,d]=CHAR_COLORS.hero;
+  const pal={B:b,L:l,d:d,K:'#2a1a08',W:'#ffffff'};
+  // 勇者の絵に つかわれている色を 役わりに ふりわける（ぴったりでなくても 近い色で判定）
+  return h.map(row=>row.map(c=>c?nearestRole(c.toLowerCase(),pal):null));}
+function applyHeroShape(){
+  const tpl=heroTemplate();
+  CHAR_KEYS.forEach(k=>{if(k==='hero')return;
+    const [b,l,d]=CHAR_COLORS[k];
+    const pal={B:b,L:l,d:d,K:'#2a1a08',W:'#ffffff'};
+    ART[k]=tpl.map(row=>row.map(r=>r?pal[r]:null));});
+  saveArt();}
+
+/* ── 前の版で えがいた ゆうしゃを すくいだす ── */
+try{
+  if(!localStorage.getItem('unkoq-art-v3')){
+    const old=localStorage.getItem('unkoq-art');
+    if(old){const o=JSON.parse(old);
+      if(o.hero&&o.hero.length===12){ART.hero=o.hero;applyHeroShape();}}}
+}catch(e){}
 
 const ART_LABEL={hero:"ゆうしゃ",npc:"むらびと",king:"おうさま",shop:"みせのひと",
  e1:"ちゃうんこ",e2:"しろうんこ",e3:"みどりうんこ",e4:"あおうんこ",e5:"あかうんこ",
@@ -1362,7 +1401,7 @@ function fieldMenu(){
         `つぎのレベルまで あと ${Math.max(0,nextExp(G.lv)-G.exp)}`,
         G.lv>=20?"りゅうおうと たたかえる ちからが ある！"
           :`りゅうおうに いどむなら Ｌｖ20は ほしい。`,
-        `うんこクエスト ver 3.1`]);return;}
+        `うんこクエスト ver 3.2`]);return;}
     if(id==='it'){itemMenu(false);return;}
     if(id==='sp'){spellMenu(false);return;}});}
 function itemMenu(inBattle){
@@ -1519,7 +1558,7 @@ function clear(){
     <p>せかいに さわやかな かぜが もどった。<br>
     ゆうしゃうんこの なは えいえんに かたりつがれる――</p>
     <p style="color:#ffd23f;font-size:5cqw;">Ｌｖ${G.lv}　クリア！</p>
-    <p id="ver">ver 3.1</p>
+    <p id="ver">ver 3.2</p>
     <button class="tm sel" onclick="localStorage.removeItem('unkoq-save');location.reload()">もういちど</button>`;
   t.classList.remove('hide');
   wMsg.classList.remove('show');wStatus.classList.remove('show');}
@@ -1809,6 +1848,9 @@ $('btnFlip').onclick=()=>{push();ART[ED.target]=ART[ED.target].map(r=>[...r].rev
 $('btnUndo').onclick=()=>{if(ED.hist.length){ART[ED.target]=ED.hist.pop();drawGrid();saveArt();}};
 $('btnClear').onclick=()=>{push();ART[ED.target]=ART[ED.target].map(r=>r.map(()=>null));
   drawGrid();saveArt();};
+$('btnHeroAll').onclick=()=>{
+  applyHeroShape();buildAssets();drawGrid();
+  toast('ゆうしゃの かたちを\nぜんいんに うつしました！',2200);};
 $('btnRestore').onclick=()=>{push();ART[ED.target]=JSON.parse(JSON.stringify(PRISTINE[ED.target]));
   drawGrid();buildPal();saveArt();};
 $('pencil').onclick=()=>{$('editor').classList.add('show');
