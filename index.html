@@ -168,7 +168,7 @@ html,body{height:100%;background:#000;color:#fff;font-family:'DotGothic16',monos
       <button class="tm sel" id="tmNew">はじめから</button>
       <button class="tm dis" id="tmCont">つづきから</button>
       <p style="font-size:2.8cqw;color:#777;">十字キー＝いどう／Ａ＝はなす・しらべる／Ｂ＝メニュー</p>
-      <p id="ver">ver 3.2</p>
+      <p id="ver">ver 3.3</p>
     </div>
   </div>
   <div id="pad">
@@ -359,9 +359,9 @@ function initArt(){
 }
 initArt();
 const PRISTINE=JSON.parse(JSON.stringify(ART));
-try{const sv=localStorage.getItem('unkoq-art-v3');
+try{const sv=localStorage.getItem('unkoq-art-v4');
   if(sv){const o=JSON.parse(sv);Object.keys(o).forEach(k=>{if(ART[k])ART[k]=o[k];});}}catch(e){}
-function saveArt(){try{localStorage.setItem('unkoq-art-v3',JSON.stringify(ART));}catch(e){}}
+function saveArt(){try{localStorage.setItem('unkoq-art-v4',JSON.stringify(ART));}catch(e){}}
 
 /* ── ゆうしゃの かたちを ぜんいんに うつす ──
    ゆうしゃの絵の いろを「本体・ハイライト・かげ・目・白目」に わけ、
@@ -386,12 +386,25 @@ function applyHeroShape(){
     ART[k]=tpl.map(row=>row.map(r=>r?pal[r]:null));});
   saveArt();}
 
-/* ── 前の版で えがいた ゆうしゃを すくいだす ── */
+/* ── 前の版で えがいた 絵を すくいだす ──
+   ・ゆうしゃ／うんこたち／たからばこ … いちばん あたらしい版
+   ・それ いがいの 地形 … 3.0の ときに えがいた もの            */
 try{
-  if(!localStorage.getItem('unkoq-art-v3')){
-    const old=localStorage.getItem('unkoq-art');
-    if(old){const o=JSON.parse(old);
-      if(o.hero&&o.hero.length===12){ART.hero=o.hero;applyHeroShape();}}}
+  if(!localStorage.getItem('unkoq-art-v4')){
+    const v3=JSON.parse(localStorage.getItem('unkoq-art-v3')||'null');
+    const v0=JSON.parse(localStorage.getItem('unkoq-art')||'null');
+    const isChar=k=>CHAR_KEYS.includes(k);
+    const isChest=k=>k==='chest'||k==='chestOpen';
+    // 3.0時代の 地形を もどす
+    if(v0)Object.keys(v0).forEach(k=>{
+      if(ART[k]&&!isChar(k)&&!isChest(k)&&Array.isArray(v0[k]))ART[k]=v0[k];});
+    // ゆうしゃ は いちばん あたらしい絵を
+    const hero=(v3&&v3.hero)||(v0&&v0.hero);
+    if(hero&&hero.length===12)ART.hero=hero;
+    // たからばこ は 3.2版（v3）に あれば それを
+    if(v3){['chest','chestOpen'].forEach(k=>{if(v3[k])ART[k]=v3[k];});}
+    applyHeroShape();
+  }
 }catch(e){}
 
 const ART_LABEL={hero:"ゆうしゃ",npc:"むらびと",king:"おうさま",shop:"みせのひと",
@@ -407,7 +420,7 @@ const ART_LABEL={hero:"ゆうしゃ",npc:"むらびと",king:"おうさま",shop
    ═══════════════════════════════════════════════ */
 const TILE={'.':'grass',',':'bush','#':'tree','~':'water','^':'mount','=':'road',
  '-':'bridge','_':'floor','B':'wall','+':'door','%':'carpet','K':'counter',
- '>':'down','<':'up','S':'mud','v':'town','c':'castle','C':'castle','T':'town','t':'town','O':'cave','o':'cave','R':'dcastle',
+ '>':'down','<':'up','S':'mud','v':'town','c':'castle','n':'town','C':'castle','T':'town','t':'town','O':'cave','o':'cave','R':'dcastle',
  'W':'dwall','F':'dfloor','X':'cwall','f':'cfloor'};
 const BLOCKED=new Set(['#','~','^','B','K','W','X','S']);
 
@@ -431,13 +444,13 @@ const WORLD=[
 "~~.~~..........................#######.......................................^^^.................~~~~~",
 "~~.~..........................########.......................................^^^.................~~.~~",
 "~~..~.........................#.######............................O.............................~~~~~~",
-"~~.~..........................########.......................................................~~~~~~~~~",
-"~~~............................#######.....................................................~~~~~~~~~~~",
-"~~............................#.#..###...............,,..,................................~~~~~~~~~~~~",
-"~~.~...............................#.................,,,,,,.............................~~~~~~~~~~~~~~",
-"~~.~................................................,,,,,,,.,...........................~~~~~~~~~~~~~~",
-"~~~.......####......................................,,,,,,,,............................~~~~~~~~~~~~~~",
-"~~.........####.....................................,,,,,,,,,,..........................~~~~~~~~~~~~~~",
+"~~.~...............###.###....########.......................................................~~~~~~~~~",
+"~~~...............##.....##....#######.....................................................~~~~~~~~~~~",
+"~~................#.......#...#.#..###...............,,..,................................~~~~~~~~~~~~",
+"~~.~.............##...n...##.......#.................,,,,,,.............................~~~~~~~~~~~~~~",
+"~~.~..............#.......#.........................,,,,,,,.,...........................~~~~~~~~~~~~~~",
+"~~~.......####....##.....##.........................,,,,,,,,............................~~~~~~~~~~~~~~",
+"~~.........####....###.###..........................,,,,,,,,,,..........................~~~~~~~~~~~~~~",
 "~~~~.....######....................................,,,,,,,,,.,......................t...~~~~~~~~~~~~~~",
 "~~~~......#####..............#.#....................,,,,,,,,,,..........................~~~~~~~~~~~~~~",
 "~~..~.....#####..............##.##.................,.,,,,,,,,...........................~~~~~~~~~~~~~~",
@@ -678,7 +691,7 @@ const VILLAGE=[
 "B..............SSSSSSSSSSS....BBBBBBB..B",
 "B..BBBBBBB......SSSSSSSSS.....B_____B..B",
 "B..B_____B.......SSSSSSS......B_____B..B",
-"B..B_____B..........SS........B_____B..B",
+"B..BKKKKKB..........SS........B_____B..B",
 "B..B_____B..........SS........BBB+BBB..B",
 "B..BBB+BBB..........SS.................B",
 "B...................SS.................B",
@@ -726,6 +739,38 @@ const CASTLE2=[
 "BBBBBBBBBBBBBBBBBB_==_BBBBBBBBBBBBBBBBBB",
 "BBBBBBBBBBBBBBBBBB_==_BBBBBBBBBBBBBBBBBB"];
 
+const NEWTOWN=[
+"BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB",
+"B......................................B",
+"B.##........#..............#........##.B",
+"B.#..................................#.B",
+"B.....BBBBBBBB....BBBBBBBB.............B",
+"B.....B______B....B______B.............B",
+"B.....BKKKKKKB....BKKKKKKB.............B",
+"B.....B......B....B......B.............B",
+"B.....B......B....B......B..BBBBBBB....B",
+"B.....BBB+BBBB....BBB+BBBB..B_____B....B",
+"B...........................B_____B....B",
+"B...........................B_____B....B",
+"B...........................BBB+BBB....B",
+"B......................................B",
+"B.#...BBBBBBBB....BBBBBBB............#.B",
+"B.....B______B....B_____B..............B",
+"B.....BKKKKKKB....B_____B..............B",
+"B.....B......B....B_____B...BBBBBBB....B",
+"B.....B......B....BBB+BBB...B_____B....B",
+"B.....BBB+BBBB..............B_____B....B",
+"B...........................B_____B....B",
+"B...........................BBB+BBB....B",
+"B......................................B",
+"B............................,,,,,,....B",
+"B............................,,,,,,....B",
+"B......................................B",
+"B.##................................##.B",
+"B.................____.................B",
+"BBBBBBBBBBBBBBBBBB_==_BBBBBBBBBBBBBBBBBB",
+"BBBBBBBBBBBBBBBBBB_==_BBBBBBBBBBBBBBBBBB"];
+
 const MAPS={
  world:{d:WORLD,enc:true},
  castle:{d:CASTLE,enc:false,name:"ラダうんこ城"},
@@ -737,16 +782,18 @@ const MAPS={
  cave2b:{d:CAVE2B,enc:true,pool:['e5','e5','d1'],name:"ちからの どうくつ　地下２かい"},
  village:{d:VILLAGE,enc:false,name:"いずみの むら"},
  castle2:{d:CASTLE2,enc:false,name:"ウンコール城"},
+ newtown:{d:NEWTOWN,enc:false,name:"はじまりの まち"},
 };
 
 /* ワープ（乗ると移動） */
 const WARPS={
- world:[{x:14,y:14,to:'castle',tx:19,ty:29},{x:38,y:40,to:'town',tx:19,ty:29},
+ world:[{x:14,y:14,to:'castle',tx:19,ty:29},{x:22,y:22,to:'newtown',tx:19,ty:29},{x:38,y:40,to:'town',tx:19,ty:29},
    {x:84,y:26,to:'town2',tx:19,ty:29},{x:24,y:58,to:'castle2',tx:19,ty:29},
    {x:66,y:18,to:'cave',tx:10,ty:15},{x:22,y:72,to:'cave2a',tx:10,ty:15},
    {x:58,y:50,to:'village',tx:19,ty:29},{x:90,y:74,to:'dragon',tx:11,ty:17}],
  castle:[{x:19,y:29,to:'world',tx:14,ty:15},{x:20,y:29,to:'world',tx:14,ty:15}],
  castle2:[{x:19,y:29,to:'world',tx:24,ty:59},{x:20,y:29,to:'world',tx:24,ty:59}],
+ newtown:[{x:19,y:29,to:'world',tx:22,ty:23},{x:20,y:29,to:'world',tx:22,ty:23}],
  town:[{x:19,y:29,to:'world',tx:38,ty:41},{x:20,y:29,to:'world',tx:38,ty:41}],
  town2:[{x:19,y:29,to:'world',tx:84,ty:27},{x:20,y:29,to:'world',tx:84,ty:27}],
  village:[{x:19,y:29,to:'world',tx:58,ty:51},{x:20,y:29,to:'world',tx:58,ty:51}],
@@ -763,7 +810,7 @@ const NPCS={
    "おお ゆうしゃうんこよ！ よくぞ ながれてきた。",
    "ドラゴンロードの うんこが せかいを くさく そめておる。",
    "この しろは きたの いりえに めんしておる。うみを めじるしに もどってくるがよい。",
-   "みなみひがしの おおきな みずうみの ほとりに まちが ある。そこで そうびを ととのえよ。",
+   "みなみひがしに もりに かこまれた ちいさな まちが ある。まずは そこへ ゆくがよい。",
    "そなたに 100ゴールドを さずけよう。"],
    after:["おお ゆうしゃうんこよ。ぶじで なによりじゃ。",
    "ドラゴンロードは みなみひがしの はて、やまと うみに とざされた ちに おる。",
@@ -784,6 +831,17 @@ const NPCS={
   {x:6,y:21,art:'npc',move:true,lines:["おれたち へいしも ほんとうは たたかいたいんだが","うんこじゃ つるぎが もてなくてな…"]},
   {x:33,y:21,art:'npc',move:true,lines:["ちゅうぼうだよ。","うんこの ごはんは なにかって？ きかないでくれ。"]},
   {x:19,y:19,art:'npc',move:true,lines:["みなみにしの やまに かこまれた ぼんちに","もうひとつ しろが あるんだ。ウンコール城さ。"]},
+ ],
+ newtown:[
+  {x:9,y:5,art:'shop',shop:'item',lines:["どうぐやです。","たびの じゅんびは ここで。"]},
+  {x:21,y:5,art:'shop',shop:'weapon0',lines:["ぶきやだよ。","かけだしの ゆうしゃむけの しなが あるよ。"]},
+  {x:9,y:15,art:'shop',shop:'inn0',lines:["やどやへ ようこそ。","このへんは まだ あんぜんだから やすいよ。"]},
+  {x:21,y:16,art:'npc',lines:["ここは はじまりの まち。","しろの みなみひがし、もりに かこまれた ちいさな まちさ。"]},
+  {x:31,y:10,art:'npc',move:true,lines:["しろの まわりは スライムの うんこしか でない。","まずは ここで レベルを あげるといい。"]},
+  {x:31,y:19,art:'npc',move:true,lines:["おおきな まちは みなみひがしの みずうみの ほとり。","そこまで いくと てきが つよくなるよ。"]},
+  {x:14,y:22,art:'npc',move:true,lines:["やどは ばしょによって ねだんが ちがうんだ。","あぶない ところほど たかいのさ。"]},
+  {x:26,y:24,art:'npc',move:true,lines:["はたけの やさいは うんこの ごはんに なるんだ。","…なにを たべてるかは きかないで。"]},
+  {x:5,y:9,art:'npc',move:true,lines:["「プリ」で HPが かいふくする。","MPが きれたら やくそうを つかいな。"]},
  ],
  castle2:[
   {x:19,y:3,art:'king',name:"ウンコール王",lines:[
@@ -849,7 +907,8 @@ const NPCS={
    "むらの みんなが よろこんで おります。",
    "いずみは いつでも おつかいくだされ。",
    "からだも こころも いやして くれましょうぞ。"]},
-  {x:6,y:15,art:'npc',move:true,lines:["いずみが にごってから みずが のめないの。","とおくまで くみに いくのは たいへんよ…"],
+  {x:6,y:14,art:'shop',shop:'inn3',lines:["やどやです。","かわの おとを ききながら やすんでいって。"]},
+  {x:13,y:19,art:'npc',move:true,lines:["いずみが にごってから みずが のめないの。","とおくまで くみに いくのは たいへんよ…"],
    after:["いずみが きれいに なったわ！","もう みずくみに とおくへ いかなくて いいの。"]},
   {x:33,y:14,art:'npc',move:true,lines:["ぬまのぬしって やつは いずみの なかに いるんだ。","いずみを しらべたら でてくるらしいぜ。"],
    after:["あんたが ぬしを たおしたんだって！？","むらの えいゆうだ！"]},
@@ -922,6 +981,9 @@ const SHOPS={
  item:{title:"どうぐや",list:[
    {t:'item',key:'herb',name:"やくそう",price:24},
    {t:'item',key:'wing',name:"きえさりのつばさ",price:80}]},
+ weapon0:{title:"ぶきや",list:[
+   {t:'w',i:1,price:70},{t:'a',i:1,price:90},
+   {t:'s',i:1,price:60},{t:'h',i:1,price:40}]},
  weapon1:{title:"ぶきや",list:[
    {t:'w',i:1,price:70},{t:'w',i:2,price:280},
    {t:'a',i:1,price:90},{t:'a',i:2,price:340},
@@ -939,8 +1001,10 @@ const SHOPS={
  item3:{title:"どうぐや",list:[
    {t:'item',key:'herb',name:"やくそう",price:20},
    {t:'item',key:'wing',name:"きえさりのつばさ",price:70}]},
- inn:{title:"やどや",inn:2},
- inn2:{title:"やどや",inn:5},
+ inn0:{title:"やどや",inn:6},
+ inn:{title:"やどや",inn:20},
+ inn3:{title:"やどや",inn:35},
+ inn2:{title:"やどや",inn:60},
 };
 const SPELLS=[{name:"プリ",mp:4,type:'heal',power:38},
  {name:"ブリ",mp:5,type:'atk',power:30},
@@ -1301,7 +1365,7 @@ function openChest(c){
 function openShop(key){
   const sh=SHOPS[key];
   if(sh.inn){
-    const cost=sh.inn*G.lv+4;
+    const cost=sh.inn;
     say([`やどやへ ようこそ。 １ぱく ${cost}Ｇです。`,
       `いま ${G.gold}Ｇ もっていますね。`],()=>{
       mode='shop';
@@ -1401,7 +1465,7 @@ function fieldMenu(){
         `つぎのレベルまで あと ${Math.max(0,nextExp(G.lv)-G.exp)}`,
         G.lv>=20?"りゅうおうと たたかえる ちからが ある！"
           :`りゅうおうに いどむなら Ｌｖ20は ほしい。`,
-        `うんこクエスト ver 3.2`]);return;}
+        `うんこクエスト ver 3.3`]);return;}
     if(id==='it'){itemMenu(false);return;}
     if(id==='sp'){spellMenu(false);return;}});}
 function itemMenu(inBattle){
@@ -1558,7 +1622,7 @@ function clear(){
     <p>せかいに さわやかな かぜが もどった。<br>
     ゆうしゃうんこの なは えいえんに かたりつがれる――</p>
     <p style="color:#ffd23f;font-size:5cqw;">Ｌｖ${G.lv}　クリア！</p>
-    <p id="ver">ver 3.2</p>
+    <p id="ver">ver 3.3</p>
     <button class="tm sel" onclick="localStorage.removeItem('unkoq-save');location.reload()">もういちど</button>`;
   t.classList.remove('hide');
   wMsg.classList.remove('show');wStatus.classList.remove('show');}
