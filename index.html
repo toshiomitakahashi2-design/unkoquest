@@ -168,7 +168,7 @@ html,body{height:100%;background:#000;color:#fff;font-family:'DotGothic16',monos
       <button class="tm sel" id="tmNew">はじめから</button>
       <button class="tm dis" id="tmCont">つづきから</button>
       <p style="font-size:2.8cqw;color:#777;">十字キー＝いどう／Ａ＝はなす・しらべる／Ｂ＝メニュー</p>
-      <p id="ver">ver 3.3</p>
+      <p id="ver">ver 3.4</p>
     </div>
   </div>
   <div id="pad">
@@ -205,6 +205,13 @@ html,body{height:100%;background:#000;color:#fff;font-family:'DotGothic16',monos
     <div class="toolrow">
       <button class="ebtn" id="btnHeroAll">★ ゆうしゃの かたちを ぜんいんに</button>
     </div>
+    <div class="toolrow">
+      <button class="ebtn" id="btnSaveFile">💾 ぜんぶ ほぞん（ファイル）</button>
+      <button class="ebtn" id="btnLoadFile">📂 よみこむ</button>
+      <input type="file" id="fileIn" accept=".json" style="display:none">
+    </div>
+    <p class="hint">「ほぞん」で 描いた絵を ファイルに 書き出せます。<br>
+      べつの 端末でも「よみこむ」で 同じ絵に できます。</p>
     <p class="hint">なぞって かけます。描いた絵は すぐゲームに 反映され<br>この端末に 保存されます。</p>
   </div></div>
 </div>
@@ -1465,7 +1472,7 @@ function fieldMenu(){
         `つぎのレベルまで あと ${Math.max(0,nextExp(G.lv)-G.exp)}`,
         G.lv>=20?"りゅうおうと たたかえる ちからが ある！"
           :`りゅうおうに いどむなら Ｌｖ20は ほしい。`,
-        `うんこクエスト ver 3.3`]);return;}
+        `うんこクエスト ver 3.4`]);return;}
     if(id==='it'){itemMenu(false);return;}
     if(id==='sp'){spellMenu(false);return;}});}
 function itemMenu(inBattle){
@@ -1622,7 +1629,7 @@ function clear(){
     <p>せかいに さわやかな かぜが もどった。<br>
     ゆうしゃうんこの なは えいえんに かたりつがれる――</p>
     <p style="color:#ffd23f;font-size:5cqw;">Ｌｖ${G.lv}　クリア！</p>
-    <p id="ver">ver 3.3</p>
+    <p id="ver">ver 3.4</p>
     <button class="tm sel" onclick="localStorage.removeItem('unkoq-save');location.reload()">もういちど</button>`;
   t.classList.remove('hide');
   wMsg.classList.remove('show');wStatus.classList.remove('show');}
@@ -1912,6 +1919,32 @@ $('btnFlip').onclick=()=>{push();ART[ED.target]=ART[ED.target].map(r=>[...r].rev
 $('btnUndo').onclick=()=>{if(ED.hist.length){ART[ED.target]=ED.hist.pop();drawGrid();saveArt();}};
 $('btnClear').onclick=()=>{push();ART[ED.target]=ART[ED.target].map(r=>r.map(()=>null));
   drawGrid();saveArt();};
+/* ── 描いた絵を ファイルに 書き出す／よみこむ ── */
+$('btnSaveFile').onclick=()=>{
+  const data={app:'unko-quest',ver:'3.3',date:new Date().toISOString(),art:ART};
+  const blob=new Blob([JSON.stringify(data)],{type:'application/json'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='unko-quest-design.json';
+  document.body.appendChild(a);a.click();
+  setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},500);
+  toast('デザインを ほぞんしました！',2000);};
+$('btnLoadFile').onclick=()=>$('fileIn').click();
+$('fileIn').onchange=e=>{
+  const fl=e.target.files&&e.target.files[0];if(!fl)return;
+  const r=new FileReader();
+  r.onload=()=>{
+    try{
+      const d=JSON.parse(r.result);
+      const src=d.art||d;
+      let n=0;
+      Object.keys(src).forEach(k=>{
+        if(ART[k]&&Array.isArray(src[k])){ART[k]=src[k];n++;}});
+      saveArt();buildAssets();buildPal();drawGrid();
+      toast(n+'まいの 絵を よみこみました！',2400);
+    }catch(err){toast('よみこめませんでした。',2400);}
+    e.target.value='';};
+  r.readAsText(fl);};
 $('btnHeroAll').onclick=()=>{
   applyHeroShape();buildAssets();drawGrid();
   toast('ゆうしゃの かたちを\nぜんいんに うつしました！',2200);};
