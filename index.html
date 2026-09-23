@@ -180,7 +180,7 @@ html,body{height:100%;background:#000;color:#fff;font-family:'DotGothic16',monos
       <button class="tm sel" id="tmNew">はじめから</button>
       <button class="tm dis" id="tmCont">つづきから</button>
       <p style="font-size:2.8cqw;color:#777;">十字キー＝いどう／Ａ＝はなす・しらべる／Ｂ＝メニュー</p>
-      <p id="ver">ver 3.6</p>
+      <p id="ver">ver 3.7</p>
     </div>
   </div>
   <div id="pad">
@@ -635,168 +635,245 @@ const TOWN2=[
 "##################.==.#######~~~~~~~~~~~"];
 
 const CAVE=[
-"XXXXXXXXXXXXXXXXXXXXXXXXXXXX",
-"XXXXXXXXXXXXXXXXXXXXXXXXXXXX",
-"XXXXXXXXXXXXXXXXXXXXXXXXXXXX",
-"XXfffffffXXXXXXXXXXXfffffffX",
-"XXfffffffXXXXXXXXXXXfffffffX",
-"XXfffffffffffffffffffffffffX",
-"XXfffffffffffffffffffffffffX",
-"XXfffffffXXXXfXXXXXXfffffffX",
-"XXXfXXXXXXXXXfXXXXXXXXXXfXXX",
-"XXXfXXXXXXXXXfXXXXXXXXXXfXXX",
-"XXXffffffffffffffffffffffXXX",
-"XXXfXXXXXXffffffffXXXXXXfXXX",
-"XXfffffXXXffffffffXXXXfffffX",
-"XXfffffXXXffffffffXXXXfffffX",
-"XXfffffXXXffffffffXXXXfffffX",
-"XXfffffXXXXXXXXXXXXXXXfffffX",
-"XXXfXXXXXXXXXXXXXXXXXXXXfXXX",
-"XXXffffffffffffffffffffffXXX",
-"XXXffffffffffffffffffffffXXX",
-"XXXXXX>XXXXXXfXXXXXXXXXXXXXX",
-"XXXXXXXXXXXXXfXXXXXXXXXXXXXX",
-"XXXXXXXXXXXXXfXXXXXXXXXXXXXX"];
+"XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+"XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+"XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+"XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+"XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+"XXXfffffffffffXXXXXXXXXXXXXXXXfffffffffffX",
+"XXXfffffffffffXXXXXXXXXXXXXXXXfffffffffffX",
+"XXXfffffffffffXXXXXXXXXXXXXXXXfffffffffffX",
+"XXXffffffffffffffffffffffffffffffffffffffX",
+"XXXffffffffffffffffffffffffffffffffffffffX",
+"XXXffffffffffffffffffffffffffffffffffffffX",
+"XXXfffffffffffXXXXXXfXXXXXXXXXfffffffffffX",
+"XXXXXfXXXXXXXXXXXXXXfXXXXXXXXXXXXXXXffXXXX",
+"XXXXXfXXXXXXXXXXXXXXfXXXXXXXXXXXXXXXffXXXX",
+"XXXXXfXXXXXXXXXXXXXXfXXXXXXXXXXXXXXXffXXXX",
+"XXXXXfffffffffffffffffffffffffffffffffXXXX",
+"XXXXXfffffffffffffffffffffffffffffffffXXXX",
+"XXXXXfXXXXXXXXXffffffffffffXXXXXXXXXffXXXX",
+"XXXffffffffXXXXffffffffffffXXXXXXffffffffX",
+"XXXffffffffXXXXffffffffffffXXXXXXffffffffX",
+"XXXffffffffXXXXffffffffffffXXXXXXffffffffX",
+"XXXffffffffXXXXffffffffffffXXXXXXffffffffX",
+"XXXffffffffXXXXffffffffffffXXXXXXffffffffX",
+"XXXffffffffXXXXXXXXXXXXXXXXXXXXXXffffffffX",
+"XXXXXfXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXffXXXX",
+"XXXXXfXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXffXXXX",
+"XXXXXfffffffffffffffffffffffffffffffffXXXX",
+"XXXXXfffffffffffffffffffffffffffffffffXXXX",
+"XXXXXfffffffffffffffffffffffffffffffffXXXX",
+"XXXXXXXXX>fXXXXXXXXXfXXXXXXXXXXXXXXXXXXXXX",
+"XXXXXXXXXXXXXXXXXXXXfXXXXXXXXXXXXXXXXXXXXX",
+"XXXXXXXXXXXXXXXXXXXXfXXXXXXXXXXXXXXXXXXXXX",
+"XXXXXXXXXXXXXXXXXXXXfXXXXXXXXXXXXXXXXXXXXX"];
 const CAVEB=[
-"XXXXXXXXXXXXXXXXXXXXXXXXXXXX",
-"XXXXXXXXXXXXXXXXXXXXXXXXXXXX",
-"XXffffffXXXXXXXXXXXXffffffXX",
-"XXffffffXXXXXXXXXXXXffffffXX",
-"XXffffffffffffffffffffffffXX",
-"XXffffffffffffffffffffffffXX",
-"XXffffffXXXXXXXXXXXXffffffXX",
-"XXXfXXXXXXXXXfXXXXXXXXXXfXXX",
-"XXXfXXXXXXffffffffXXXXXXfXXX",
-"XXXfXXXXXXffffffffXXXXXXfXXX",
-"XXXfXXXXXXffffffffXXXXXXfXXX",
-"XXXffffffffffffffffffffffXXX",
-"XXXfXXXXXXffffffffXXXXXXfXXX",
-"XXfffffXXXffffffffXXXfffffXX",
-"XXfffffXXXXXXXXXXXXXXfffffXX",
-"XXfffffXXXXXXXXXXXXXXfffffXX",
-"XXfffffXXXXXXXXXXXXXXfffffXX",
-"XXXfXXXXXXXXXXXXXXXXXXXXfXXX",
-"XXXffffffffffffffffffffffXXX",
-"XXXfff<ffffffffffffffffffXXX",
-"XXXXXXXXXXXXXXXXXXXXXXXXXXXX",
-"XXXXXXXXXXXXXXXXXXXXXXXXXXXX"];
+"XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+"XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+"XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+"XXXfffffffffXXXXXXXXXXXXXXXXXXfffffffffXXX",
+"XXXfffffffffXXXXXXXXXXXXXXXXXXfffffffffXXX",
+"XXXfffffffffXXXXXXXXXXXXXXXXXXfffffffffXXX",
+"XXXffffffffffffffffffffffffffffffffffffXXX",
+"XXXffffffffffffffffffffffffffffffffffffXXX",
+"XXXffffffffffffffffffffffffffffffffffffXXX",
+"XXXfffffffffXXXXXXXXXXXXXXXXXXfffffffffXXX",
+"XXXfffffffffXXXXXXXXXXXXXXXXXXfffffffffXXX",
+"XXXXXfXXXXXXXXXXXXXXfXXXXXXXXXXXXXXXffXXXX",
+"XXXXXfXXXXXXXXXffffffffffffXXXXXXXXXffXXXX",
+"XXXXXfXXXXXXXXXffffffffffffXXXXXXXXXffXXXX",
+"XXXXXfXXXXXXXXXffffffffffffXXXXXXXXXffXXXX",
+"XXXXXfXXXXXXXXXffffffffffffXXXXXXXXXffXXXX",
+"XXXXXfXXXXXXXXXffffffffffffXXXXXXXXXffXXXX",
+"XXXXXfffffffffffffffffffffffffffffffffXXXX",
+"XXXXXfXXXXXXXXXffffffffffffXXXXXXXXXffXXXX",
+"XXXXXfXXXXXXXXXffffffffffffXXXXXXXXXffXXXX",
+"XXXffffffffXXXXffffffffffffXXXXXfffffffXXX",
+"XXXffffffffXXXXXXXXXXXXXXXXXXXXXfffffffXXX",
+"XXXffffffffXXXXXXXXXXXXXXXXXXXXXfffffffXXX",
+"XXXffffffffXXXXXXXXXXXXXXXXXXXXXfffffffXXX",
+"XXXffffffffXXXXXXXXXXXXXXXXXXXXXfffffffXXX",
+"XXXffffffffXXXXXXXXXXXXXXXXXXXXXfffffffXXX",
+"XXXXXfXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXffXXXX",
+"XXXXXfffffffffffffffffffffffffffffffffXXXX",
+"XXXXXfffffffffffffffffffffffffffffffffXXXX",
+"XXXXXffff<ffffffffffffffffffffffffffffXXXX",
+"XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+"XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+"XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"];
 
 const DRAGON=[
-"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
-"W%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%W",
-"W%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%W",
-"W%%WWWWWWW%%%%%%%%%%%%WWWWWWW%%W",
-"W%%WFFFFFW%%%%%%%%%%%%WFFFFFW%%W",
-"W%%WFFFFFW%%%%%%%%%%%%WFFFFFW%%W",
-"W%%WFFFFF+%%%%%%%%%%%%+FFFFFW%%W",
-"W%%WFFFFFW%%%%%%%%%%%%WFFFFFW%%W",
-"W%%WFFFFFW%%%%%%%%%%%%WFFFFFW%%W",
-"W%%WWWWWWW%%%%%%%%%%%%WWWWWWW%%W",
-"W%%%%%%%%%%%%WWWWWW%%%%%%%%%%%%W",
-"W%%%%%%%%%%%%WFFFFW%%%%%%%%%%%%W",
-"W%%%%%%%%%%%%WFF>FW%%%%%%%%%%%%W",
-"W%%%%%%%%%%%%WFFFFW%%%%%%%%%%%%W",
-"W%%%%%%%%%%%%WFFFFW%%%%%%%%%%%%W",
-"W%%%%%%%%%%%%WWW+WW%%%%%%%%%%%%W",
-"W%%WWWWWWW%%%%%%%%%%%%WWWWWWW%%W",
-"W%%WFFFFFW%%%%%%%%%%%%WFFFFFW%%W",
-"W%%WFFFFFW%%%%%%%%%%%%WFFFFFW%%W",
-"W%%WFFFFF+%%%%%%%%%%%%+FFFFFW%%W",
-"W%%WFFFFFW%%%%%%%%%%%%WFFFFFW%%W",
-"W%%WFFFFFW%%%%%%%%%%%%WFFFFFW%%W",
-"W%%WWWWWWW%%%%%%%%%%%%WWWWWWW%%W",
-"WWWWWWWWWWWWWW%%%%WWWWWWWWWWWWWW",
-"WWWWWWWWWWWWWW%==%WWWWWWWWWWWWWW",
-"WWWWWWWWWWWWWW%==%WWWWWWWWWWWWWW"];
+"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
+"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
+"WW%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%W",
+"WW%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%W",
+"WW%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%W",
+"WW%%%WWWWWWWWWW%%%%%%%%%%%%%%%%%%WWWWWWWWWWW%%%W",
+"WW%%%WFFFFFFFFW%%%%%%%%%%%%%%%%%%WWFFFFFFFWW%%%W",
+"WW%%%WFFFFFFFFW%%%%%%%%%%%%%%%%%%WWFFFFFFFWW%%%W",
+"WW%%%WFFFFFFFFW%%%%%%%%%%%%%%%%%%WWFFFFFFFWW%%%W",
+"WW%%%WFFFFFFFF+%%%%%%%%%%%%%%%%%%++FFFFFFFWW%%%W",
+"WW%%%WFFFFFFFF+%%%%%%%%%%%%%%%%%%++FFFFFFFWW%%%W",
+"WW%%%WFFFFFFFFW%%%%%%%%%%%%%%%%%%WWFFFFFFFWW%%%W",
+"WW%%%WFFFFFFFFW%%%%%%%%%%%%%%%%%%WWFFFFFFFWW%%%W",
+"WW%%%WFFFFFFFFW%%%%%%%%%%%%%%%%%%WWFFFFFFFWW%%%W",
+"WW%%%WWWWWWWWWW%%%%%%%%%%%%%%%%%%WWWWWWWWWWW%%%W",
+"WW%%%%%%%%%%%%%%%%%%WWWWWWWWW%%%%%%%%%%%%%%%%%%W",
+"WW%%%%%%%%%%%%%%%%%%WWWWWWWWW%%%%%%%%%%%%%%%%%%W",
+"WW%%%%%%%%%%%%%%%%%%WFFFFFFWW%%%%%%%%%%%%%%%%%%W",
+"WW%%%%%%%%%%%%%%%%%%WFFF>FFWW%%%%%%%%%%%%%%%%%%W",
+"WW%%%%%%%%%%%%%%%%%%WFFFFFFWW%%%%%%%%%%%%%%%%%%W",
+"WW%%%%%%%%%%%%%%%%%%WFFFFFFWW%%%%%%%%%%%%%%%%%%W",
+"WW%%%%%%%%%%%%%%%%%%WFFFFFFWW%%%%%%%%%%%%%%%%%%W",
+"WW%%%%%%%%%%%%%%%%%%WFFFFFFWW%%%%%%%%%%%%%%%%%%W",
+"WW%%%%%%%%%%%%%%%%%%WWWW++WWW%%%%%%%%%%%%%%%%%%W",
+"WW%%%WWWWWWWWWW%%%%%%%%%%%%%%%%%%WWWWWWWWWWW%%%W",
+"WW%%%WWWWWWWWWW%%%%%%%%%%%%%%%%%%WWWWWWWWWWW%%%W",
+"WW%%%WFFFFFFFFW%%%%%%%%%%%%%%%%%%WWFFFFFFFWW%%%W",
+"WW%%%WFFFFFFFFW%%%%%%%%%%%%%%%%%%WWFFFFFFFWW%%%W",
+"WW%%%WFFFFFFFFW%%%%%%%%%%%%%%%%%%WWFFFFFFFWW%%%W",
+"WW%%%WFFFFFFFF+%%%%%%%%%%%%%%%%%%++FFFFFFFWW%%%W",
+"WW%%%WFFFFFFFFW%%%%%%%%%%%%%%%%%%WWFFFFFFFWW%%%W",
+"WW%%%WFFFFFFFFW%%%%%%%%%%%%%%%%%%WWFFFFFFFWW%%%W",
+"WW%%%WFFFFFFFFW%%%%%%%%%%%%%%%%%%WWFFFFFFFWW%%%W",
+"WW%%%WWWWWWWWWW%%%%%%%%%%%%%%%%%%WWWWWWWWWWW%%%W",
+"WW%%%WWWWWWWWWW%%%%%%%%%%%%%%%%%%WWWWWWWWWWW%%%W",
+"WWWWWWWWWWWWWWWWWWWWW%%%%%%WWWWWWWWWWWWWWWWWWWWW",
+"WWWWWWWWWWWWWWWWWWWWW%%===%WWWWWWWWWWWWWWWWWWWWW",
+"WWWWWWWWWWWWWWWWWWWWW%%===%WWWWWWWWWWWWWWWWWWWWW",
+"WWWWWWWWWWWWWWWWWWWWW%%===%WWWWWWWWWWWWWWWWWWWWW"];
 const DRAGON2=[
-"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
-"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
-"WWFFFFFFFFFF%%%%%%%%FFFFFFFFFFWW",
-"WWFFFFFFFFFF%%%%>%%%FFFFFFFFFFWW",
-"WWFFFFFFFFFF%%%%%%%%FFFFFFFFFFWW",
-"WWFFFFFFFFFF%%%%%%%%FFFFFFFFFFWW",
-"WWFFFFFFFFFF%%%%%%%%FFFFFFFFFFWW",
-"WWFFFFFFFFFFFFFFFFFFFFFFFFFFFFWW",
-"WWWWFWWWFWWWFWWWFWWWFWWWFWWWFWWW",
-"WWFFFFFFFFFFFFFFFFFFFFFFFFFFFFWW",
-"WWFFFFFFFFFFFFFFFFFFFFFFFFFFFFWW",
-"WWFFFFFFFFFFFFFFFFFFFFFFFFFFFFWW",
-"WWFFFFFFFFFFFFFFFFFFFFFFFFFFFFWW",
-"WWFFFFFFFFFFFFFFFFFFFFFFFFFFFFWW",
-"WWFFFFFFFFFFFFFFFFFFFFFFFFFFFFWW",
-"WWFFFFFFFFFFFFFFFFFFFFFFFFFFFFWW",
-"WWWWFWWWFWWWFWWWFWWWFWWWFWWWFWWW",
-"WWFFFFFFFFFFFFFFFFFFFFFFFFFFFFWW",
-"WWFFFFFFFFFFFFFFFFFFFFFFFFFFFFWW",
-"WWFFFFFFFFFFFFFFFFFFFFFFFFFFFFWW",
-"WWFFFFFFFFFFFF%%%%FFFFFFFFFFFFWW",
-"WWFFFFFFFFFFFF%%<%FFFFFFFFFFFFWW",
-"WWFFFFFFFFFFFF%%%%FFFFFFFFFFFFWW",
-"WWFFFFFFFFFFFF%%%%FFFFFFFFFFFFWW",
-"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
-"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW"];
+"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
+"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
+"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
+"WWWFFFFFFFFFFFFFFF%%%%%%%%%%%%FFFFFFFFFFFFFFFWWW",
+"WWWFFFFFFFFFFFFFFF%%%%%%%%%%%%FFFFFFFFFFFFFFFWWW",
+"WWWFFFFFFFFFFFFFFF%%%%%%>%%%%%FFFFFFFFFFFFFFFWWW",
+"WWWFFFFFFFFFFFFFFF%%%%%%%%%%%%FFFFFFFFFFFFFFFWWW",
+"WWWFFFFFFFFFFFFFFF%%%%%%%%%%%%FFFFFFFFFFFFFFFWWW",
+"WWWFFFFFFFFFFFFFFF%%%%%%%%%%%%FFFFFFFFFFFFFFFWWW",
+"WWWFFFFFFFFFFFFFFF%%%%%%%%%%%%FFFFFFFFFFFFFFFWWW",
+"WWWFFFFFFFFFFFFFFF%%%%%%%%%%%%FFFFFFFFFFFFFFFWWW",
+"WWWFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFWWW",
+"WWWWWWFFWWWWFFWWWWFFWWWWFFWWWWFFWWWWFFWWWWFFWWWW",
+"WWWWWWFFWWWWFFWWWWFFWWWWFFWWWWFFWWWWFFWWWWFFWWWW",
+"WWWFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFWWW",
+"WWWFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFWWW",
+"WWWFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFWWW",
+"WWWFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFWWW",
+"WWWFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFWWW",
+"WWWFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFWWW",
+"WWWFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFWWW",
+"WWWFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFWWW",
+"WWWFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFWWW",
+"WWWFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFWWW",
+"WWWWWWFFWWWWFFWWWWFFWWWWFFWWWWFFWWWWFFWWWWFFWWWW",
+"WWWWWWFFWWWWFFWWWWFFWWWWFFWWWWFFWWWWFFWWWWFFWWWW",
+"WWWFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFWWW",
+"WWWFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFWWW",
+"WWWFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFWWW",
+"WWWFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFWWW",
+"WWWFFFFFFFFFFFFFFFFFF%%%%%%FFFFFFFFFFFFFFFFFFWWW",
+"WWWFFFFFFFFFFFFFFFFFF%%%%%%FFFFFFFFFFFFFFFFFFWWW",
+"WWWFFFFFFFFFFFFFFFFFF%%%<%%FFFFFFFFFFFFFFFFFFWWW",
+"WWWFFFFFFFFFFFFFFFFFF%%%%%%FFFFFFFFFFFFFFFFFFWWW",
+"WWWFFFFFFFFFFFFFFFFFF%%%%%%FFFFFFFFFFFFFFFFFFWWW",
+"WWWFFFFFFFFFFFFFFFFFF%%%%%%FFFFFFFFFFFFFFFFFFWWW",
+"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
+"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
+"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW"];
 const DRAGON3=[
-"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
-"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
-"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
-"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
-"WWWW%%%%%%%%%%%%%%%%%%%%%%%%WWWW",
-"WWWW%%%%%%%%%%%%%%%%%%%%%%%%WWWW",
-"WWWW%%%%%%%%%%%%%%%%%%%%%%%%WWWW",
-"WWWW%%%WWW%%%%%%%%%%%%WWW%%%WWWW",
-"WWWW%%%WWW%%%%%%%%%%%%WWW%%%WWWW",
-"WWWW%%%WWW%%%%%%%%%%%%WWW%%%WWWW",
-"WWWW%%%%%%%%%%%%%%%%%%%%%%%%WWWW",
-"WWWW%%%%%%%%%%%%%%%%%%%%%%%%WWWW",
-"WWWW%%%%%%%%%%%%%%%%%%%%%%%%WWWW",
-"WWWW%%%%%%%%%%%%%%%%%%%%%%%%WWWW",
-"WWWW%%%%%%%%%%%%%%%%%%%%%%%%WWWW",
-"WWWW%%%%%%%%%%%%%%%%%%%%%%%%WWWW",
-"WWWW%%%WWW%%%%%%%%%%%%WWW%%%WWWW",
-"WWWW%%%WWW%%%%%%%%%%%%WWW%%%WWWW",
-"WWWW%%%WWW%%%%%%%%%%%%WWW%%%WWWW",
-"WWWW%%%%%%%%%%%%%%%%%%%%%%%%WWWW",
-"WWWW%%%%%%%%%%%%%%%%%%%%%%%%WWWW",
-"WWWW%%%%%%%%%%%%<%%%%%%%%%%%WWWW",
-"WWWWWWWWWWWWWW%%%%WWWWWWWWWWWWWW",
-"WWWWWWWWWWWWWW%%%%WWWWWWWWWWWWWW",
-"WWWWWWWWWWWWWW%%%%WWWWWWWWWWWWWW",
-"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW"];
+"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
+"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
+"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
+"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
+"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
+"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
+"WWWWWW%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%WWWWWW",
+"WWWWWW%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%WWWWWW",
+"WWWWWW%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%WWWWWW",
+"WWWWWW%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%WWWWWW",
+"WWWWWW%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%WWWWWW",
+"WWWWWW%%%%%WWWW%%%%%%%%%%%%%%%%%%WWWWW%%%%WWWWWW",
+"WWWWWW%%%%%WWWW%%%%%%%%%%%%%%%%%%WWWWW%%%%WWWWWW",
+"WWWWWW%%%%%WWWW%%%%%%%%%%%%%%%%%%WWWWW%%%%WWWWWW",
+"WWWWWW%%%%%WWWW%%%%%%%%%%%%%%%%%%WWWWW%%%%WWWWWW",
+"WWWWWW%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%WWWWWW",
+"WWWWWW%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%WWWWWW",
+"WWWWWW%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%WWWWWW",
+"WWWWWW%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%WWWWWW",
+"WWWWWW%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%WWWWWW",
+"WWWWWW%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%WWWWWW",
+"WWWWWW%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%WWWWWW",
+"WWWWWW%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%WWWWWW",
+"WWWWWW%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%WWWWWW",
+"WWWWWW%%%%%WWWW%%%%%%%%%%%%%%%%%%WWWWW%%%%WWWWWW",
+"WWWWWW%%%%%WWWW%%%%%%%%%%%%%%%%%%WWWWW%%%%WWWWWW",
+"WWWWWW%%%%%WWWW%%%%%%%%%%%%%%%%%%WWWWW%%%%WWWWWW",
+"WWWWWW%%%%%WWWW%%%%%%%%%%%%%%%%%%WWWWW%%%%WWWWWW",
+"WWWWWW%%%%%WWWW%%%%%%%%%%%%%%%%%%WWWWW%%%%WWWWWW",
+"WWWWWW%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%WWWWWW",
+"WWWWWW%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%WWWWWW",
+"WWWWWW%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%WWWWWW",
+"WWWWWW%%%%%%%%%%%%%%%%%%<%%%%%%%%%%%%%%%%%WWWWWW",
+"WWWWWWWWWWWWWWWWWWWWW%%%%%%WWWWWWWWWWWWWWWWWWWWW",
+"WWWWWWWWWWWWWWWWWWWWW%%%%%%WWWWWWWWWWWWWWWWWWWWW",
+"WWWWWWWWWWWWWWWWWWWWW%%%%%%WWWWWWWWWWWWWWWWWWWWW",
+"WWWWWWWWWWWWWWWWWWWWW%%%%%%WWWWWWWWWWWWWWWWWWWWW",
+"WWWWWWWWWWWWWWWWWWWWW%%%%%%WWWWWWWWWWWWWWWWWWWWW",
+"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW"];
 
 const CAVE2A=[
-"XXXXXXXXXXXXXXXXXXXX",
-"XXffffXXXXXXXXffffXX",
-"XXffffXXXXXXXXffffXX",
-"XXffffXXXXXXXXffffXX",
-"XXffffffffffffffffXX",
-"XXfXXXXXXXXXXXXXXfXX",
-"XXfXXXXXfffffXXXXfXX",
-"XXfXXXXXfffffXXXXfXX",
-"XXfXXXXXfffffXXXXfXX",
-"XXfXXXXXXXfXXXXXXfXX",
-"XXfXXXXXXXfXXXXXXfXX",
-"XXffffffffffffffffXX",
-"XXXXXfXXXXfXXXfXXXXX",
-"XXXffffXXXfXXffffXXX",
-"XXXf>ffXXXfXXffffXXX",
-"XXXXXXXXXXfXXXXXXXXX"];
+"XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+"XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+"XXXffffffXXXXXXXXXXXXffffffXXX",
+"XXXffffffXXXXXXXXXXXXffffffXXX",
+"XXXffffffXXXXXXXXXXXXffffffXXX",
+"XXXffffffXXXXXXXXXXXXffffffXXX",
+"XXXffffffffffffffffffffffffXXX",
+"XXXffffffffffffffffffffffffXXX",
+"XXXffXXXXXXXXXXXXXXXXXXXXXfXXX",
+"XXXffXXXXXXXffffffffXXXXXXfXXX",
+"XXXffXXXXXXXffffffffXXXXXXfXXX",
+"XXXffXXXXXXXffffffffXXXXXXfXXX",
+"XXXffXXXXXXXffffffffXXXXXXfXXX",
+"XXXffXXXXXXXffffffffXXXXXXfXXX",
+"XXXffXXXXXXXXXXffXXXXXXXXXfXXX",
+"XXXffXXXXXXXXXXffXXXXXXXXXfXXX",
+"XXXffXXXXXXXXXXffXXXXXXXXXfXXX",
+"XXXffffffffffffffffffffffffXXX",
+"XXXXXXXXfXXXXXXffXXXXffXXXXXXX",
+"XXXXXXXXfXXXXXXffXXXXffXXXXXXX",
+"XXXXXffffffXXXXffXXXffffffXXXX",
+"XXXXXf>ffffXXXXffXXXffffffXXXX",
+"XXXXXffffffXXXXffXXXffffffXXXX",
+"XXXXXXXXXXXXXXXffXXXXXXXXXXXXX"];
 const CAVE2B=[
-"XXXXXXXXXXXXXXXXXXXX",
-"XffffXXXXXXXXfffffXX",
-"XffffXXXXXXXXfffffXX",
-"XffffXXXXXXXXfffffXX",
-"XXXfXXXXXXXXXXXXfXXX",
-"XXXfXXXXXXXXXXXXfXXX",
-"XXXfXXfffffXXXXXfXXX",
-"XXXfXXfffffXXXXXfXXX",
-"XXXffffffffffffffXXX",
-"XXXfXXfffffXXXXXfXXX",
-"XXXfXXfffffXXXXXfXXX",
-"XXXfXXXXfXXXXXXXfXXX",
-"XXXffffffffffffffXXX",
-"XXXfXXXXXXXXXXXXXXXX",
-"XXX<XXXXXXXXXXXXXXXX",
-"XXXXXXXXXXXXXXXXXXXX"];
+"XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+"XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+"XXffffffXXXXXXXXXXXXfffffffXXX",
+"XXffffffXXXXXXXXXXXXfffffffXXX",
+"XXffffffXXXXXXXXXXXXfffffffXXX",
+"XXffffffXXXXXXXXXXXXfffffffXXX",
+"XXXXXfXXXXXXXXXXXXXXXXXXffXXXX",
+"XXXXXfXXXXXXXXXXXXXXXXXXffXXXX",
+"XXXXXfXXXXXXXXXXXXXXXXXXffXXXX",
+"XXXXXfXXXffffffffXXXXXXXffXXXX",
+"XXXXXfXXXffffffffXXXXXXXffXXXX",
+"XXXXXfXXXffffffffXXXXXXXffXXXX",
+"XXXXXfffffffffffffffffffffXXXX",
+"XXXXXfffffffffffffffffffffXXXX",
+"XXXXXfXXXffffffffXXXXXXXffXXXX",
+"XXXXXfXXXffffffffXXXXXXXffXXXX",
+"XXXXXfXXXffffffffXXXXXXXffXXXX",
+"XXXXXfXXXXXXffXXXXXXXXXXffXXXX",
+"XXXXXfffffffffffffffffffffXXXX",
+"XXXXXfffffffffffffffffffffXXXX",
+"XXXXXfXXXXXXXXXXXXXXXXXXXXXXXX",
+"XXXXX<XXXXXXXXXXXXXXXXXXXXXXXX",
+"XXXXXfXXXXXXXXXXXXXXXXXXXXXXXX",
+"XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"];
 
 const VILLAGE=[
 "........................................",
@@ -915,22 +992,23 @@ const MAPS={
 const WARPS={
  world:[{x:14,y:14,to:'castle',tx:19,ty:29},{x:22,y:22,to:'newtown',tx:19,ty:29},{x:38,y:40,to:'town',tx:19,ty:29},
    {x:84,y:26,to:'town2',tx:19,ty:29},{x:24,y:58,to:'castle2',tx:19,ty:29},
-   {x:66,y:18,to:'cave',tx:13,ty:21},{x:22,y:72,to:'cave2a',tx:10,ty:15},
-   {x:58,y:50,to:'village',tx:19,ty:29},{x:90,y:74,to:'dragon',tx:16,ty:25}],
+   {x:66,y:18,to:'cave',tx:20,ty:32},{x:22,y:72,to:'cave2a',tx:15,ty:23},
+   {x:58,y:50,to:'village',tx:19,ty:29},{x:90,y:74,to:'dragon',tx:24,ty:38}],
  castle:[{x:19,y:29,to:'world',tx:14,ty:15},{x:20,y:29,to:'world',tx:14,ty:15}],
  castle2:[{x:19,y:29,to:'world',tx:24,ty:59},{x:20,y:29,to:'world',tx:24,ty:59}],
  newtown:[{x:19,y:29,to:'world',tx:22,ty:23},{x:20,y:29,to:'world',tx:22,ty:23}],
  town:[{x:19,y:29,to:'world',tx:38,ty:41},{x:20,y:29,to:'world',tx:38,ty:41}],
  town2:[{x:19,y:29,to:'world',tx:84,ty:27},{x:20,y:29,to:'world',tx:84,ty:27}],
  village:[{x:19,y:29,to:'world',tx:58,ty:51},{x:20,y:29,to:'world',tx:58,ty:51}],
- cave:[{x:13,y:21,to:'world',tx:66,ty:19},{x:6,y:19,to:'caveb',tx:6,ty:19}],
- caveb:[{x:6,y:19,to:'cave',tx:6,ty:18}],
- cave2a:[{x:10,y:15,to:'world',tx:22,ty:73},{x:4,y:14,to:'cave2b',tx:3,ty:14}],
- cave2b:[{x:3,y:14,to:'cave2a',tx:4,ty:13}],
- dragon:[{x:15,y:25,to:'world',tx:90,ty:75},{x:16,y:25,to:'world',tx:90,ty:75},
-   {x:16,y:12,to:'dragon2',tx:16,ty:21}],
- dragon2:[{x:16,y:21,to:'dragon',tx:16,ty:13},{x:16,y:3,to:'dragon3',tx:16,ty:21}],
- dragon3:[{x:16,y:21,to:'dragon2',tx:16,ty:4}],
+ cave:[{x:20,y:32,to:'world',tx:66,ty:19},{x:9,y:29,to:'caveb',tx:9,ty:29}],
+ caveb:[{x:9,y:29,to:'cave',tx:9,ty:27}],
+ cave2a:[{x:15,y:23,to:'world',tx:22,ty:73},{x:6,y:21,to:'cave2b',tx:5,ty:21}],
+ cave2b:[{x:5,y:21,to:'cave2a',tx:6,ty:20}],
+ dragon:[{x:23,y:38,to:'world',tx:90,ty:75},{x:24,y:38,to:'world',tx:90,ty:75},
+   {x:25,y:38,to:'world',tx:90,ty:75},
+   {x:24,y:18,to:'dragon2',tx:24,ty:32}],
+ dragon2:[{x:24,y:32,to:'dragon',tx:24,ty:20},{x:24,y:5,to:'dragon3',tx:24,ty:32}],
+ dragon3:[{x:24,y:32,to:'dragon2',tx:24,ty:6}],
 };
 
 /* NPC */
@@ -1045,13 +1123,13 @@ const NPCS={
    after:["いずみが きれいに なったわ！","もう みずくみに とおくへ いかなくて いいの。"]},
  ],
  cave2b:[
-  {x:8,y:9,art:'d3',boss2:true,lines:[
+  {x:12,y:14,art:'d3',boss2:true,lines:[
    "…ここは ちからの みなもと。",
    "われは その まもりびと。",
    "「さいごのつるぎ」が ほしくば われを たおしてみよ！"]},
  ],
  dragon3:[
-  {x:16,y:6,art:'boss',boss:true,lines:[
+  {x:24,y:9,art:'boss',boss:true,lines:[
    "…よくぞ ここまで ながれついた。",
    "われこそは ドラゴンロードの うんこ。",
    "せかいは このまま くさいままで よいのだ！"]},
@@ -1061,43 +1139,33 @@ const NPCS={
 const CHESTS={
  castle:[
   {x:33,y:3,gold:60},{x:36,y:7,item:'herb',n:2},          // ほうもつこ
-  {x:3,y:3,item:'wing',n:1},                              // しょこの すみ
-  {x:3,y:25,gold:40},{x:36,y:25,item:'herb',n:1}],        // へいしゃ・ちゅうぼう
+  {x:3,y:3,item:'wing',n:1}],                             // しょこの すみ
  castle2:[
-  {x:3,y:8,gold:900},{x:9,y:6,item:'herb',n:5},           // ほうもつこ
-  {x:3,y:21,item:'wing',n:2},{x:36,y:21,gold:600},
+  {x:9,y:6,item:'herb',n:5},                              // ほうもつこ
   {x:20,y:12,gold:1200}],                                 // まんなかの さいだん
  newtown:[
-  {x:12,y:4,gold:30},{x:31,y:11,item:'herb',n:2},         // みせの すみ・みんか
+  {x:31,y:11,item:'herb',n:2},                            // みんか
   {x:25,y:26,gold:50}],                                   // いけの ほとり
  town:[
-  {x:10,y:3,gold:80},{x:29,y:11,item:'herb',n:3},         // ふんすい ひろば
-  {x:36,y:24,gold:120}],
+  {x:29,y:11,item:'herb',n:3},{x:36,y:24,gold:120}],      // ふんすい ひろば
  town2:[
-  {x:22,y:6,gold:200},{x:35,y:8,item:'wing',n:1},         // そうこ・さんばしの さき
-  {x:35,y:18,gold:150},{x:9,y:13,item:'herb',n:2}],
+  {x:35,y:8,item:'wing',n:1},{x:35,y:18,gold:150}],       // さんばしの さき
  village:[
-  {x:13,y:2,gold:90},{x:33,y:24,item:'herb',n:3},
-  {x:5,y:23,gold:160}],
+  {x:33,y:24,item:'herb',n:3},{x:5,y:23,gold:160}],
+ // ダンジョンは ひろく なったぶん おくに すこしだけ
  cave:[
-  {x:3,y:4,gold:250},{x:24,y:4,item:'herb',n:3},
-  {x:3,y:13,gold:400},{x:25,y:13,item:'wing',n:2},
-  {x:13,y:11,gold:320}],
+  {x:5,y:20,gold:400},{x:38,y:20,item:'wing',n:2}],
  caveb:[
-  {x:3,y:3,gold:700},{x:24,y:3,item:'herb',n:5},
-  {x:3,y:14,gold:900},{x:24,y:14,item:'wing',n:3},
-  {x:13,y:9,gold:1500}],
+  {x:5,y:21,gold:900},{x:36,y:21,item:'wing',n:3},
+  {x:20,y:14,gold:1500}],
  dragon:[
-  {x:5,y:5,gold:500},{x:26,y:5,item:'herb',n:5},
-  {x:5,y:20,gold:800},{x:26,y:20,item:'wing',n:2}],
+  {x:8,y:8,gold:500},{x:39,y:30,item:'wing',n:2}],
  dragon2:[
-  {x:3,y:3,gold:1200},{x:28,y:3,item:'herb',n:8},
-  {x:3,y:22,gold:1500}],
+  {x:42,y:5,item:'herb',n:8},{x:5,y:33,gold:1500}],
  dragon3:[
-  {x:6,y:6,gold:2000},{x:25,y:6,item:'herb',n:8},
-  {x:6,y:18,gold:2500},{x:25,y:18,item:'wing',n:5}],
- cave2a:[{x:3,y:1,gold:600},{x:17,y:1,item:'herb',n:5},{x:15,y:14,gold:800}],
- cave2b:[{x:2,y:1,gold:1200},{x:17,y:1,item:'wing',n:3}],
+  {x:38,y:9,item:'herb',n:8},{x:9,y:27,gold:2500}],
+ cave2a:[{x:26,y:2,item:'herb',n:5},{x:23,y:21,gold:800}],
+ cave2b:[{x:3,y:2,gold:1200}],
 };
 
 /* ═══════════════════════════════════════════════
@@ -1642,7 +1710,7 @@ function fieldMenu(){
         `つぎのレベルまで あと ${Math.max(0,nextExp(G.lv)-G.exp)}`,
         G.lv>=20?"りゅうおうと たたかえる ちからが ある！"
           :`りゅうおうに いどむなら Ｌｖ20は ほしい。`,
-        `うんこクエスト ver 3.6`]);return;}
+        `うんこクエスト ver 3.7`]);return;}
     if(id==='it'){itemMenu(false);return;}
     if(id==='sp'){spellMenu(false);return;}});}
 function itemMenu(inBattle){
@@ -1799,7 +1867,7 @@ function clear(){
     <p>せかいに さわやかな かぜが もどった。<br>
     ゆうしゃうんこの なは えいえんに かたりつがれる――</p>
     <p style="color:#ffd23f;font-size:5cqw;">Ｌｖ${G.lv}　クリア！</p>
-    <p id="ver">ver 3.6</p>
+    <p id="ver">ver 3.7</p>
     <button class="tm sel" onclick="localStorage.removeItem('unkoq-save');location.reload()">もういちど</button>`;
   t.classList.remove('hide');
   wMsg.classList.remove('show');wStatus.classList.remove('show');}
@@ -1870,6 +1938,14 @@ function load(){try{const s=localStorage.getItem('unkoq-save');
     if(G.springQuest===undefined)G.springQuest=false;
     if(G.shield===undefined){G.shield=0;G.haveS=[0];}
     if(G.helm===undefined){G.helm=0;G.haveH=[0];}
+    // ダンジョンが 1.5ばいに ひろがったのを 補正
+    if(G.dunVer===undefined){G.dunVer=1;
+      const DUN=['cave','caveb','cave2a','cave2b','dragon','dragon2','dragon3'],up=v=>Math.ceil(v*1.5);
+      if(DUN.includes(G.map)){G.x=up(G.x);G.y=up(G.y);}
+      const ch={};Object.keys(G.chests||{}).forEach(k=>{
+        const [m,xy]=k.split(':'),[x,y]=xy.split(',').map(Number);
+        ch[DUN.includes(m)?m+':'+up(x)+','+up(y):k]=G.chests[k];});
+      G.chests=ch;}
     // 武器が1段ずれた（てつのおの追加）のを 補正
     if(G.eqVer===undefined){G.eqVer=1;
       const fixW=i=>i>=3?i+1:i, fixA=i=>i>=3?i+1:i;
@@ -1881,7 +1957,7 @@ function load(){try{const s=localStorage.getItem('unkoq-save');
 function begin(cont){
   if(!cont){G={map:'castle',x:19,y:24,dir:'down',lv:1,exp:0,hp:0,mp:0,gold:0,
     weapon:0,armor:0,shield:0,helm:0,haveW:[0],haveA:[0],haveS:[0],haveH:[0],
-    items:{herb:3,wing:0},chests:{},
+    items:{herb:3,wing:0},chests:{},dunVer:1,
     bossDead:false,boss2Dead:false,kingGift:false,springFixed:false,springQuest:false,
     steps:0,thr:8};resetHpMp();save();}
   $('title').classList.add('hide');
