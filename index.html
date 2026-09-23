@@ -180,7 +180,7 @@ html,body{height:100%;background:#000;color:#fff;font-family:'DotGothic16',monos
       <button class="tm sel" id="tmNew">はじめから</button>
       <button class="tm dis" id="tmCont">つづきから</button>
       <p style="font-size:2.8cqw;color:#777;">十字キー＝いどう／Ａ＝はなす・しらべる／Ｂ＝メニュー</p>
-      <p id="ver">ver 3.7</p>
+      <p id="ver">ver 3.8</p>
     </div>
   </div>
   <div id="pad">
@@ -990,10 +990,10 @@ const MAPS={
 
 /* ワープ（乗ると移動） */
 const WARPS={
- world:[{x:14,y:14,to:'castle',tx:19,ty:29},{x:22,y:22,to:'newtown',tx:19,ty:29},{x:38,y:40,to:'town',tx:19,ty:29},
-   {x:84,y:26,to:'town2',tx:19,ty:29},{x:24,y:58,to:'castle2',tx:19,ty:29},
-   {x:66,y:18,to:'cave',tx:20,ty:32},{x:22,y:72,to:'cave2a',tx:15,ty:23},
-   {x:58,y:50,to:'village',tx:19,ty:29},{x:90,y:74,to:'dragon',tx:24,ty:38}],
+ world:[{x:14,y:14,to:'castle',tx:19,ty:28},{x:22,y:22,to:'newtown',tx:19,ty:28},{x:38,y:40,to:'town',tx:19,ty:28},
+   {x:84,y:26,to:'town2',tx:19,ty:28},{x:24,y:58,to:'castle2',tx:19,ty:28},
+   {x:66,y:18,to:'cave',tx:20,ty:31},{x:22,y:72,to:'cave2a',tx:15,ty:22},
+   {x:58,y:50,to:'village',tx:19,ty:28},{x:90,y:74,to:'dragon',tx:24,ty:37}],
  castle:[{x:19,y:29,to:'world',tx:14,ty:15},{x:20,y:29,to:'world',tx:14,ty:15}],
  castle2:[{x:19,y:29,to:'world',tx:24,ty:59},{x:20,y:29,to:'world',tx:24,ty:59}],
  newtown:[{x:19,y:29,to:'world',tx:22,ty:23},{x:20,y:29,to:'world',tx:22,ty:23}],
@@ -1236,6 +1236,7 @@ const SPELLS=[{name:"プリ",mp:4,type:'heal',power:38},
  {name:"プリプリプリ",mp:22,type:'heal',power:160,lv:18},
  {name:"ブリブリブリ",mp:26,type:'atk',power:170,lv:21}];
 
+const LV_MAX=40;
 function nextExp(lv){return Math.floor(lv*lv*7+lv*10);}
 function statFor(lv){return{hpMax:24+lv*11,mpMax:Math.floor(5+lv*2.5),atk:4+lv*2,def:3+lv*2};}
 
@@ -1707,10 +1708,11 @@ function fieldMenu(){
         `ちから ${s.atk}／みのまもり ${s.def}`,
         `ぶき：${WEAPONS[G.weapon].name}／よろい：${ARMORS[G.armor].name}`,
         `たて：${SHIELDS[G.shield||0].name}／かぶと：${HELMS[G.helm||0].name}`,
-        `つぎのレベルまで あと ${Math.max(0,nextExp(G.lv)-G.exp)}`,
+        G.lv>=LV_MAX?`レベルは さいこうの ${LV_MAX}！`
+          :`つぎのレベルまで あと ${Math.max(0,nextExp(G.lv)-G.exp)}`,
         G.lv>=20?"りゅうおうと たたかえる ちからが ある！"
           :`りゅうおうに いどむなら Ｌｖ20は ほしい。`,
-        `うんこクエスト ver 3.7`]);return;}
+        `うんこクエスト ver 3.8`]);return;}
     if(id==='it'){itemMenu(false);return;}
     if(id==='sp'){spellMenu(false);return;}});}
 function itemMenu(inBattle){
@@ -1842,7 +1844,7 @@ function win(){
         "ゆうしゃうんこは それを そうびした！"],endBattle);return;}
     endBattle();}));}
 function lvUp(done){
-  if(G.exp>=nextExp(G.lv)){
+  if(G.lv<LV_MAX&&G.exp>=nextExp(G.lv)){
     const o=statFor(G.lv);G.lv++;const n=statFor(G.lv);LOG.ev('レベルアップ','Lv'+G.lv);
     G.hp+=n.hpMax-o.hpMax;G.mp+=n.mpMax-o.mpMax;updStatus();
     const l=[`レベルが ${G.lv}に あがった！`,
@@ -1867,7 +1869,7 @@ function clear(){
     <p>せかいに さわやかな かぜが もどった。<br>
     ゆうしゃうんこの なは えいえんに かたりつがれる――</p>
     <p style="color:#ffd23f;font-size:5cqw;">Ｌｖ${G.lv}　クリア！</p>
-    <p id="ver">ver 3.7</p>
+    <p id="ver">ver 3.8</p>
     <button class="tm sel" onclick="localStorage.removeItem('unkoq-save');location.reload()">もういちど</button>`;
   t.classList.remove('hide');
   wMsg.classList.remove('show');wStatus.classList.remove('show');}
@@ -1899,6 +1901,7 @@ const LOG={
   },
   ev(type,detail){
     if(!this.on)return;
+    try{
     const s=stats();
     this.queue.push({
       pid:this.pid, sid:this.sid, type,
@@ -1910,6 +1913,7 @@ const LOG={
       ver:'2.1', ts:new Date().toISOString()
     });
     if(this.queue.length>=12)this.flush();
+    }catch(e){}
   },
   flush(final){
     if(!this.on||this.sending||!this.queue.length)return;
@@ -1919,10 +1923,12 @@ const LOG={
       try{navigator.sendBeacon(ANALYTICS_URL,new Blob([body],{type:'text/plain'}));}catch(e){}
       return;}
     this.sending=true;
+    try{
     fetch(ANALYTICS_URL,{method:'POST',mode:'no-cors',
       headers:{'Content-Type':'text/plain;charset=utf-8'},body})
       .catch(()=>{this.queue=batch.concat(this.queue);})
       .finally(()=>{this.sending=false;});
+    }catch(e){this.sending=false;this.queue=batch.concat(this.queue);}
   }
 };
 
@@ -1951,6 +1957,12 @@ function load(){try{const s=localStorage.getItem('unkoq-save');
       const fixW=i=>i>=3?i+1:i, fixA=i=>i>=3?i+1:i;
       G.weapon=fixW(G.weapon);G.haveW=[...new Set(G.haveW.map(fixW))];
       G.armor=fixA(G.armor);G.haveA=[...new Set(G.haveA.map(fixA))];}
+    // レベル上限より うえの セーブは 上限に もどす
+    if(G.lv>LV_MAX){G.lv=LV_MAX;const st=stats();
+      G.hp=Math.min(G.hp,st.hpMax);G.mp=Math.min(G.mp,st.mpMax);}
+    // きえた マップや かべの なかなら しろに もどす
+    if(!MAPS[G.map]||BLOCKED.has(tileAt(G.x,G.y))){
+      G.map='castle';G.x=19;G.y=24;G.dir='down';}
     return true;}}catch(e){}return false;}
 
 /* ── ゲーム開始 ── */
