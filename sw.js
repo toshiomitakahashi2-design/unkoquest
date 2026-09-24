@@ -2,7 +2,7 @@
    ・HTML と JSON は「ネットワークさきに みる」＝更新が すぐ反映される
    ・画像などは キャッシュさきに みる＝はやい
    ・オフラインでも あそべる                                        */
-const CACHE = 'unkoq-v22';
+const CACHE = 'unkoq-v23';
 const ASSETS = [
   './',
   './index.html',
