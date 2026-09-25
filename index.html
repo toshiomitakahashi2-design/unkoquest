@@ -180,7 +180,7 @@ html,body{height:100%;background:#000;color:#fff;font-family:'DotGothic16',monos
       <button class="tm sel" id="tmNew">はじめから</button>
       <button class="tm dis" id="tmCont">つづきから</button>
       <p style="font-size:2.8cqw;color:#777;">十字キー＝いどう／Ａ＝はなす・しらべる／Ｂ＝メニュー</p>
-      <p id="ver">ver 3.18</p>
+      <p id="ver">ver 3.19</p>
     </div>
   </div>
   <div id="pad">
@@ -1322,7 +1322,7 @@ const SPELLS=[{name:"プリ",mp:12,type:'heal',power:38},
  {name:"プリプリ",mp:30,type:'heal',power:200,lv:8},
  {name:"ブリブリ",mp:12,type:'atk',power:80,lv:12},
  {name:"ベチョ",mp:14,type:'kill',lv:15},
- {name:"プリプリプリ",mp:66,type:'heal',full:true,lv:18},
+ {name:"プリプリプリ",mp:30,type:'heal',full:true,lv:18},
  {name:"ブリブリブリ",mp:26,type:'atk',power:170,lv:21}];
 
 const LV_MAX=40;
@@ -1870,7 +1870,7 @@ function fieldMenu(){
           :`つぎのレベルまで あと ${Math.max(0,nextExp(G.lv)-G.exp)}`,
         G.lv>=20?"りゅうおうと たたかえる ちからが ある！"
           :`りゅうおうに いどむなら Ｌｖ20は ほしい。`,
-        `うんこクエスト ver 3.18`]);return;}
+        `うんこクエスト ver 3.19`]);return;}
     if(id==='it'){itemMenu(false);return;}
     if(id==='sp'){spellMenu(false);return;}});}
 function itemMenu(inBattle){
@@ -2027,7 +2027,7 @@ function clear(){
     <p>せかいに さわやかな かぜが もどった。<br>
     ゆうしゃうんこの なは えいえんに かたりつがれる――</p>
     <p style="color:#ffd23f;font-size:5cqw;">Ｌｖ${G.lv}　クリア！</p>
-    <p id="ver">ver 3.18</p>
+    <p id="ver">ver 3.19</p>
     <button class="tm sel" onclick="localStorage.removeItem('unkoq-save');location.reload()">もういちど</button>`;
   t.classList.remove('hide');
   wMsg.classList.remove('show');wStatus.classList.remove('show');}
