@@ -180,7 +180,7 @@ html,body{height:100%;background:#000;color:#fff;font-family:'DotGothic16',monos
       <button class="tm sel" id="tmNew">はじめから</button>
       <button class="tm dis" id="tmCont">つづきから</button>
       <p style="font-size:2.8cqw;color:#777;">十字キー＝いどう／Ａ＝はなす・しらべる／Ｂ＝メニュー</p>
-      <p id="ver">ver 3.23</p>
+      <p id="ver">ver 3.24</p>
     </div>
   </div>
   <div id="pad">
@@ -384,6 +384,33 @@ function initArt(){
   rct(ART.dcastle,7,10,2,5,'#140a18');
   dots(ART.dcastle,[[4,8],[11,8],[7,7],[8,7]],'#e5484d');
   ART.tower=mk(16,16,'#3a8c3a');                        // うんこの とう
+  // みせの ひさし（しましま）
+  const awn=(k,c1,c2)=>{const a=ART[k]=mk(16,16,'#4a4f5e');
+    for(let x=0;x<16;x++){const c=Math.floor(x/2)%2?c2:c1;rct(a,x,1,1,10,c);}
+    rct(a,0,0,16,1,'#2a2a30');
+    for(let x=0;x<16;x++){const c=Math.floor(x/2)%2?c2:c1;const d=[2,3,3,2][x%4];rct(a,x,11,1,d,c);}};
+  awn('awnItem','#e04848','#f4f0e8');awn('awnWeapon','#3a6ad0','#f4f0e8');
+  awn('awnInn','#3a9a4a','#f4f0e8');awn('awnCasino','#e8b820','#8a2ab0');
+  // かんばん（かべに かけた いたに しるし）
+  const sign=(k,draw)=>{const a=ART[k]=mk(16,16,'#4a4f5e');
+    rct(a,0,7,16,1,'#6a6f80');rct(a,4,0,1,7,'#6a6f80');rct(a,11,8,1,8,'#6a6f80');
+    rct(a,1,2,14,12,'#5a3a1a');rct(a,2,3,12,10,'#b07a3a');rct(a,2,3,12,1,'#d09a5a');draw(a);};
+  sign('signWeapon',a=>{for(let i=0;i<7;i++)dots(a,[[4+i,11-i],[5+i,11-i]],'#e8e8f0');
+    rct(a,4,10,1,2,'#6a4a1a');dots(a,[[3,9],[6,12],[5,10]],'#ffd23f');});        // つるぎ
+  sign('signItem',a=>{rct(a,6,4,4,2,'#e8e8f0');rct(a,5,6,6,6,'#e8e8f0');
+    rct(a,6,7,4,4,'#40b0e0');dots(a,[[7,8]],'#c0f0ff');});                       // くすりびん
+  sign('signInn',a=>{const I=[[4,5],[4,6],[4,7],[4,8],[4,9]];
+    const N=x=>[[x,5],[x,6],[x,7],[x,8],[x,9],[x+2,5],[x+2,6],[x+2,7],[x+2,8],[x+2,9],[x+1,6],[x+1,7]];
+    dots(a,I.concat(N(6),N(10)),'#fff2c0');});                                   // INN
+  sign('signCasino',a=>{rct(a,5,4,6,8,'#ffd23f');rct(a,4,5,8,6,'#ffd23f');
+    rct(a,6,5,4,6,'#e8a800');dots(a,[[7,6],[8,6],[8,7],[7,8],[7,9]],'#c02020');}); // コイン（７）
+  // カジノの テーブル（みどりの ぬの）
+  ART.table=mk(16,16,'#8a5a2a');rct(ART.table,0,2,16,12,'#1f7a3a');rct(ART.table,0,2,16,1,'#2f9a4a');
+  rct(ART.table,0,14,16,2,'#5a3a1a');dots(ART.table,[[3,6],[12,9],[7,11]],'#2f9a4a');
+  // スロットマシン（NPCの かわりに おく 12×12）
+  ART.slotm=mk(12,12,null);rct(ART.slotm,1,0,9,12,'#c02828');rct(ART.slotm,1,0,9,2,'#ffd23f');
+  rct(ART.slotm,2,3,7,4,'#f4f0e8');dots(ART.slotm,[[3,5],[5,5],[7,5]],'#c02828');
+  rct(ART.slotm,2,8,7,3,'#801818');rct(ART.slotm,10,2,1,5,'#c0c0c8');dots(ART.slotm,[[10,1],[11,1]],'#ffd23f');
   rct(ART.tower,5,4,6,11,'#a8a090');rct(ART.tower,4,2,8,3,'#c8c0b0');
   rct(ART.tower,4,1,2,1,'#c8c0b0');rct(ART.tower,7,1,2,1,'#c8c0b0');rct(ART.tower,10,1,2,1,'#c8c0b0');
   rct(ART.tower,5,8,6,1,'#8a8272');
@@ -450,6 +477,9 @@ const ART_LABEL={hero:"ゆうしゃ",npc:"むらびと",king:"おうさま",shop
  mount:"やま",road:"みち",bridge:"はし",floor:"ゆか",wall:"かべ",door:"とびら",doorOpen:"あいたとびら",
  carpet:"じゅうたん",counter:"カウンター",stairs:"かいだん",chest:"たからばこ",mud:"よごれたいずみ",spring:"きれいないずみ",chestOpen:"あいたはこ",down:"くだりかいだん",up:"のぼりかいだん",
  castle:"しろ",town:"まち",cave:"どうくつ",dcastle:"まおうじょう",tower:"とう",
+ awnItem:"どうぐやの ひさし",awnWeapon:"ぶきやの ひさし",awnInn:"やどやの ひさし",awnCasino:"カジノの ひさし",
+ signItem:"どうぐやの かんばん",signWeapon:"ぶきやの かんばん",signInn:"やどやの かんばん",signCasino:"カジノの かんばん",
+ table:"カジノの テーブル",slotm:"スロットマシン",
  dwall:"まおうのかべ",dfloor:"まおうのゆか",cwall:"どうくつのかべ",cfloor:"どうくつのゆか"};
 
 /* ═══════════════════════════════════════════════
@@ -458,8 +488,10 @@ const ART_LABEL={hero:"ゆうしゃ",npc:"むらびと",king:"おうさま",shop
 const TILE={'.':'grass',',':'bush','#':'tree','~':'water','^':'mount','=':'road',
  '-':'bridge','_':'floor','B':'wall','+':'door','%':'carpet','K':'counter',
  '>':'down','<':'up','S':'mud','v':'town','c':'castle','n':'town','C':'castle','T':'town','t':'town','O':'cave','o':'cave','R':'dcastle',
- 'W':'dwall','F':'dfloor','X':'cwall','f':'cfloor','g':'grass','Y':'tower'};
-const BLOCKED=new Set(['#','~','^','B','K','W','X','S']);
+ 'W':'dwall','F':'dfloor','X':'cwall','f':'cfloor','g':'grass','Y':'tower',
+ 'L':'awnItem','M':'awnWeapon','N':'awnInn','A':'awnCasino',
+ 'Z':'signItem','V':'signWeapon','Q':'signInn','J':'signCasino','H':'table'};
+const BLOCKED=new Set(['#','~','^','B','K','W','X','S','L','M','N','A','Z','V','Q','J','H']);
 
 const WORLD=[
 "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
@@ -580,22 +612,22 @@ const TOWN=[
 "........................................",
 "..##................##...........~......",
 ".............................~~~~~~~~~..",
-"....BBBBBBBB...BBBBBBBB.....~~~~~~~~~~~.",
+"....LLLLLLLL...MMMMMMMM.....~~~~~~~~~~~.",
 "....B______B...B______B....~~~~~~~~~~~~~",
 "....BKKKKKKB...BKKKKKKB....~~~~~~~~~~~~~",
 "....B......B...B......B...~~~~~~~~~~~~~~",
 "....B......B...B......B....~~~~~~~~~~~~~",
-"....BBB+BBBB...BBB+BBBB....~~~~~~~~~~~~~",
+"....BBZ+BBBB...BBV+BBBB....~~~~~~~~~~~~~",
 "..#....................._______~~~~~~~~.",
 "........................___~~__~~~~~~~..",
 "...........#............_______..~......",
 "........................................",
-"....BBBBBBBB...BBBBBBB...........,,,,,..",
+"....NNNNNNNN...BBBBBBB...........,,,,,..",
 "....B______B...B_____B..BBBBBBB..,,,,,..",
 "....BKKKKKKB...B_____B..B_____B.........",
 "....B......B...B_____B..B_____B.........",
 "....B......B...BBB+BBB..B_____B.........",
-"....BBB+BBBB............BBB+BBB.........",
+"....BBQ+BBBB............BBB+BBB.........",
 ".....................................#..",
 "....................................#...",
 "....BBBBBBB...BBBBBBB...BBBBBBBB........",
@@ -612,27 +644,27 @@ const TOWN2=[
 ".............................~~~~~~~~~~~",
 "..#..........................~~~~~~~~~~~",
 ".............................~~~~~~~~~~~",
-"...BBBBBBBB...BBBBBBBBBBBB...~~~~~~~~~~~",
+"...LLLLLLLL...MMMMMMBBBBBB...~~~~~~~~~~~",
 "...B______B...B____B_____B...~~~~~~~~~~~",
 "...BKKKKKKB...BKKKKB_____B...~~~~~---~~~",
 "...B......B...B....B_____B...--------~~~",
 "...B......B...B....B_____B...--------~~~",
-"...BBB+BBBB...BBB+BBBB+BBB...~~~~~---~~~",
+"...BBZ+BBBB...BBV+BBBB+BBB...~~~~~---~~~",
 ".............................~~~~~~~~~~~",
 ".............................~~~~~~~~~~~",
 "..#.......#..................~~~~~~~~~~~",
 ".............................~~~~~~~~~~~",
-"...BBBBBBBB...BBBBBBB........~~~~~~~~~~~",
+"...NNNNNNNN...BBBBBBB........~~~~~~~~~~~",
 "...B______B...B_____B........~~~~~~~~~~~",
 "...BKKKKKKB...B_____B........~~~~~~~~~~~",
 "...B......B...B___#_B........--------~~~",
 "...B......B...BBB+BBB........--------~~~",
-"...BBB+BBBB..................~~~~~~~~~~~",
-"....................BBBBBBB..~~~~~~~~~~~",
-"....................B_____B..~~~~~~~~~~~",
-"...BBBBBBB..BBBBBBB.BKKKKKB..~~~~~~~~~~~",
+"...BBQ+BBBB..................~~~~~~~~~~~",
+"....................AAAAAAA..~~~~~~~~~~~",
+"....................B%%>%%B..~~~~~~~~~~~",
+"...BBBBBBB..BBBBBBB.B%%%%%B..~~~~~~~~~~~",
 "...B_____B..B_____B.B%%%%%B..~~~~~~~~~~~",
-"...B_____B..B_____B.BBB+BBB..~~~~~~~~~~~",
+"...B_____B..B_____B.BBJ+BBB..~~~~~~~~~~~",
 "...B_____B..B_____B..........~~~~~~~~~~~",
 "...BBB+BBB..BBB+BBB......#...~~~~~~~~~~~",
 ".............................~~~~~~~~~~~",
@@ -947,25 +979,48 @@ const TOWER3=[
 "B___B_______B>B_B_______B",
 "BBBBBBBBBBBBBBBBBBBBBBBBB"];
 
+const CASINO=[
+"BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB",
+"B%%%%%%%%%%%%%%%%%%%%==========B",
+"B%%%%%%%%%%%%%%%%%%%%==========B",
+"B%%%%%%%%%%%%%HHHHH%%%%%%%%%%%%B",
+"B%%%%%%%%%%%%%%%%%%%%%%%KKKKK%%B",
+"B%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%B",
+"B%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%B",
+"B%%%%%%%%%%%B%%%%%%%B%%%%%%%%%%B",
+"B%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%B",
+"B%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%B",
+"B%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%B",
+"B______________%%%_____________B",
+"B___________B__%%%__B__________B",
+"B______________%%%_____________B",
+"B______________%%%_____________B",
+"B______________%%%_____________B",
+"B_KKKKK__KKKKK_%%%_____________B",
+"B______________%%%_____________B",
+"B______________%%%_____________B",
+"B______________%%%_____________B",
+"B______________%<%_____________B",
+"BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB"];
 const VILLAGE=[
 "........................................",
 "........................................",
 "........................................",
-".......BBBBBBBB.............BBBBBBBB....",
+".......LLLLLLLL.............BBBBBBBB....",
 "....##.B______B.............B______B....",
 "....#..BKKKKKKB.............B______B....",
 ".......B......B.............B______B....",
 ".......B......B#...........#B______B....",
-".......BBB+BBBB.....S.......BBBB+BBB....",
+".......BBZ+BBBB.....S.......BBBB+BBB....",
 ".................SSSSSSS................",
 ".........##....SSSSSSSSSSS.......##.....",
 "...............SSSSSSSSSSS..............",
 "..............SSSSSSSSSSSSS.............",
-"...BBBBBBBBB...SSSSSSSSSSS...BBBBBBB....",
+"...NNNNNNNNN...SSSSSSSSSSS...BBBBBBB....",
 "...B_______B...SSSSSSSSSSS...B_____B....",
 "...BKKKKKKKB.....SSSSSSS.....B_____B....",
 "...B.......B........SS.......B_____B....",
-"...BBBB+BBBB........SS....#..BBB+BBB....",
+"...BBBQ+BBBB........SS....#..BBB+BBB....",
 "....................SS..................",
 "....................--..................",
 "....................SS..................",
@@ -1017,22 +1072,22 @@ const NEWTOWN=[
 "########################################",
 "###..................................###",
 "###..................................###",
-"###...BBBBBBBB......BBBBBBBB.........###",
+"###...LLLLLLLL......MMMMMMMM.........###",
 "###...B______B......B______B..##.....###",
 "###...BKKKKKKB......BKKKKKKB.........###",
 "###...B......B......B......B.........###",
 "###...B......B......B......B.........###",
-"###...BBB+BBBB...##.BBB+BBBB.BBBBBBB.###",
+"###...BBZ+BBBB...##.BBV+BBBB.BBBBBBB.###",
 "###..........................B_____B.###",
 "###..........................B_____B.###",
 "###..........................B_____B.###",
 "###..........................BBB+BBB.###",
-"###...BBBBBBBB......BBBBBBB..........###",
+"###...NNNNNNNN......BBBBBBB..........###",
 "###...B______B......B_____B..........###",
 "###...BKKKKKKB......B_____B..........###",
 "###...B......B......B_____B..........###",
 "###...B......B......BBB+BBB..BBBBBBB.###",
-"###...BBB+BBBB...............B_____B.###",
+"###...BBQ+BBBB...............B_____B.###",
 "###..........................B_____B.###",
 "###.........,,,,,,,..........B_____B.###",
 "###.........,,,,,,,..........BBB+BBB.###",
@@ -1058,6 +1113,7 @@ const MAPS={
  village:{d:VILLAGE,enc:false,name:"いずみの むら"},
  castle2:{d:CASTLE2,enc:false,name:"ウンコール城"},
  newtown:{d:NEWTOWN,enc:false,name:"はじまりの まち"},
+ casino:{d:CASINO,enc:false,name:"ちかの うんこカジノ"},
  tower1:{d:TOWER1,enc:true,pool:['e3','e3','e4','e4'],name:"うんこの とう　１かい"},
  tower2:{d:TOWER2,enc:true,pool:['e3','e4','e4','e4'],name:"うんこの とう　２かい"},
  tower3:{d:TOWER3,enc:true,pool:['e3','e4','e4','e4'],name:"うんこの とう　さいじょうかい"},
@@ -1072,7 +1128,7 @@ const WARPS={
  castle2:[{x:19,y:29,to:'world',tx:22,ty:47},{x:20,y:29,to:'world',tx:22,ty:47}],
  newtown:[{x:19,y:29,to:'world',tx:56,ty:17},{x:20,y:29,to:'world',tx:56,ty:17}],
  town:[{x:19,y:29,to:'world',tx:62,ty:36},{x:20,y:29,to:'world',tx:62,ty:36}],
- town2:[{x:19,y:29,to:'world',tx:88,ty:67},{x:20,y:29,to:'world',tx:88,ty:67}],
+ town2:[{x:23,y:21,to:'casino',tx:16,ty:19},{x:19,y:29,to:'world',tx:88,ty:67},{x:20,y:29,to:'world',tx:88,ty:67}],
  village:[{x:19,y:29,to:'world',tx:66,ty:46},{x:20,y:29,to:'world',tx:66,ty:46}],
  cave:[{x:20,y:32,to:'world',tx:84,ty:48},{x:9,y:29,to:'caveb',tx:9,ty:29}],
  caveb:[{x:9,y:29,to:'cave',tx:9,ty:27}],
@@ -1083,6 +1139,7 @@ const WARPS={
    {x:24,y:18,to:'dragon2',tx:24,ty:32}],
  dragon2:[{x:24,y:32,to:'dragon',tx:24,ty:20},{x:24,y:5,to:'dragon3',tx:24,ty:32}],
  dragon3:[{x:24,y:32,to:'dragon2',tx:24,ty:6}],
+ casino:[{x:16,y:20,to:'town2',tx:23,ty:22}],
  tower1:[{x:12,y:20,to:'world',tx:25,ty:71},{x:21,y:11,to:'tower2',tx:21,ty:11}],
  tower2:[{x:21,y:11,to:'tower1',tx:21,ty:11},{x:13,y:19,to:'tower3',tx:13,ty:19}],
  tower3:[{x:13,y:19,to:'tower2',tx:13,ty:19}],
@@ -1173,8 +1230,7 @@ const NPCS={
   {x:27,y:22,art:'npc',move:true,lines:["ざぶ〜ん。","なみの おとが きもちいいねえ。"]},
   {x:22,y:6,art:'npc',lines:["そうこには なにも ないよ。","…たぶんね。"]},
   {x:10,y:11,art:'npc',move:true,lines:["ベチョは つよい じゅもんだけど","ボスには きかないって うわさだ。"]},
-  {x:23,y:21,art:'shop',casino:true,lines:["ようこそ うんこカジノへ！","コインを かって スロットで ひとやま あてな！"]},
-  {x:22,y:23,art:'npc',lines:["スロットで 💩が 3つ そろうと 100ばい だってさ！","けいひんの ゴールドうんこのよろいが ほしいなあ…"]},
+  {x:21,y:21,art:'shop',lines:["ようこそ うんこカジノへ！","かいだんを おりると ちかの カジノだよ。"]},
   {x:21,y:26,art:'npc',move:true,lines:["ウンコール城の おうさまも","むかしは ゆうしゃ だったらしいよ。"]},
  ],
  village:[
@@ -1203,6 +1259,31 @@ const NPCS={
    after:["いずみの きれいな みずが かわに ながれてる。"]},
   {x:26,y:25,art:'npc',move:true,lines:["いずみが にごってから みずが のめないの。","とおくまで くみに いくのは たいへんよ…"],
    after:["いずみが きれいに なったわ！","もう みずくみに とおくへ いかなくて いいの。"]},
+ ],
+ casino:[
+  // りょうがえ・けいひん
+  {x:4,y:15,art:'shop',casino:'buy',lines:["コインの りょうがえだよ。","1まい 20Ｇで うってるよ。"]},
+  {x:11,y:15,art:'shop',casino:'prize',lines:["けいひん こうかんじょ だよ。","コインを ためて いいものと かえておいき！"]},
+  // スロットマシン
+  {x:2,y:1,art:'slotm',casino:'slot',lines:["うんこスロットだ。"]},
+  {x:4,y:1,art:'slotm',casino:'slot',lines:["うんこスロットだ。"]},
+  {x:6,y:1,art:'slotm',casino:'slot',lines:["うんこスロットだ。"]},
+  {x:8,y:1,art:'slotm',casino:'slot',lines:["うんこスロットだ。"]},
+  {x:10,y:1,art:'slotm',casino:'slot',lines:["うんこスロットだ。"]},
+  // ブラックジャック・うんこレース
+  {x:16,y:2,art:'shop',casino:'bj',lines:["ブラックジャックの テーブルへ ようこそ。","21に ちかいほうが かち。21を こえたら まけだよ。"]},
+  {x:26,y:3,art:'shop',casino:'race',lines:["うんこレースの うけつけだよ！","1ちゃくを あてたら ばいりつぶん コインが もらえるよ。"]},
+  // あそんでいる うんこたち
+  {x:4,y:2,art:'e1',lines:["スロット たのしい〜！","そろそろ 💩が そろう きが する…"]},
+  {x:8,y:2,art:'e3',lines:["また すっちゃった…","あと 1かいだけ… あと 1かいだけ…"]},
+  {x:14,y:4,art:'e2',lines:["ブラックジャックは 17いじょうで とまるのが コツさ。"]},
+  {x:18,y:4,art:'npc',lines:["ディーラー つよすぎ〜","でも ダブルで かったときは きもちいいよ！"]},
+  {x:24,y:5,art:'e4',lines:["いけー！ ウルフ〜！","ばいりつ 8ばいは ゆめが あるぜ！"]},
+  {x:28,y:5,art:'e6',lines:["きんの ぼくは いつも スライムに かける。","かたいのが いちばんさ。"]},
+  {x:9,y:9,art:'e2',move:true,lines:["カジノが ちかに あるなんて ひみつきち みたい！"]},
+  {x:23,y:10,art:'npc',move:true,lines:["コインを ためて ゴールドうんこのよろいを もらうんだ。"]},
+  {x:16,y:13,art:'e5',move:true,lines:["ゴーレムだけど きょうは あそびに きたよ。","たたかうのは おやすみ。"]},
+  {x:26,y:15,art:'e1',move:true,lines:["ぷるぷる… コインが なくなっちゃった…"]},
  ],
  cave2b:[
   {x:12,y:14,art:'d3',boss2:true,lines:[
@@ -1411,6 +1492,7 @@ const SCENE={
   dragon:{sky:['#160a20','#3a1450'],ground:'#3a2a48',g2:'#281a34',kind:'room'},
   dragon2:{sky:['#120818','#2e1040'],ground:'#332440',g2:'#22162c',kind:'cave'},
   dragon3:{sky:['#1a0616','#4a0e30'],ground:'#42203a',g2:'#2e1428',kind:'room'},
+  casino:{sky:['#1a0a24','#3a1450'],ground:'#6a2a3a',g2:'#4a1a2a',kind:'room'},
   tower1:{sky:['#1a1c24','#3a3e4c'],ground:'#6a6660',g2:'#4a4844',kind:'room'},
   tower2:{sky:['#16182a','#343a58'],ground:'#626068',g2:'#44424c',kind:'room'},
   tower3:{sky:['#20142a','#4a2e5a'],ground:'#6a5e70',g2:'#4a4050',kind:'room'},
@@ -1510,7 +1592,11 @@ function render(){
   if(mode==='title')return;
   if(battle&&(mode==='battle'||mode==='bmsg'||mode==='bcmd'))drawBattle();
   else if(mode==='map')drawWorldMap();
+  else if(mode==='slot'&&SLOTA)drawSlot();
+  else if(mode==='race'&&RACE)drawRace();
   else drawMap();
+  // ちず・スロット・レースの あいだは ステータスを かくす
+  wStatus.style.visibility=(mode==='map'||mode==='slot'||mode==='race')?'hidden':'';
   // ＨＰが あぶないときは ふちが あかく ひかる
   const s=stats();
   if(G.hp>0&&G.hp<=s.hpMax*0.25&&Math.sin(anim*0.18)>0){
@@ -1521,7 +1607,8 @@ function render(){
 /* ── ちず：いまの マップ ぜんたいを ちいさく みせる ── */
 const MAPCOL={'~':'#2452c8','#':'#1c5a22',',':'#3f9a40','.':'#5cb048','g':'#5cb048','^':'#8a8272',
   '-':'#c08a4a','=':'#d0b078','B':'#3a3e4c','W':'#241c30','X':'#2e2820','_':'#b0a08a','F':'#6a5a7a',
-  'f':'#8a7a5e','%':'#c04040','+':'#8a6030','K':'#8a5a2a','S':'#4a4230','<':'#f4f4f4','>':'#f4f4f4'};
+  'f':'#8a7a5e','%':'#c04040','+':'#8a6030','K':'#8a5a2a','S':'#4a4230','<':'#f4f4f4','>':'#f4f4f4',
+  'L':'#e04848','M':'#3a6ad0','N':'#3a9a4a','A':'#e8b820','Z':'#b07a3a','V':'#b07a3a','Q':'#b07a3a','J':'#b07a3a','H':'#1f7a3a'};
 const MAPPLACE={C:'#ffffff',c:'#ffffff',n:'#ff7060',T:'#ff7060',t:'#ff7060',v:'#ff7060',
   O:'#141018',o:'#141018',R:'#b040e0',Y:'#d8d0c0'};
 function drawWorldMap(){
@@ -1604,7 +1691,7 @@ function move(dir){
   if(blocked(nx,ny)){
     // ひとに ぶつかったら そのまま はなす
     let n=findNpc(nx,ny);
-    if(!n&&tileAt(nx,ny)==='K'){
+    if(!n&&'KH'.includes(tileAt(nx,ny))){
       const ex=nx+(dir==='left'?-1:dir==='right'?1:0);
       const ey=ny+(dir==='up'?-1:dir==='down'?1:0);
       n=findNpc(ex,ey);}
@@ -1662,7 +1749,7 @@ function action(){
   if(G.dir==='left')tx--;if(G.dir==='right')tx++;
   let n=findNpc(tx,ty);
   // カウンターの むこうにいる 店の人とも はなせる
-  if(!n&&tileAt(tx,ty)==='K'){
+  if(!n&&'KH'.includes(tileAt(tx,ty))){
     const ex=tx+(G.dir==='left'?-1:G.dir==='right'?1:0);
     const ey=ty+(G.dir==='up'?-1:G.dir==='down'?1:0);
     n=findNpc(ex,ey);}
@@ -1714,7 +1801,7 @@ function talkTo(n){
   if(n.boss2){say(n.lines,()=>startBattle('guard'));return;}
   if(n.heal){say(n.lines,()=>{resetHpMp();updStatus();save();LOG.ev('いのりば',G.map);
     say(["ゆうしゃの HPと MPが ぜんかいした！"]);});return;}
-  if(n.casino){say(n.lines,()=>casino());return;}
+  if(n.casino){say(n.lines,()=>casinoGame(n.casino));return;}
   // いずみの むらの どうぐやは いずみが きれいに なると しなものが ふえる
   if(n.shop==='item2'&&G.springFixed){say(n.after||n.lines,()=>openShop('item3'));return;}
   if(n.shop){say(n.lines,()=>openShop(n.shop));return;}
@@ -1733,53 +1820,146 @@ function talkTo(n){
   if(n.afterLv&&G.lv>=15){say(n.afterLv);return;}
   if(n.after){say(n.after);return;}
   say(n.lines);}
-/* ── カジノ（みなとまち）──
-   Ｇで コインを かい、スロットで ふやして、けいひんと こうかんする */
+/* ── うんこカジノ（みなとまちの ちか）──
+   コインの りょうがえ・けいひん・スロット・ブラックジャック・うんこレース */
 const COIN_PRICE=20,GOLD_ARMOR=6;
 const SLOT=[{s:'💩',w:1,pay:100},{s:'７',w:2,pay:30},{s:'★',w:3,pay:10},{s:'◆',w:4,pay:5}];
 const PRIZES=[
  {id:'herb',label:'やくそう ×10',coin:50,give:()=>{G.items.herb=(G.items.herb||0)+10;}},
  {id:'wing',label:'きえさりのつばさ ×5',coin:80,give:()=>{G.items.wing=(G.items.wing||0)+5;}},
  {id:'gold',label:'ゴールドうんこのよろい',coin:1500,give:()=>{if(!G.haveA.includes(GOLD_ARMOR))G.haveA.push(GOLD_ARMOR);}}];
-function spinReel(){let r=Math.random()*10;for(const t of SLOT){if((r-=t.w)<0)return t;}return SLOT[3];}
-function casino(){
+const coinTitle=t=>`${t}　コイン ${G.coins||0}まい`;
+function betMenu(title,onBet,back){
   mode='shop';G.coins=G.coins||0;
-  const l=[{id:'buy',label:'コインを かう'},{id:'slot',label:'スロットで あそぶ'},
-    {id:'prize',label:'けいひんと こうかん'},{id:'x',label:'やめる'}];
-  l.title=`コイン ${G.coins}まい　${G.gold}Ｇ`;
-  menu(null,l,id=>{
-    if(id==='x'){mode='field';say(["また きてね！"]);return;}
-    if(id==='buy')casinoBuy();else if(id==='slot')casinoSlot();else casinoPrize();});}
+  const l=[1,10,100].map(n=>({id:n,label:`${n}まい かける`,dis:G.coins<n}));
+  l.push({id:'x',label:'やめる'});l.title=coinTitle(title);
+  menu(null,l,id=>{if(id==='x'){(back||(()=>{mode='field';}))();return;}onBet(id);});}
+function casinoGame(kind){
+  if(kind==='buy')casinoBuy();else if(kind==='prize')casinoPrize();
+  else if(kind==='slot')casinoSlot();else if(kind==='bj')bjBet();else if(kind==='race')raceMenu();}
 function casinoBuy(){
   mode='shop';
   const l=[10,100,1000].map(n=>({id:n,label:`${n}まい`,price:n*COIN_PRICE,dis:G.gold<n*COIN_PRICE}));
-  l.push({id:'x',label:'もどる'});l.title=`1まい ${COIN_PRICE}Ｇ　（${G.gold}Ｇ）`;
+  l.push({id:'x',label:'やめる'});l.title=`1まい ${COIN_PRICE}Ｇ　（${G.gold}Ｇ／コイン ${G.coins||0}まい）`;
   menu(null,l,id=>{
-    if(id==='x'){casino();return;}
+    if(id==='x'){mode='field';return;}
     G.gold-=id*COIN_PRICE;G.coins=(G.coins||0)+id;updStatus();save();LOG.ev('コイン',id);
     say([`コインを ${id}まい かった！`],casinoBuy);});}
-function casinoSlot(){
-  mode='shop';
-  const l=[1,10,100].map(n=>({id:n,label:`${n}まい かける`,dis:G.coins<n}));
-  l.push({id:'x',label:'もどる'});l.title=`コイン ${G.coins}まい`;
-  menu(null,l,id=>{
-    if(id==='x'){casino();return;}
-    G.coins-=id;const r=[spinReel(),spinReel(),spinReel()];
-    const win=r[0]===r[1]&&r[1]===r[2]?id*r[0].pay:0;G.coins+=win;save();
-    const lines=[`くるくるくる…　［ ${r.map(t=>t.s).join(' ｜ ')} ］`];
-    if(win)lines.push(r[0].s==='💩'?`だいあたり！！ コインを ${win}まい てにいれた！`:`あたり！ コインを ${win}まい てにいれた！`);
-    else lines.push('ざんねん… はずれ。');
-    if(win)LOG.ev('スロット',win);
-    say(lines,casinoSlot);});}
 function casinoPrize(){
-  mode='shop';
+  mode='shop';G.coins=G.coins||0;
   const l=PRIZES.map(p=>({id:p.id,label:`${p.label}　${p.coin}まい`,
     dis:G.coins<p.coin||(p.id==='gold'&&G.haveA.includes(GOLD_ARMOR))}));
-  l.push({id:'x',label:'もどる'});l.title=`コイン ${G.coins}まい`;
+  l.push({id:'x',label:'やめる'});l.title=coinTitle('けいひん');
   menu(null,l,id=>{
-    if(id==='x'){casino();return;}
+    if(id==='x'){mode='field';return;}
     const p=PRIZES.find(p=>p.id===id);G.coins-=p.coin;p.give();updStatus();save();LOG.ev('けいひん',p.label);
     say([`${p.label}を てにいれた！`].concat(p.id==='gold'?['「そうび」で みにつけよう。']:[]),casinoPrize);});}
+
+/* スロット：リールが まわって ひとつずつ とまる */
+let SLOTA=null;
+function spinReel(){let r=Math.random()*10;for(const t of SLOT){if((r-=t.w)<0)return t;}return SLOT[3];}
+function casinoSlot(){
+  betMenu('スロット',bet=>{
+    G.coins-=bet;const r=[spinReel(),spinReel(),spinReel()];
+    const win=r[0]===r[1]&&r[1]===r[2]?bet*r[0].pay:0;G.coins+=win;save();
+    SLOTA={r,bet,win,t0:anim,stop:[45,70,95]};mode='slot';});}
+function drawSym(sym,x,y){
+  if(sym==='💩'){drawArt('e6',x+6,y+6,3);return;}
+  ctx.font='bold 34px sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';
+  ctx.fillStyle=sym==='７'?'#e02828':sym==='★'?'#e8b800':'#2a6ad0';ctx.fillText(sym==='７'?'7':sym,x+24,y+26);
+  ctx.textAlign='left';}
+function drawSlot(){
+  const f=anim-SLOTA.t0;
+  ctx.fillStyle='#1a0a24';ctx.fillRect(0,0,256,224);
+  for(let i=0;i<14;i++){ctx.fillStyle=(Math.floor(f/6)+i)%2?'#ffd23f':'#e04848';ctx.fillRect(28+i*15,18,6,6);}
+  ctx.fillStyle='#c02828';ctx.fillRect(24,30,208,130);ctx.fillStyle='#801818';ctx.fillRect(24,150,208,10);
+  ctx.fillStyle='#ffd23f';ctx.font='bold 13px sans-serif';ctx.textBaseline='top';ctx.fillText('うんこスロット',84,36);
+  for(let k=0;k<3;k++){
+    const x=40+k*62,y=58;ctx.fillStyle='#f4f0e8';ctx.fillRect(x,y,48,72);
+    ctx.save();ctx.beginPath();ctx.rect(x,y,48,72);ctx.clip();
+    if(f<SLOTA.stop[k]){const sp=f*9+k*17,off=sp%48,idx=Math.floor(sp/48);
+      for(let j=-1;j<2;j++)drawSym(SLOT[(idx-j+40)%4].s,x,y+12+j*48+off-24);}
+    else drawSym(SLOTA.r[k].s,x,y+12);
+    ctx.restore();ctx.strokeStyle='#5a1010';ctx.lineWidth=2;ctx.strokeRect(x,y,48,72);}
+  ctx.fillStyle='#e04848';ctx.fillRect(36,93,184,2);   // まんなかの せん
+  // レバー
+  const down=f<12;ctx.fillStyle='#c0c0c8';ctx.fillRect(236,down?80:48,4,down?60:92);
+  ctx.fillStyle='#ffd23f';ctx.beginPath();ctx.arc(238,down?80:48,7,0,7);ctx.fill();
+  ctx.fillStyle='#fff';ctx.font='11px sans-serif';ctx.fillText(`かけ ${SLOTA.bet}まい`,32,170);
+  if(f>SLOTA.stop[2]+8&&SLOTA.win&&Math.floor(f/8)%2){ctx.fillStyle='#ffd23f';ctx.font='bold 18px sans-serif';
+    ctx.fillText(SLOTA.r[0].s==='💩'?'だいあたり！！':'あたり！',84,184);}
+  if(f>SLOTA.stop[2]+45){const a=SLOTA;SLOTA=null;
+    const lines=[`［ ${a.r.map(t=>t.s).join(' ｜ ')} ］`];
+    if(a.win){lines.push(a.r[0].s==='💩'?`だいあたり！！ コインを ${a.win}まい てにいれた！`:`あたり！ コインを ${a.win}まい てにいれた！`);LOG.ev('スロット',a.win);}
+    else lines.push('ざんねん… はずれ。');
+    say(lines,casinoSlot);}}
+
+/* ブラックジャック：21に ちかいほうが かち。こえたら まけ */
+let BJ=null;
+const SUITS=['♠','♥','♦','♣'],RANKS=['A','2','3','4','5','6','7','8','9','10','J','Q','K'];
+function bjDeck(){const d=[];for(const s of SUITS)for(let r=1;r<=13;r++)d.push({s,r});
+  for(let i=d.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[d[i],d[j]]=[d[j],d[i]];}return d;}
+function bjVal(h){let v=0,a=0;h.forEach(c=>{v+=Math.min(10,c.r);if(c.r===1)a++;});
+  while(a>0&&v+10<=21){v+=10;a--;}return v;}
+const bjStr=h=>h.map(c=>c.s+RANKS[c.r-1]).join(' ');
+function bjBet(){betMenu('ブラックジャック',bet=>{
+  G.coins-=bet;const d=bjDeck();BJ={bet,deck:d,p:[d.pop(),d.pop()],d:[d.pop(),d.pop()]};
+  if(bjVal(BJ.p)===21){bjEnd(bjVal(BJ.d)===21?'push':'bj');return;}
+  bjTurn();},()=>{mode='field';});}
+function bjTurn(){
+  mode='shop';
+  const l=[{id:'hit',label:'ヒット（もう 1まい）'},{id:'stand',label:'スタンド（しょうぶ）'},
+    {id:'dbl',label:`ダブル（かけを 2ばい）`,dis:BJ.p.length!==2||G.coins<BJ.bet}];
+  l.title=`ディーラー： ${BJ.d[0].s+RANKS[BJ.d[0].r-1]} ？<br>あなた： ${bjStr(BJ.p)}（${bjVal(BJ.p)}）　かけ ${BJ.bet}まい`;
+  menu(null,l,id=>{
+    if(id==='hit'){BJ.p.push(BJ.deck.pop());if(bjVal(BJ.p)>21){bjEnd('bust');return;}bjTurn();return;}
+    if(id==='dbl'){G.coins-=BJ.bet;BJ.bet*=2;BJ.p.push(BJ.deck.pop());if(bjVal(BJ.p)>21){bjEnd('bust');return;}}
+    while(bjVal(BJ.d)<17)BJ.d.push(BJ.deck.pop());
+    const pv=bjVal(BJ.p),dv=bjVal(BJ.d);
+    bjEnd(dv>21||pv>dv?'win':pv===dv?'push':'lose');});}
+function bjEnd(r){
+  const b=BJ.bet,pay={bj:Math.floor(b*2.5),win:b*2,push:b}[r]||0;G.coins+=pay;save();
+  const l=[`ディーラー： ${bjStr(BJ.d)}（${bjVal(BJ.d)}）`,`あなた： ${bjStr(BJ.p)}（${bjVal(BJ.p)}）`];
+  l.push({bj:`ブラックジャック！ コインを ${pay}まい てにいれた！`,win:`あなたの かち！ コインを ${pay}まい てにいれた！`,
+    push:'ひきわけ。かけた コインは もどってきた。',lose:'ディーラーの かち…',bust:'21を こえてしまった… まけ。'}[r]);
+  if(pay>b)LOG.ev('ブラックジャック',pay);BJ=null;say(l,bjBet);}
+
+/* うんこレース：かつ うんこを あてる */
+const RACERS=[{art:'e1',name:'スライムのうんこ',odds:2,p:0.43},{art:'e2',name:'ゴブリンのうんこ',odds:3,p:0.29},
+  {art:'e3',name:'ゴーストのうんこ',odds:5,p:0.17},{art:'e4',name:'ウルフのうんこ',odds:8,p:0.11}];
+let RACE=null;
+function raceMenu(){
+  mode='shop';G.coins=G.coins||0;
+  const l=RACERS.map((r,i)=>({id:i,label:`${r.name}　×${r.odds}`}));
+  l.push({id:'x',label:'やめる'});l.title=coinTitle('どの うんこに かける？');
+  menu(null,l,id=>{
+    if(id==='x'){mode='field';return;}
+    betMenu(RACERS[id].name+'に',bet=>{
+      G.coins-=bet;let r=Math.random(),win=3;for(let i=0;i<4;i++){if((r-=RACERS[i].p)<0){win=i;break;}}
+      const T=RACERS.map((_,i)=>i===win?150:150+12+Math.floor(Math.random()*50));
+      RACE={pick:id,bet,win,T,t0:anim,ph:RACERS.map(()=>Math.random()*6)};mode='race';},raceMenu);});}
+function drawRace(){
+  const f=anim-RACE.t0,GO=30,st=24,fin=214;
+  ctx.fillStyle='#2a1a3a';ctx.fillRect(0,0,256,224);
+  ctx.fillStyle='#ffd23f';ctx.font='bold 13px sans-serif';ctx.textBaseline='top';ctx.fillText('うんこレース',90,8);
+  for(let i=0;i<4;i++){const y=34+i*40;
+    ctx.fillStyle=i%2?'#b08a5a':'#c29a6a';ctx.fillRect(0,y,256,36);
+    ctx.fillStyle=i===RACE.pick?'#ffd23f':'#fff';ctx.font='9px sans-serif';ctx.fillText((i+1)+'',6,y+2);
+    const t=Math.max(0,f-GO),T=RACE.T[i];let prog=Math.min(1,t/T);
+    prog=prog<1?prog+Math.sin(t*0.25+RACE.ph[i])*0.012:1;
+    const x=st+(fin-st-24)*Math.max(0,prog),hop=prog<1&&t>0?Math.abs(Math.sin(t*0.3+RACE.ph[i]))*4:0;
+    drawArt(RACERS[i].art,Math.round(x),Math.round(y+6-hop),2);
+    if(i===RACE.pick){ctx.strokeStyle='#ffd23f';ctx.lineWidth=1;ctx.strokeRect(1,y+1,254,34);}}
+  for(let k=0;k<8;k++){ctx.fillStyle=k%2?'#000':'#fff';ctx.fillRect(fin,34+k*20,6,20);}
+  if(f<GO){ctx.fillStyle='#fff';ctx.font='bold 22px sans-serif';ctx.fillText(f<GO/2?'よーい…':'ドン！',92,190);}
+  const end=GO+Math.max(...RACE.T)+30;
+  if(f>GO+RACE.T[RACE.win]){ctx.fillStyle='#ffd23f';ctx.font='bold 14px sans-serif';
+    ctx.fillText(`1ちゃく ${RACERS[RACE.win].name}！`,40,196);}
+  if(f>end){const a=RACE;RACE=null;const R=RACERS[a.win];
+    const l=[`1ちゃくは ${R.name}！`];
+    if(a.pick===a.win){const pay=a.bet*R.odds;G.coins+=pay;l.push(`あたり！ コインを ${pay}まい てにいれた！`);LOG.ev('うんこレース',pay);}
+    else l.push('ざんねん… はずれ。');
+    save();say(l,raceMenu);}}
 
 function openChest(c){
   G.chests[G.map+':'+c.x+','+c.y]=1;
@@ -1899,7 +2079,7 @@ function fieldMenu(){
           :`つぎのレベルまで あと ${Math.max(0,nextExp(G.lv)-G.exp)}`,
         G.lv>=20?"りゅうおうと たたかえる ちからが ある！"
           :`りゅうおうに いどむなら Ｌｖ20は ほしい。`,
-        `うんこクエスト ver 3.23`]);return;}
+        `うんこクエスト ver 3.24`]);return;}
     if(id==='it'){itemMenu(false);return;}
     if(id==='sp'){spellMenu(false);return;}});}
 function itemMenu(inBattle){
@@ -2056,7 +2236,7 @@ function clear(){
     <p>せかいに さわやかな かぜが もどった。<br>
     ゆうしゃうんこの なは えいえんに かたりつがれる――</p>
     <p style="color:#ffd23f;font-size:5cqw;">Ｌｖ${G.lv}　クリア！</p>
-    <p id="ver">ver 3.23</p>
+    <p id="ver">ver 3.24</p>
     <button class="tm sel" onclick="localStorage.removeItem('unkoq-save');location.reload()">もういちど</button>`;
   t.classList.remove('hide');
   wMsg.classList.remove('show');wStatus.classList.remove('show');}
@@ -2375,7 +2555,7 @@ $('btnClear').onclick=()=>{push();ART[ED.target]=ART[ED.target].map(r=>r.map(()=
 const SCENE_JP={world:'のはら（大地図）',castle:'ラダうんこ城',castle2:'ウンコール城',
   newtown:'はじまりの まち',town:'うんこの まち',town2:'みなとまち',village:'いずみの むら',
   cave:'うんこの どうくつ',cave2a:'ちからの どうくつ B1',cave2b:'ちからの どうくつ B2',
-  dragon:'りゅうおうの しろ',tower1:'うんこの とう 1F',tower2:'うんこの とう 2F',tower3:'うんこの とう さいじょうかい'};
+  dragon:'りゅうおうの しろ',casino:'ちかの うんこカジノ',tower1:'うんこの とう 1F',tower2:'うんこの とう 2F',tower3:'うんこの とう さいじょうかい'};
 const SCENE_INIT=JSON.parse(JSON.stringify(SCENE));
 function buildBg(){
   const el=$('bgList');el.innerHTML='';
