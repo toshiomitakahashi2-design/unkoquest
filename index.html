@@ -180,7 +180,7 @@ html,body{height:100%;background:#000;color:#fff;font-family:'DotGothic16',monos
       <button class="tm sel" id="tmNew">はじめから</button>
       <button class="tm dis" id="tmCont">つづきから</button>
       <p style="font-size:2.8cqw;color:#777;">十字キー＝いどう／Ａ＝はなす・しらべる／Ｂ＝メニュー</p>
-      <p id="ver">ver 3.21</p>
+      <p id="ver">ver 3.22</p>
     </div>
   </div>
   <div id="pad">
@@ -1048,19 +1048,19 @@ const MAPS={
  castle:{d:CASTLE,enc:false,name:"ラダうんこ城"},
  town:{d:TOWN,enc:false,name:"うんこの まち"},
  town2:{d:TOWN2,enc:false,name:"みなとまち ウンコット"},
- cave:{d:CAVE,enc:true,pool:['e4','e5','e3'],name:"うんこの どうくつ　地下１かい"},
- caveb:{d:CAVEB,enc:true,pool:['e5','e4','d1'],name:"うんこの どうくつ　地下２かい"},
+ cave:{d:CAVE,enc:true,pool:['e2','e2','e3','e3'],name:"うんこの どうくつ　地下１かい"},
+ caveb:{d:CAVEB,enc:true,pool:['e2','e3','e3','e3'],name:"うんこの どうくつ　地下２かい"},
  dragon:{d:DRAGON,enc:true,pool:['d1','d1','d2','d2','d3'],name:"りゅうおうの しろ　１かい"},
  dragon2:{d:DRAGON2,enc:true,pool:['d1','d2','d2','d3'],name:"りゅうおうの しろ　地下１かい"},
  dragon3:{d:DRAGON3,enc:true,pool:['d2','d3','d3'],name:"りゅうおうの しろ　地下２かい"},
- cave2a:{d:CAVE2A,enc:true,pool:['e4','e4','e5'],name:"ちからの どうくつ　地下１かい"},
- cave2b:{d:CAVE2B,enc:true,pool:['e5','e5','d1'],name:"ちからの どうくつ　地下２かい"},
+ cave2a:{d:CAVE2A,enc:true,pool:['e3','e3','e4','e4'],name:"ちからの どうくつ　地下１かい"},
+ cave2b:{d:CAVE2B,enc:true,pool:['e3','e4','e4','e4'],name:"ちからの どうくつ　地下２かい"},
  village:{d:VILLAGE,enc:false,name:"いずみの むら"},
  castle2:{d:CASTLE2,enc:false,name:"ウンコール城"},
  newtown:{d:NEWTOWN,enc:false,name:"はじまりの まち"},
- tower1:{d:TOWER1,enc:true,pool:['e4','e5','e5','d1'],name:"うんこの とう　１かい"},
- tower2:{d:TOWER2,enc:true,pool:['e5','d1','d1'],name:"うんこの とう　２かい"},
- tower3:{d:TOWER3,enc:true,pool:['e5','d1','d2'],name:"うんこの とう　さいじょうかい"},
+ tower1:{d:TOWER1,enc:true,pool:['e3','e3','e4','e4'],name:"うんこの とう　１かい"},
+ tower2:{d:TOWER2,enc:true,pool:['e3','e4','e4','e4'],name:"うんこの とう　２かい"},
+ tower3:{d:TOWER3,enc:true,pool:['e3','e4','e4','e4'],name:"うんこの とう　さいじょうかい"},
 };
 
 /* ワープ（乗ると移動） */
@@ -1316,7 +1316,7 @@ const SHOPS={
  inn3:{title:"やどや",inn:35},
  inn2:{title:"やどや",inn:60},
 };
-const SPELLS=[{name:"プリ",mp:5,type:'heal',power:40},
+const SPELLS=[{name:"プリ",mp:5,type:'heal',power:30},
  {name:"ブリ",mp:5,type:'atk',power:30},
  {name:"ジュワ〜",mp:8,type:'warp',lv:6},
  {name:"プリプリ",mp:20,type:'heal',power:200,lv:8},
@@ -1589,7 +1589,7 @@ function move(dir){
   const w=(WARPS[G.map]||[]).find(w=>w.x===nx&&w.y===ny);
   if(w){doWarp(w);return;}
   if(MAPS[G.map].enc){
-    G.steps++;
+    G.steps+=MAPS[G.map].pool?1:0.5;   // 大地図は どうくつの はんぶんしか でない
     if(G.steps>=G.thr){G.steps=0;G.thr=6+Math.floor(Math.random()*11);   // へいきん 11ほに 1かい（もとの 9ほより 20% すくなく）
       const t=tileAt(nx,ny);
       if(t!=='='&&t!=='-'&&t!=='g'){startBattle(pickEnemy(t));save();return;}}}
@@ -1621,9 +1621,9 @@ function zoneAt(x,y){
 function pickEnemy(t){
   const mp=MAPS[G.map];
   if(mp.pool)return mp.pool[Math.floor(Math.random()*mp.pool.length)];
-  let pool=ZONE_POOL[zoneAt(G.x,G.y)];
+  const z=zoneAt(G.x,G.y);let pool=ZONE_POOL[z];
   if(t===',')pool=pool.slice(1).concat(pool[pool.length-1]);
-  if(Math.random()<0.02)return 'e6';
+  if(z===5&&Math.random()<0.04)return 'e6';   // きんのうんこは りゅうおうの ちだけに でる
   return pool[Math.floor(Math.random()*pool.length)];}
 
 /* ── しらべる／はなす ── */
@@ -1870,7 +1870,7 @@ function fieldMenu(){
           :`つぎのレベルまで あと ${Math.max(0,nextExp(G.lv)-G.exp)}`,
         G.lv>=20?"りゅうおうと たたかえる ちからが ある！"
           :`りゅうおうに いどむなら Ｌｖ20は ほしい。`,
-        `うんこクエスト ver 3.21`]);return;}
+        `うんこクエスト ver 3.22`]);return;}
     if(id==='it'){itemMenu(false);return;}
     if(id==='sp'){spellMenu(false);return;}});}
 function itemMenu(inBattle){
@@ -1936,7 +1936,7 @@ function spellMenu(inBattle){
 function startBattle(key){
   const e=ENEMY[key];
   battle={key,name:e.name,hp:e.hp,hpMax:e.hp,atk:e.atk,def:e.def,
-    exp:e.exp,gold:e.gold,art:e.art,boss:!!e.boss,rage:!!e.rage,poison:!!e.poison};
+    exp:e.exp,gold:Math.ceil(e.gold/2),art:e.art,boss:!!e.boss,rage:!!e.rage,poison:!!e.poison};
   LOG.ev('戦闘開始',e.name);
   mode='bmsg';closeMenu();
   say([`${e.name}が あらわれた！`],battleCmd);}
@@ -2027,7 +2027,7 @@ function clear(){
     <p>せかいに さわやかな かぜが もどった。<br>
     ゆうしゃうんこの なは えいえんに かたりつがれる――</p>
     <p style="color:#ffd23f;font-size:5cqw;">Ｌｖ${G.lv}　クリア！</p>
-    <p id="ver">ver 3.21</p>
+    <p id="ver">ver 3.22</p>
     <button class="tm sel" onclick="localStorage.removeItem('unkoq-save');location.reload()">もういちど</button>`;
   t.classList.remove('hide');
   wMsg.classList.remove('show');wStatus.classList.remove('show');}
