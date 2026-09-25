@@ -180,7 +180,7 @@ html,body{height:100%;background:#000;color:#fff;font-family:'DotGothic16',monos
       <button class="tm sel" id="tmNew">はじめから</button>
       <button class="tm dis" id="tmCont">つづきから</button>
       <p style="font-size:2.8cqw;color:#777;">十字キー＝いどう／Ａ＝はなす・しらべる／Ｂ＝メニュー</p>
-      <p id="ver">ver 3.22</p>
+      <p id="ver">ver 3.23</p>
     </div>
   </div>
   <div id="pad">
@@ -1509,6 +1509,7 @@ function drawBattle(){
 function render(){
   if(mode==='title')return;
   if(battle&&(mode==='battle'||mode==='bmsg'||mode==='bcmd'))drawBattle();
+  else if(mode==='map')drawWorldMap();
   else drawMap();
   // ＨＰが あぶないときは ふちが あかく ひかる
   const s=stats();
@@ -1516,6 +1517,33 @@ function render(){
     ctx.fillStyle='#e5484d';
     ctx.fillRect(0,0,256,3);ctx.fillRect(0,221,256,3);
     ctx.fillRect(0,0,3,224);ctx.fillRect(253,0,3,224);}}
+
+/* ── ちず：いまの マップ ぜんたいを ちいさく みせる ── */
+const MAPCOL={'~':'#2452c8','#':'#1c5a22',',':'#3f9a40','.':'#5cb048','g':'#5cb048','^':'#8a8272',
+  '-':'#c08a4a','=':'#d0b078','B':'#3a3e4c','W':'#241c30','X':'#2e2820','_':'#b0a08a','F':'#6a5a7a',
+  'f':'#8a7a5e','%':'#c04040','+':'#8a6030','K':'#8a5a2a','S':'#4a4230','<':'#f4f4f4','>':'#f4f4f4'};
+const MAPPLACE={C:'#ffffff',c:'#ffffff',n:'#ff7060',T:'#ff7060',t:'#ff7060',v:'#ff7060',
+  O:'#141018',o:'#141018',R:'#b040e0',Y:'#d8d0c0'};
+function drawWorldMap(){
+  const m=curMap(),W=m[0].length,H=m.length;
+  const s=Math.max(1,Math.floor(Math.min(240/W,190/H)));
+  const ox=Math.floor((256-W*s)/2),oy=Math.floor((224-H*s)/2)+6;
+  ctx.fillStyle='#000';ctx.fillRect(0,0,256,224);
+  for(let y=0;y<H;y++)for(let x=0;x<W;x++){
+    let t=m[y][x];if(t==='S'&&G.springFixed)t='~';
+    ctx.fillStyle=MAPCOL[t]||MAPPLACE[t]||'#5cb048';ctx.fillRect(ox+x*s,oy+y*s,s,s);}
+  // 城・町は すこし おおきく
+  for(let y=0;y<H;y++)for(let x=0;x<W;x++){const c=MAPPLACE[m[y][x]];if(!c)continue;
+    const r=Math.max(2,s);ctx.fillStyle='#000';ctx.fillRect(ox+x*s-r/2-1,oy+y*s-r/2-1,s+r+2,s+r+2);
+    ctx.fillStyle=c;ctx.fillRect(ox+x*s-r/2,oy+y*s-r/2,s+r,s+r);}
+  // ゆうしゃ（てんめつ）
+  if(Math.sin(anim*0.2)>-0.7){const r=Math.max(7,s+3),cx=ox+G.x*s+s/2,cy=oy+G.y*s+s/2;
+    ctx.fillStyle='#000';ctx.fillRect(cx-r/2-1,cy-r/2-1,r+2,r+2);
+    ctx.fillStyle='#ffe040';ctx.fillRect(cx-r/2,cy-r/2,r,r);
+    ctx.fillStyle='#000';ctx.fillRect(cx-1,cy-1,2,2);}
+  ctx.fillStyle='#fff';ctx.font='bold 10px sans-serif';ctx.textBaseline='top';
+  ctx.fillText(MAPS[G.map].name||'せかいちず',6,3);
+  ctx.font='9px sans-serif';ctx.fillStyle='#bbb';ctx.fillText('Ａ／Ｂで とじる',180,213);}
 
 /* ── ステータス窓 ── */
 function updStatus(){
@@ -1858,8 +1886,9 @@ function fieldMenu(){
   if(mode!=='field')return;
   mode='menu';
   menu(null,[{id:'sp',label:'じゅもん'},{id:'it',label:'どうぐ'},
-    {id:'eq',label:'そうび'},{id:'st',label:'つよさ'},{id:'x',label:'とじる'}],id=>{
+    {id:'eq',label:'そうび'},{id:'st',label:'つよさ'},{id:'map',label:'ちず'},{id:'x',label:'とじる'}],id=>{
     if(id==='x'){mode='field';return;}
+    if(id==='map'){mode='map';return;}
     if(id==='eq'){equipMenu();return;}
     if(id==='st'){const s=stats();mode='field';
       say([`ゆうしゃ Ｌｖ${G.lv}　ＨＰ${G.hp}/${s.hpMax}　ＭＰ${G.mp}/${s.mpMax}`,
@@ -1870,7 +1899,7 @@ function fieldMenu(){
           :`つぎのレベルまで あと ${Math.max(0,nextExp(G.lv)-G.exp)}`,
         G.lv>=20?"りゅうおうと たたかえる ちからが ある！"
           :`りゅうおうに いどむなら Ｌｖ20は ほしい。`,
-        `うんこクエスト ver 3.22`]);return;}
+        `うんこクエスト ver 3.23`]);return;}
     if(id==='it'){itemMenu(false);return;}
     if(id==='sp'){spellMenu(false);return;}});}
 function itemMenu(inBattle){
@@ -2027,7 +2056,7 @@ function clear(){
     <p>せかいに さわやかな かぜが もどった。<br>
     ゆうしゃうんこの なは えいえんに かたりつがれる――</p>
     <p style="color:#ffd23f;font-size:5cqw;">Ｌｖ${G.lv}　クリア！</p>
-    <p id="ver">ver 3.22</p>
+    <p id="ver">ver 3.23</p>
     <button class="tm sel" onclick="localStorage.removeItem('unkoq-save');location.reload()">もういちど</button>`;
   t.classList.remove('hide');
   wMsg.classList.remove('show');wStatus.classList.remove('show');}
@@ -2150,10 +2179,12 @@ $('tmCont').onclick=()=>{if(hasSave&&load())begin(true);};
 function onA(){
   if(mode==='title'){tIdx===0?begin(false):(hasSave&&load()&&begin(true));return;}
   if(mode==='msg'||mode==='bmsg'){nextMsg();return;}
+  if(mode==='map'){mode='field';return;}
   if(mode==='menu'||mode==='bcmd'||mode==='shop'){pickMenu();return;}
   if(mode==='field')action();}
 function onB(){
   if(mode==='msg'||mode==='bmsg'){nextMsg();return;}
+  if(mode==='map'){mode='field';return;}
   if(mode==='menu'){closeMenu();mode='field';return;}
   if(mode==='shop'){closeMenu();mode='field';return;}
   if(mode==='field')fieldMenu();}
@@ -2198,6 +2229,7 @@ $('btnA').onclick=onA;$('btnB').onclick=onB;
   el.onclick=()=>{if(touched){touched=false;return;}fn();};});
 // がめんタップでも メッセージを おくれる
 $('game').addEventListener('click',()=>{
+  if(mode==='map'){mode='field';return;}
   if(mode==='msg'||mode==='bmsg')nextMsg();});
 let toastT=null;
 function toast(msg,ms){
