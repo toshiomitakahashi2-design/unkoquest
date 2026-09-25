@@ -180,7 +180,7 @@ html,body{height:100%;background:#000;color:#fff;font-family:'DotGothic16',monos
       <button class="tm sel" id="tmNew">はじめから</button>
       <button class="tm dis" id="tmCont">つづきから</button>
       <p style="font-size:2.8cqw;color:#777;">十字キー＝いどう／Ａ＝はなす・しらべる／Ｂ＝メニュー</p>
-      <p id="ver">ver 3.20</p>
+      <p id="ver">ver 3.21</p>
     </div>
   </div>
   <div id="pad">
@@ -1327,7 +1327,7 @@ const SPELLS=[{name:"プリ",mp:5,type:'heal',power:40},
 
 const LV_MAX=40;
 function nextExp(lv){return Math.floor((lv*lv*7+lv*10)*1.25);}   // もとの 1.25ばい
-function statFor(lv){return{hpMax:24+lv*11,mpMax:Math.floor(5+lv*2.5),atk:4+lv*2,def:3+lv*2};}
+function statFor(lv){return{hpMax:24+lv*11,mpMax:Math.floor(5+lv*2.5+lv*lv*0.1125),atk:4+lv*2,def:3+lv*2};}
 
 /* ═══════════════════════════════════════════════
    4. エンジン
@@ -1870,7 +1870,7 @@ function fieldMenu(){
           :`つぎのレベルまで あと ${Math.max(0,nextExp(G.lv)-G.exp)}`,
         G.lv>=20?"りゅうおうと たたかえる ちからが ある！"
           :`りゅうおうに いどむなら Ｌｖ20は ほしい。`,
-        `うんこクエスト ver 3.20`]);return;}
+        `うんこクエスト ver 3.21`]);return;}
     if(id==='it'){itemMenu(false);return;}
     if(id==='sp'){spellMenu(false);return;}});}
 function itemMenu(inBattle){
@@ -2027,7 +2027,7 @@ function clear(){
     <p>せかいに さわやかな かぜが もどった。<br>
     ゆうしゃうんこの なは えいえんに かたりつがれる――</p>
     <p style="color:#ffd23f;font-size:5cqw;">Ｌｖ${G.lv}　クリア！</p>
-    <p id="ver">ver 3.20</p>
+    <p id="ver">ver 3.21</p>
     <button class="tm sel" onclick="localStorage.removeItem('unkoq-save');location.reload()">もういちど</button>`;
   t.classList.remove('hide');
   wMsg.classList.remove('show');wStatus.classList.remove('show');}
