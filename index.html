@@ -180,7 +180,7 @@ html,body{height:100%;background:#000;color:#fff;font-family:'DotGothic16',monos
       <button class="tm sel" id="tmNew">はじめから</button>
       <button class="tm dis" id="tmCont">つづきから</button>
       <p style="font-size:2.8cqw;color:#777;">十字キー＝いどう／Ａ＝はなす・しらべる／Ｂ＝メニュー</p>
-      <p id="ver">ver 3.17</p>
+      <p id="ver">ver 3.18</p>
     </div>
   </div>
   <div id="pad">
@@ -1326,7 +1326,7 @@ const SPELLS=[{name:"プリ",mp:12,type:'heal',power:38},
  {name:"ブリブリブリ",mp:26,type:'atk',power:170,lv:21}];
 
 const LV_MAX=40;
-function nextExp(lv){return Math.floor(lv*lv*7+lv*10)*5;}
+function nextExp(lv){return Math.floor((lv*lv*7+lv*10)*1.25);}   // もとの 1.25ばい
 function statFor(lv){return{hpMax:24+lv*11,mpMax:Math.floor(5+lv*2.5),atk:4+lv*2,def:3+lv*2};}
 
 /* ═══════════════════════════════════════════════
@@ -1590,7 +1590,7 @@ function move(dir){
   if(w){doWarp(w);return;}
   if(MAPS[G.map].enc){
     G.steps++;
-    if(G.steps>=G.thr){G.steps=0;G.thr=25+Math.floor(Math.random()*45);   // へいきん 47ほに 1かい
+    if(G.steps>=G.thr){G.steps=0;G.thr=6+Math.floor(Math.random()*11);   // へいきん 11ほに 1かい（もとの 9ほより 20% すくなく）
       const t=tileAt(nx,ny);
       if(t!=='='&&t!=='-'&&t!=='g'){startBattle(pickEnemy(t));save();return;}}}
   if(G.steps%12===0)save();}
@@ -1870,7 +1870,7 @@ function fieldMenu(){
           :`つぎのレベルまで あと ${Math.max(0,nextExp(G.lv)-G.exp)}`,
         G.lv>=20?"りゅうおうと たたかえる ちからが ある！"
           :`りゅうおうに いどむなら Ｌｖ20は ほしい。`,
-        `うんこクエスト ver 3.17`]);return;}
+        `うんこクエスト ver 3.18`]);return;}
     if(id==='it'){itemMenu(false);return;}
     if(id==='sp'){spellMenu(false);return;}});}
 function itemMenu(inBattle){
@@ -2027,7 +2027,7 @@ function clear(){
     <p>せかいに さわやかな かぜが もどった。<br>
     ゆうしゃうんこの なは えいえんに かたりつがれる――</p>
     <p style="color:#ffd23f;font-size:5cqw;">Ｌｖ${G.lv}　クリア！</p>
-    <p id="ver">ver 3.17</p>
+    <p id="ver">ver 3.18</p>
     <button class="tm sel" onclick="localStorage.removeItem('unkoq-save');location.reload()">もういちど</button>`;
   t.classList.remove('hide');
   wMsg.classList.remove('show');wStatus.classList.remove('show');}
@@ -2132,7 +2132,7 @@ function begin(cont){
     weapon:0,armor:0,shield:0,helm:0,haveW:[0],haveA:[0],haveS:[0],haveH:[0],
     items:{herb:3,wing:0},chests:{},dunVer:1,worldVer:2,coins:0,
     bossDead:false,boss2Dead:false,kingGift:false,springFixed:false,springQuest:false,
-    steps:0,thr:40};resetHpMp();save();}
+    steps:0,thr:10};resetHpMp();save();}
   $('title').classList.add('hide');
   LOG.init();LOG.ev(cont?'つづきから':'はじめから');
   mode='field';updStatus();
