@@ -180,7 +180,7 @@ html,body{height:100%;background:#000;color:#fff;font-family:'DotGothic16',monos
       <button class="tm sel" id="tmNew">はじめから</button>
       <button class="tm dis" id="tmCont">つづきから</button>
       <p style="font-size:2.8cqw;color:#777;">十字キー＝いどう／Ａ＝はなす・しらべる／Ｂ＝メニュー</p>
-      <p id="ver">ver 3.16</p>
+      <p id="ver">ver 3.17</p>
     </div>
   </div>
   <div id="pad">
@@ -528,17 +528,17 @@ const WORLD=[
 "~~~~........###.o.###..........^.^..^^^^^^^,,,,,,,###.........^^^^gg........###~~,,~~..........,,~~~~~",
 "~~~~........###...##...........^^..^^..^^,,,,,,,,,###..........^.^gggg...^..###,~~~~..........~~~~~~~~",
 "~~~~..,.##...#######..........^^.^^^...^.,,,,,,,..,#..........^^.^g..gg....^^^,,...,.........~~~~~~~~~",
-"~~~~~.,,###...#####.............^^^......##^^^,...,,.................g^^^^.........,....t....~~~~~~~~~",
-"~~~~~.,,####...##..............^^^^......##,,,,....,......^^...^.^^.....^^^........,....=====--~~~~~~~",
-"~~~~~~,,#####.........^^...^^..^^^......,,,,,..........^..^~~~=~~~^^#^,...^^^...^.,,.........~~~~~~~~~",
-"~~~~~~~,#####.........^^...^^..^^^^.....#,,,..........^^^^^~..=..~^^###,.^^...^^^,,,.......~~~~~~~~~~~",
-"~~~~~~~~#####.........^^.Y..^...^^^.....####..........^^^^.~..=..~^^###^..^^^^...,,,.....~~~~~~~~~~~~~",
-"~~~~~~~~~~............^^...^^...^^^^^...####...........^^^.~..R..~^^,,###^^.............~~~~~~~~~~~~~~",
-"~~~~~~~~~~~~......,...^^^.^^^....^^.....####...........^.^.~.....~^^..##^^^^..^.......~~~~~~~~~~~~~~~~",
-"~~~~~~~~~~~~~~.........^^^^^......^^^...####.,.........^^^^~.....~^^..^#^^^^^^^.....~~~~~~~~~~~~~~~~~~",
-"~~~~~~~~~~~~~~,,..~......^.......^^^^...#####,,........^^^^~~~~~~~^^..###^^^^^^^...~~~~~~~~~~~~~~~~~~~",
-"~~~~~~~~~~~~~~~~,~~~~~~.......^^^^^^..^..#####,...,....^^^^^^...^^^...##^#^^^^^.^~~~~~~~~~~~~~~~~~~~~~",
-"~~~~~~~~~~~~~~~~~~~~~~~~~~....^^^.^^.....#####,..,,,....^^.#^^^^^#....#^###^~~~~~~~~~~~~~~~~~~~~~~~~~~",
+"~~~~~.,,###...#####.............^^^^......^^^^,...,,.................g^^^^.........,....t....~~~~~~~~~",
+"~~~~~.,,####...##..............^^^^~~~=~~~^,,,,....,...........^........^^^........,....=====--~~~~~~~",
+"~~~~~~,,#####.........^^...^^..^^^^~..=..~^^,..........^.....,..#####^,...^^^...^.,,.........~~~~~~~~~",
+"~~~~~~~,#####.........^^...^^..^^^^~..=..~^^..........^^^^..,,#########,.^^...^^^,,,.......~~~~~~~~~~~",
+"~~~~~~~~#####.........^^.Y..^...^^^~..R..~.^..........^^^^...,#########^..^^^^...,,,.....~~~~~~~~~~~~~",
+"~~~~~~~~~~............^^...^^...^^^~.....~.^...........^^...#.,,,,,,,,###^^.............~~~~~~~~~~~~~~",
+"~~~~~~~~~~~~......,...^^^.^^^....^^~.....~^^...........^...###,,,,,,..##^^^^..^.......~~~~~~~~~~~~~~~~",
+"~~~~~~~~~~~~~~.........^^^^^.....^^~~~~~~~^#.,.........^^..####.......^#^^^^^^^.....~~~~~~~~~~~~~~~~~~",
+"~~~~~~~~~~~~~~,,..~......^.......^^^^...^^^##,,........^^^.#####......###^^^^^^^...~~~~~~~~~~~~~~~~~~~",
+"~~~~~~~~~~~~~~~~,~~~~~~.......^^^^^^^^^^^^####,...,....^^^^######.....##^#^^^^^.^~~~~~~~~~~~~~~~~~~~~~",
+"~~~~~~~~~~~~~~~~~~~~~~~~~~....^^^.^^.....#####,..,,,....^^.#######....#^###^~~~~~~~~~~~~~~~~~~~~~~~~~~",
 "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~.~~~~~~~,,,,,.####.##########~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
 "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
 "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"];
@@ -630,8 +630,8 @@ const TOWN2=[
 "...BBB+BBBB..................~~~~~~~~~~~",
 "....................BBBBBBB..~~~~~~~~~~~",
 "....................B_____B..~~~~~~~~~~~",
-"...BBBBBBB..BBBBBBB.B_____B..~~~~~~~~~~~",
-"...B_____B..B_____B.B_____B..~~~~~~~~~~~",
+"...BBBBBBB..BBBBBBB.BKKKKKB..~~~~~~~~~~~",
+"...B_____B..B_____B.B%%%%%B..~~~~~~~~~~~",
 "...B_____B..B_____B.BBB+BBB..~~~~~~~~~~~",
 "...B_____B..B_____B..........~~~~~~~~~~~",
 "...BBB+BBB..BBB+BBB......#...~~~~~~~~~~~",
@@ -1067,7 +1067,7 @@ const MAPS={
 const WARPS={
  world:[{x:50,y:8,to:'castle',tx:19,ty:28},{x:56,y:16,to:'newtown',tx:19,ty:28},{x:62,y:35,to:'town',tx:19,ty:28},
    {x:22,y:46,to:'castle2',tx:19,ty:28},{x:84,y:47,to:'cave',tx:20,ty:31},{x:66,y:45,to:'village',tx:19,ty:28},
-   {x:16,y:63,to:'cave2a',tx:15,ty:22},{x:88,y:66,to:'town2',tx:19,ty:28},{x:62,y:71,to:'dragon',tx:24,ty:37},{x:25,y:70,to:'tower1',tx:12,ty:19}],
+   {x:16,y:63,to:'cave2a',tx:15,ty:22},{x:88,y:66,to:'town2',tx:19,ty:28},{x:38,y:70,to:'dragon',tx:24,ty:37},{x:25,y:70,to:'tower1',tx:12,ty:19}],
  castle:[{x:19,y:29,to:'world',tx:50,ty:9},{x:20,y:29,to:'world',tx:50,ty:9}],
  castle2:[{x:19,y:29,to:'world',tx:22,ty:47},{x:20,y:29,to:'world',tx:22,ty:47}],
  newtown:[{x:19,y:29,to:'world',tx:56,ty:17},{x:20,y:29,to:'world',tx:56,ty:17}],
@@ -1078,8 +1078,8 @@ const WARPS={
  caveb:[{x:9,y:29,to:'cave',tx:9,ty:27}],
  cave2a:[{x:15,y:23,to:'world',tx:16,ty:64},{x:6,y:21,to:'cave2b',tx:5,ty:21}],
  cave2b:[{x:5,y:21,to:'cave2a',tx:6,ty:20}],
- dragon:[{x:23,y:38,to:'world',tx:62,ty:72},{x:24,y:38,to:'world',tx:62,ty:72},
-   {x:25,y:38,to:'world',tx:62,ty:72},
+ dragon:[{x:23,y:38,to:'world',tx:38,ty:71},{x:24,y:38,to:'world',tx:38,ty:71},
+   {x:25,y:38,to:'world',tx:38,ty:71},
    {x:24,y:18,to:'dragon2',tx:24,ty:32}],
  dragon2:[{x:24,y:32,to:'dragon',tx:24,ty:20},{x:24,y:5,to:'dragon3',tx:24,ty:32}],
  dragon3:[{x:24,y:32,to:'dragon2',tx:24,ty:6}],
@@ -1098,7 +1098,7 @@ const NPCS={
    "みなみひがしに もりに かこまれた ちいさな まちが ある。まずは そこへ ゆくがよい。",
    "そなたに 100ゴールドを さずけよう。"],
    after:["おお ゆうしゃうんこよ。ぶじで なによりじゃ。",
-   "ドラゴンロードは みなみひがしの はて、やまと うみに とざされた ちに おる。",
+   "ドラゴンロードは みなみの はて、やまと うみに とざされた ちに おる。",
    "しろの おくは ちかに ふかく のびておるらしい。"],
    afterLv:["ほう… ずいぶん たくましく なったのう。",
    "そなたなら ドラゴンロードにも まけまい。"],
@@ -1106,6 +1106,7 @@ const NPCS={
   {x:17,y:7,art:'npc',lines:["おうさまの まえでは しずかにな。"]},
   {x:22,y:7,art:'npc',lines:["なかにわの いけは この しろの じまんだ。"]},
   {x:19,y:23,art:'npc',move:true,lines:["しろの そとには まものの うんこが おる。","くさむらは とくに あぶないぞ。"]},
+  {x:23,y:22,art:'npc',heal:true,lines:["ここは しろの いのりば。","つかれた からだを いやして あげましょう。"]},
   {x:6,y:5,art:'npc',lines:["ここは しょこ。","「ジュワ〜」を おぼえれば この しろに いっしゅんで もどれる。"]},
   {x:33,y:5,art:'npc',lines:["ほうもつこの たからばこは","ゆうしゃどのなら もっていって よいと おおせだ。"]},
   {x:6,y:24,art:'npc',move:true,lines:["おれたち へいしも たたかいたいんだが","うんこじゃ つるぎが もてなくてな…"]},
@@ -1128,6 +1129,7 @@ const NPCS={
   {x:33,y:21,art:'npc',lines:["りゅうおうの しろは ちかに ふかい。","３かいそう あると きいたぞ。"]},
   {x:20,y:14,art:'npc',move:true,lines:["この まんなかの さいだんは","むかし ゆうしゃが いのりを ささげた ばしょさ。"]},
   {x:14,y:19,art:'npc',move:true,lines:["うんこの どうくつも ちかにかいまで あるらしい。","おくには おたからが ねむっているとか。"]},
+  {x:22,y:23,art:'npc',heal:true,lines:["ウンコールの いのりばへ ようこそ。","かみの ごかごを。"]},
   {x:26,y:19,art:'npc',move:true,lines:["たてと かぶとで みのまもりが あがる。","みなとまちで そろえるんだな。"]},
  ],
  newtown:[
@@ -1150,7 +1152,7 @@ const NPCS={
   {x:27,y:18,art:'npc',lines:["ふんすいの ひろばは まちの じまんさ。"]},
   {x:6,y:25,art:'npc',lines:["ひがしの みなとまちには つよい ぶきが あるらしい。","でも たかいんだ…"]},
   {x:16,y:25,art:'npc',lines:["いらなくなった ぶきや よろいは","みせで うることが できるよ。"]},
-  {x:28,y:26,art:'npc',lines:["ドラゴンロードの しろは みなみひがしの はてに あるって。"]},
+  {x:28,y:26,art:'npc',lines:["ドラゴンロードの しろは みなみの はてに あるって。","ひがしの とうげを こえて ずっと にしへ いくんだ。"]},
   {x:21,y:8,art:'npc',move:true,lines:["ひがしに 「いずみの むら」が あってね。","おおきな かわの ほとりだよ。いずみが にごって こまってるらしい。"]},
   {x:11,y:11,art:'npc',move:true,lines:["メタルスライムの うんこは にげあしが はやいけど","たおすと どっさり けいけんちが もらえるよ！"]},
   {x:34,y:16,art:'npc',move:true,lines:["みずうみの ほとりの はたけさ。","うんこが よく そだつんだ。"]},
@@ -1171,6 +1173,8 @@ const NPCS={
   {x:27,y:22,art:'npc',move:true,lines:["ざぶ〜ん。","なみの おとが きもちいいねえ。"]},
   {x:22,y:6,art:'npc',lines:["そうこには なにも ないよ。","…たぶんね。"]},
   {x:10,y:11,art:'npc',move:true,lines:["ベチョは つよい じゅもんだけど","ボスには きかないって うわさだ。"]},
+  {x:23,y:21,art:'shop',casino:true,lines:["ようこそ うんこカジノへ！","コインを かって スロットで ひとやま あてな！"]},
+  {x:22,y:23,art:'npc',lines:["スロットで 💩が 3つ そろうと 100ばい だってさ！","けいひんの ゴールドうんこのよろいが ほしいなあ…"]},
   {x:21,y:26,art:'npc',move:true,lines:["ウンコール城の おうさまも","むかしは ゆうしゃ だったらしいよ。"]},
  ],
  village:[
@@ -1271,7 +1275,8 @@ const WEAPONS=[{name:"すあし",atk:0},{name:"きのぼう",atk:6},{name:"ど�
  {name:"てつのおの",atk:23},{name:"はがねのつるぎ",atk:30},{name:"ほのおのつるぎ",atk:48},
  {name:"さいごのつるぎ",atk:70}];
 const ARMORS=[{name:"ぬののふく",def:0},{name:"かわのよろい",def:6},{name:"くさりかたびら",def:14},
- {name:"てつのよろい",def:20},{name:"はがねのよろい",def:26},{name:"まほうのよろい",def:42}];
+ {name:"てつのよろい",def:20},{name:"はがねのよろい",def:26},{name:"まほうのよろい",def:42},
+ {name:"ゴールドうんこのよろい",def:50}];   // カジノの けいひん
 const SHIELDS=[{name:"なし",def:0},{name:"かわのたて",def:3},{name:"てつのたて",def:8},
  {name:"はがねのたて",def:14},{name:"まほうのたて",def:22},
  {name:"うんこのたて",def:30}];        // うんこの とうの おたから
@@ -1311,17 +1316,17 @@ const SHOPS={
  inn3:{title:"やどや",inn:35},
  inn2:{title:"やどや",inn:60},
 };
-const SPELLS=[{name:"プリ",mp:4,type:'heal',power:38},
+const SPELLS=[{name:"プリ",mp:12,type:'heal',power:38},
  {name:"ブリ",mp:5,type:'atk',power:30},
  {name:"ジュワ〜",mp:8,type:'warp',lv:6},
- {name:"プリプリ",mp:10,type:'heal',power:70,lv:8},
+ {name:"プリプリ",mp:30,type:'heal',power:200,lv:8},
  {name:"ブリブリ",mp:12,type:'atk',power:80,lv:12},
  {name:"ベチョ",mp:14,type:'kill',lv:15},
- {name:"プリプリプリ",mp:22,type:'heal',power:160,lv:18},
+ {name:"プリプリプリ",mp:66,type:'heal',full:true,lv:18},
  {name:"ブリブリブリ",mp:26,type:'atk',power:170,lv:21}];
 
 const LV_MAX=40;
-function nextExp(lv){return Math.floor(lv*lv*7+lv*10);}
+function nextExp(lv){return Math.floor(lv*lv*7+lv*10)*5;}
 function statFor(lv){return{hpMax:24+lv*11,mpMax:Math.floor(5+lv*2.5),atk:4+lv*2,def:3+lv*2};}
 
 /* ═══════════════════════════════════════════════
@@ -1585,7 +1590,7 @@ function move(dir){
   if(w){doWarp(w);return;}
   if(MAPS[G.map].enc){
     G.steps++;
-    if(G.steps>=G.thr){G.steps=0;G.thr=5+Math.floor(Math.random()*9);
+    if(G.steps>=G.thr){G.steps=0;G.thr=25+Math.floor(Math.random()*45);   // へいきん 47ほに 1かい
       const t=tileAt(nx,ny);
       if(t!=='='&&t!=='-'&&t!=='g'){startBattle(pickEnemy(t));save();return;}}}
   if(G.steps%12===0)save();}
@@ -1602,7 +1607,7 @@ function doWarp(w){
 const ZONE_POOL=[null,['e1','e1','e1','e1'],['e1','e1','e2','e2'],
   ['e2','e2','e3','e3'],['e3','e3','e4','e4'],['e4','e4','e5','e5']];
 const ZONE_SEEDS=[
- [50,9,1], [56,17,1], [62,36,2], [22,47,3], [84,48,3], [66,46,3], [16,64,4], [88,67,4], [62,72,5], [25,71,4], [32,33,2]];
+ [50,9,1], [56,17,1], [62,36,2], [22,47,3], [84,48,3], [66,46,3], [16,64,4], [88,67,4], [38,71,5], [25,71,4], [32,33,2]];
 let ZONE=null;
 function zoneAt(x,y){
   if(!ZONE){const M=WORLD;ZONE=M.map(r=>new Array(r.length).fill(0));
@@ -1679,6 +1684,11 @@ function talkTo(n){
   LOG.ev('はなす',G.map+(n.shop?'/'+n.shop:''));
   if(n.boss){say(n.lines,()=>startBattle('boss'));return;}
   if(n.boss2){say(n.lines,()=>startBattle('guard'));return;}
+  if(n.heal){say(n.lines,()=>{resetHpMp();updStatus();save();LOG.ev('いのりば',G.map);
+    say(["ゆうしゃの HPと MPが ぜんかいした！"]);});return;}
+  if(n.casino){say(n.lines,()=>casino());return;}
+  // いずみの むらの どうぐやは いずみが きれいに なると しなものが ふえる
+  if(n.shop==='item2'&&G.springFixed){say(n.after||n.lines,()=>openShop('item3'));return;}
   if(n.shop){say(n.lines,()=>openShop(n.shop));return;}
   if(n.gold&&!G.kingGift){
     G.kingGift=true;G.gold+=n.gold;updStatus();save();
@@ -1690,12 +1700,59 @@ function talkTo(n){
         say(n.after.concat(["おれいに 800Ｇと やくそう５こを うけとって くだされ。"]));return;}
       say(n.after);return;}
     G.springQuest=true;save();say(n.lines);return;}
-  if(n.after&&G.springFixed&&G.map==='village'){say(n.after);return;}
-  if(n.shop==='item2'&&G.springFixed){say(n.after||n.lines,()=>openShop('item3'));return;}
+  if(n.after&&G.map==='village'){say(G.springFixed?n.after:n.lines);return;}
   if(n.afterBoss&&G.bossDead){say(n.afterBoss);return;}
   if(n.afterLv&&G.lv>=15){say(n.afterLv);return;}
   if(n.after){say(n.after);return;}
   say(n.lines);}
+/* ── カジノ（みなとまち）──
+   Ｇで コインを かい、スロットで ふやして、けいひんと こうかんする */
+const COIN_PRICE=20,GOLD_ARMOR=6;
+const SLOT=[{s:'💩',w:1,pay:100},{s:'７',w:2,pay:30},{s:'★',w:3,pay:10},{s:'◆',w:4,pay:5}];
+const PRIZES=[
+ {id:'herb',label:'やくそう ×10',coin:50,give:()=>{G.items.herb=(G.items.herb||0)+10;}},
+ {id:'wing',label:'きえさりのつばさ ×5',coin:80,give:()=>{G.items.wing=(G.items.wing||0)+5;}},
+ {id:'gold',label:'ゴールドうんこのよろい',coin:1500,give:()=>{if(!G.haveA.includes(GOLD_ARMOR))G.haveA.push(GOLD_ARMOR);}}];
+function spinReel(){let r=Math.random()*10;for(const t of SLOT){if((r-=t.w)<0)return t;}return SLOT[3];}
+function casino(){
+  mode='shop';G.coins=G.coins||0;
+  const l=[{id:'buy',label:'コインを かう'},{id:'slot',label:'スロットで あそぶ'},
+    {id:'prize',label:'けいひんと こうかん'},{id:'x',label:'やめる'}];
+  l.title=`コイン ${G.coins}まい　${G.gold}Ｇ`;
+  menu(null,l,id=>{
+    if(id==='x'){mode='field';say(["また きてね！"]);return;}
+    if(id==='buy')casinoBuy();else if(id==='slot')casinoSlot();else casinoPrize();});}
+function casinoBuy(){
+  mode='shop';
+  const l=[10,100,1000].map(n=>({id:n,label:`${n}まい`,price:n*COIN_PRICE,dis:G.gold<n*COIN_PRICE}));
+  l.push({id:'x',label:'もどる'});l.title=`1まい ${COIN_PRICE}Ｇ　（${G.gold}Ｇ）`;
+  menu(null,l,id=>{
+    if(id==='x'){casino();return;}
+    G.gold-=id*COIN_PRICE;G.coins=(G.coins||0)+id;updStatus();save();LOG.ev('コイン',id);
+    say([`コインを ${id}まい かった！`],casinoBuy);});}
+function casinoSlot(){
+  mode='shop';
+  const l=[1,10,100].map(n=>({id:n,label:`${n}まい かける`,dis:G.coins<n}));
+  l.push({id:'x',label:'もどる'});l.title=`コイン ${G.coins}まい`;
+  menu(null,l,id=>{
+    if(id==='x'){casino();return;}
+    G.coins-=id;const r=[spinReel(),spinReel(),spinReel()];
+    const win=r[0]===r[1]&&r[1]===r[2]?id*r[0].pay:0;G.coins+=win;save();
+    const lines=[`くるくるくる…　［ ${r.map(t=>t.s).join(' ｜ ')} ］`];
+    if(win)lines.push(r[0].s==='💩'?`だいあたり！！ コインを ${win}まい てにいれた！`:`あたり！ コインを ${win}まい てにいれた！`);
+    else lines.push('ざんねん… はずれ。');
+    if(win)LOG.ev('スロット',win);
+    say(lines,casinoSlot);});}
+function casinoPrize(){
+  mode='shop';
+  const l=PRIZES.map(p=>({id:p.id,label:`${p.label}　${p.coin}まい`,
+    dis:G.coins<p.coin||(p.id==='gold'&&G.haveA.includes(GOLD_ARMOR))}));
+  l.push({id:'x',label:'もどる'});l.title=`コイン ${G.coins}まい`;
+  menu(null,l,id=>{
+    if(id==='x'){casino();return;}
+    const p=PRIZES.find(p=>p.id===id);G.coins-=p.coin;p.give();updStatus();save();LOG.ev('けいひん',p.label);
+    say([`${p.label}を てにいれた！`].concat(p.id==='gold'?['「そうび」で みにつけよう。']:[]),casinoPrize);});}
+
 function openChest(c){
   G.chests[G.map+':'+c.x+','+c.y]=1;
   let msg;
@@ -1813,7 +1870,7 @@ function fieldMenu(){
           :`つぎのレベルまで あと ${Math.max(0,nextExp(G.lv)-G.exp)}`,
         G.lv>=20?"りゅうおうと たたかえる ちからが ある！"
           :`りゅうおうに いどむなら Ｌｖ20は ほしい。`,
-        `うんこクエスト ver 3.16`]);return;}
+        `うんこクエスト ver 3.17`]);return;}
     if(id==='it'){itemMenu(false);return;}
     if(id==='sp'){spellMenu(false);return;}});}
 function itemMenu(inBattle){
@@ -1843,8 +1900,8 @@ function spellMenu(inBattle){
     if(G.mp<sp.mp){if(inBattle)say(["ＭＰが たりない！"],battleCmd);
       else{mode='field';say(["ＭＰが たりない。"]);}return;}
     if(sp.type==='heal'){G.mp-=sp.mp;const s=stats(),b=G.hp;
-      G.hp=Math.min(s.hpMax,G.hp+sp.power);updStatus();save();
-      const l=[`ゆうしゃは ${sp.name}を となえた！`,`HPが ${G.hp-b} かいふくした！`];
+      G.hp=sp.full?s.hpMax:Math.min(s.hpMax,G.hp+sp.power);updStatus();save();
+      const l=[`ゆうしゃは ${sp.name}を となえた！`,sp.full?'HPが ぜんかいした！':`HPが ${G.hp-b} かいふくした！`];
       if(inBattle)say(l,enemyTurn);else{mode='field';say(l);}return;}
     /* ── ジュワ〜：城へ もどる ── */
     if(sp.type==='warp'){
@@ -1970,7 +2027,7 @@ function clear(){
     <p>せかいに さわやかな かぜが もどった。<br>
     ゆうしゃうんこの なは えいえんに かたりつがれる――</p>
     <p style="color:#ffd23f;font-size:5cqw;">Ｌｖ${G.lv}　クリア！</p>
-    <p id="ver">ver 3.16</p>
+    <p id="ver">ver 3.17</p>
     <button class="tm sel" onclick="localStorage.removeItem('unkoq-save');location.reload()">もういちど</button>`;
   t.classList.remove('hide');
   wMsg.classList.remove('show');wStatus.classList.remove('show');}
@@ -2073,9 +2130,9 @@ function load(){try{const s=localStorage.getItem('unkoq-save');
 function begin(cont){
   if(!cont){G={map:'castle',x:19,y:24,dir:'down',lv:1,exp:0,hp:0,mp:0,gold:0,
     weapon:0,armor:0,shield:0,helm:0,haveW:[0],haveA:[0],haveS:[0],haveH:[0],
-    items:{herb:3,wing:0},chests:{},dunVer:1,worldVer:2,
+    items:{herb:3,wing:0},chests:{},dunVer:1,worldVer:2,coins:0,
     bossDead:false,boss2Dead:false,kingGift:false,springFixed:false,springQuest:false,
-    steps:0,thr:8};resetHpMp();save();}
+    steps:0,thr:40};resetHpMp();save();}
   $('title').classList.add('hide');
   LOG.init();LOG.ev(cont?'つづきから':'はじめから');
   mode='field';updStatus();
