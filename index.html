@@ -180,7 +180,7 @@ html,body{height:100%;background:#000;color:#fff;font-family:'DotGothic16',monos
       <button class="tm sel" id="tmNew">はじめから</button>
       <button class="tm dis" id="tmCont">つづきから</button>
       <p style="font-size:2.8cqw;color:#777;">十字キー＝いどう／Ａ＝はなす・しらべる／Ｂ＝メニュー</p>
-      <p id="ver">ver 3.33</p>
+      <p id="ver">ver 3.34</p>
     </div>
   </div>
   <div id="pad">
@@ -1503,8 +1503,10 @@ function drawMap(){
     if(n.phase===undefined)n.phase=Math.random()*6;
     const nb=Math.sin(anim*.15+n.phase)>0?0:1;
     drawArt(n.art,(n.x-cx)*TS+2,(n.y-cy)*TS+2+nb,1);});
+  drawOthers(cx,cy);
   const bob=Math.sin(anim*.15)>0?0:1;
   drawArt(heroArt(),(G.x-cx)*TS+2,(G.y-cy)*TS+2+bob,1);
+  if(ONLINE.on&&ONLINE.st>=0&&ONLINE.A.now()-ONLINE.sa<4000)bubble(STAMPS[ONLINE.st],(G.x-cx)*TS,(G.y-cy)*TS);
 }
 let battle=null,flash=false;
 /* ── せんとうの はいけい（★ここを かえると 景色が かわります）──
@@ -1689,7 +1691,7 @@ function updStatus(){
   const s=stats();
   wStatus.innerHTML=`ゆうしゃ<br>Ｌ <b>${G.lv}</b><br>
     <span class="${G.hp<=s.hpMax*.25?'low':''}">Ｈ ${G.hp}</span><br>
-    Ｍ ${G.mp}<br>Ｇ ${G.gold}`;
+    Ｍ ${G.mp}<br>Ｇ ${G.gold}${typeof ONLINE!=='undefined'&&ONLINE&&ONLINE.on?`<br><span style="color:#8fd0ff">みんな ${othersHere().length+1}</span>`:''}`;
   wStatus.classList.toggle('show',mode!=='title');}
 
 /* ── メッセージ ── */
@@ -1763,7 +1765,7 @@ function move(dir){
     const c=(CHESTS[G.map]||[]).find(c=>c.x===nx&&c.y===ny&&!got(c));
     if(c){openChest(c);return;}
     return;}
-  G.x=nx;G.y=ny;closeFarDoors();
+  G.x=nx;G.y=ny;closeFarDoors();onlineSync();
   const w=(WARPS[G.map]||[]).find(w=>w.x===nx&&w.y===ny);
   if(w){doWarp(w);return;}
   if(MAPS[G.map].enc&&G.repel>0){G.repel--;if(!G.repel)toast('にげにげのこうの こうかが きれた…');}
@@ -1775,7 +1777,7 @@ function move(dir){
   if(G.steps%12===0)save();}
 function doWarp(w){
   const from=G.map;
-  G.map=w.to;G.x=w.tx;G.y=w.ty;G.steps=0;
+  G.map=w.to;G.x=w.tx;G.y=w.ty;G.steps=0;onlineSync(true);
   LOG.ev('エリア移動',from+'→'+w.to);
   const nm=MAPS[w.to].name;
   save();
@@ -1818,6 +1820,9 @@ function action(){
     const ey=ty+(G.dir==='up'?-1:G.dir==='down'?1:0);
     n=findNpc(ex,ey);}
   if(n){talkTo(n);return;}
+  const op=ONLINE.on&&otherAt(tx,ty);
+  if(op){const [pid,v]=op;say([`${nickOf(pid)}（Ｌｖ${v.lv||1}）だ。`,
+    v.st>=0&&v.sa&&ONLINE.A.now()-v.sa<30000?`「${STAMPS[v.st]}」`:'こちらに てを ふっている。']);return;}
   const c=(CHESTS[G.map]||[]).find(c=>c.x===tx&&c.y===ty);
   if(c){if(got(c))say(["たからばこは からっぽだ。"]);else openChest(c);return;}
   if(tileAt(tx,ty)==='S'){checkSpring();return;}
@@ -2259,12 +2264,99 @@ function equipMenu(){
     G[e.key]=i;save();mode='field';
     say([`${e.arr[i].name}を そうびした。`]);});}
 
+
+/* ═══════════════════════════════════════════════
+   オンライン：おなじ マップに いる ほかの プレイヤーが みえる
+   （Firebase Realtime Database。つながらなくても ゲームは ふつうに あそべる）
+   データ：online/{マップ}/{pid} = {x,y,d,sk,lv,st,sa,t}
+   ═══════════════════════════════════════════════ */
+const FB_URL='https://unko-quest-online-default-rtdb.asia-southeast1.firebasedatabase.app';
+const FB_SDK='https://www.gstatic.com/firebasejs/10.12.2/';
+const STAMPS=['こんにちは！','よろしく！','ありがとう！','いっしょに いこう！','おさきに〜','まって〜！','やったー！','💩'];
+const NICK=['ぷりぷり','もりもり','ころころ','とぐろ','ほかほか','ぴかぴか','にょろにょろ','ぶりぶり',
+  'ふわふわ','ずっしり','ぽかぽか','ゆるゆる','きらきら','どっしり','ちょこん','ぐるぐる'];
+var ONLINE={on:false,A:null,pid:'',map:null,unsub:null,others:{},view:{},offset:0,last:0,beat:0,st:-1,sa:0};
+function onlinePid(){let p='';try{p=localStorage.getItem('unkoq-pid')||'';}catch(e){}
+  if(!/^p[a-z0-9]{6,12}$/.test(p)){p='p'+Math.random().toString(36).slice(2,10).replace(/[^a-z0-9]/g,'0');
+    try{localStorage.setItem('unkoq-pid',p);}catch(e){}}return p;}
+function nickOf(pid){let h=0;for(const c of pid)h=(h*31+c.charCodeAt(0))>>>0;return NICK[h%NICK.length]+'うんこ';}
+function palOf(pid){let h=7;for(const c of pid)h=(h*17+c.charCodeAt(0))>>>0;return h%6;}
+// Firebase の うすい ラッパー（テストでは window.__UQ_FAKE を つかう）
+async function onlineInit(){
+  ONLINE.pid=onlinePid();
+  try{
+    if(window.__UQ_FAKE){ONLINE.A=window.__UQ_FAKE;}
+    else{
+      const app=await import(FB_SDK+'firebase-app.js'),db=await import(FB_SDK+'firebase-database.js');
+      const d=db.getDatabase(app.initializeApp({databaseURL:FB_URL}));
+      db.onValue(db.ref(d,'.info/serverTimeOffset'),sn=>{ONLINE.offset=sn.val()||0;});
+      ONLINE.A={
+        set:(k,v)=>db.set(db.ref(d,k),Object.assign({},v,{t:db.serverTimestamp()})),
+        remove:k=>db.remove(db.ref(d,k)),
+        dropOnLeave:k=>db.onDisconnect(db.ref(d,k)).remove(),
+        watch:(k,cb)=>db.onValue(db.ref(d,k),sn=>cb(sn.val()||{}),()=>{}),
+        now:()=>Date.now()+ONLINE.offset};}
+    ONLINE.on=true;onlineSync(true);
+  }catch(e){ONLINE.on=false;}}
+function myState(){return {x:G.x,y:G.y,d:G.dir||'down',sk:G.skin==='gold'?1:0,lv:G.lv,st:ONLINE.st,sa:ONLINE.sa};}
+function onlineSync(force){
+  if(!ONLINE.on||mode==='title')return;
+  const A=ONLINE.A,key=m=>`online/${m}/${ONLINE.pid}`;
+  try{
+    if(ONLINE.map!==G.map){
+      if(ONLINE.map){A.remove(key(ONLINE.map));if(ONLINE.unsub)ONLINE.unsub();}
+      ONLINE.map=G.map;ONLINE.others={};ONLINE.view={};
+      A.dropOnLeave(key(G.map));
+      ONLINE.unsub=A.watch(`online/${G.map}`,v=>{ONLINE.others=v;updStatus();});
+      force=true;}
+    const now=Date.now();
+    if(force||now-ONLINE.last>120){ONLINE.last=now;ONLINE.beat=now;A.set(key(G.map),myState());}
+  }catch(e){}}
+setInterval(()=>{if(ONLINE.on&&(ONLINE.map!==G.map||Date.now()-ONLINE.beat>20000))onlineSync(true);},1000);
+// いまの マップに いる ほかの プレイヤー（ふるい データは むし）
+function othersHere(){const now=ONLINE.on?ONLINE.A.now():0,o=[];
+  for(const [pid,v] of Object.entries(ONLINE.others||{})){
+    if(pid===ONLINE.pid||!v||typeof v.x!=='number')continue;
+    if(v.t&&now-v.t>90000)continue;o.push([pid,v]);}return o;}
+function otherAt(x,y){return othersHere().find(([,v])=>v.x===x&&v.y===y);}
+// ほかの プレイヤーの いろ（ゆうしゃの いろを かえた え）
+function heroPal(k){const key='heroP'+k;
+  if(!ART[key]){const rot=[200,300,120,250,30,170][k];
+    ART[key]=ART.hero.map(r=>r.map(c=>{if(!c)return c;const n=parseInt(c.slice(1),16);
+      let R=(n>>16)/255,Gr=((n>>8)&255)/255,B=(n&255)/255;const mx=Math.max(R,Gr,B),mn=Math.min(R,Gr,B),l=(mx+mn)/2;
+      if(mx-mn<0.15)return c;const d=mx-mn,sat=l>0.5?d/(2-mx-mn):d/(mx+mn);
+      let h=mx===R?((Gr-B)/d+(Gr<B?6:0)):mx===Gr?((B-R)/d+2):((R-Gr)/d+4);h=(h*60+rot)%360/360;
+      const q=l<0.5?l*(1+sat):l+sat-l*sat,pp=2*l-q,f=t=>{t=(t+1)%1;return t<1/6?pp+(q-pp)*6*t:t<1/2?q:t<2/3?pp+(q-pp)*(2/3-t)*6:pp;};
+      const hx=v=>('0'+Math.round(v*255).toString(16)).slice(-2);return '#'+hx(f(h+1/3))+hx(f(h))+hx(f(h-1/3));}));}
+  return key;}
+function goldArt(){const k=G.skin;G.skin='gold';const a=heroArt();G.skin=k;return a;}
+function bubble(text,x,y){ctx.font='8px sans-serif';const w=Math.min(120,ctx.measureText(text).width+8);
+  const bx=Math.max(1,Math.min(255-w,x+8-w/2)),by=Math.max(1,y-14);
+  ctx.fillStyle='#fff';ctx.fillRect(bx,by,w,12);ctx.fillRect(x+6,by+12,4,2);
+  ctx.fillStyle='#1a1a24';ctx.textBaseline='middle';ctx.textAlign='left';ctx.fillText(text,bx+4,by+6.5);}
+function drawOthers(cx,cy){
+  if(!ONLINE.on)return;const now=Date.now();
+  for(const [pid,v] of othersHere()){
+    // なめらかに うごかす
+    const vw=ONLINE.view[pid]||(ONLINE.view[pid]={x:v.x,y:v.y});
+    vw.x+=(v.x-vw.x)*0.35;vw.y+=(v.y-vw.y)*0.35;if(Math.abs(v.x-vw.x)>4||Math.abs(v.y-vw.y)>4){vw.x=v.x;vw.y=v.y;}
+    const px=Math.round((vw.x-cx)*TS),py=Math.round((vw.y-cy)*TS);
+    if(px<-16||py<-16||px>256||py>224)continue;
+    drawArt(v.sk?goldArt():heroPal(palOf(pid)),px+2,py+2+(Math.sin(anim*.15+pid.length)>0?0:1),1);
+    if(v.st>=0&&v.sa&&ONLINE.A.now()-v.sa<4000)bubble(STAMPS[v.st]||'',px,py);}}
+function stampMenu(){
+  mode='menu';
+  const l=STAMPS.map((t,i)=>({id:i,label:t}));l.push({id:'x',label:'やめる'});l.title='スタンプ';
+  menu(null,l,id=>{mode='field';if(id==='x')return;
+    ONLINE.st=id;ONLINE.sa=ONLINE.A.now();onlineSync(true);LOG.ev('スタンプ',STAMPS[id]);});}
+
 /* ── フィールドメニュー ── */
 function fieldMenu(){
   if(mode!=='field')return;
   mode='menu';
   menu(null,[{id:'sp',label:'じゅもん'},{id:'it',label:'どうぐ'},
-    {id:'eq',label:'そうび'},{id:'st',label:'つよさ'},{id:'map',label:'ちず'},{id:'x',label:'とじる'}],id=>{
+    {id:'eq',label:'そうび'},{id:'st',label:'つよさ'},{id:'map',label:'ちず'}].concat(ONLINE.on?[{id:'stamp',label:'スタンプ'}]:[]).concat([{id:'x',label:'とじる'}]),id=>{
+    if(id==='stamp'){stampMenu();return;}
     if(id==='x'){mode='field';return;}
     if(id==='map'){mode='map';return;}
     if(id==='eq'){equipMenu();return;}
@@ -2277,7 +2369,7 @@ function fieldMenu(){
           :`つぎのレベルまで あと ${Math.max(0,nextExp(G.lv)-G.exp)}`,
         G.lv>=20?"りゅうおうと たたかえる ちからが ある！"
           :`りゅうおうに いどむなら Ｌｖ20は ほしい。`,
-        `うんこクエスト ver 3.33`]);return;}
+        `うんこクエスト ver 3.34`]);return;}
     if(id==='it'){itemMenu(false);return;}
     if(id==='sp'){spellMenu(false);return;}});}
 function itemMenu(inBattle){
@@ -2449,7 +2541,7 @@ function clear(){
     <p>せかいに さわやかな かぜが もどった。<br>
     ゆうしゃうんこの なは えいえんに かたりつがれる――</p>
     <p style="color:#ffd23f;font-size:5cqw;">Ｌｖ${G.lv}　クリア！</p>
-    <p id="ver">ver 3.33</p>
+    <p id="ver">ver 3.34</p>
     <button class="tm sel" onclick="localStorage.removeItem('unkoq-save');location.reload()">もういちど</button>`;
   t.classList.remove('hide');
   wMsg.classList.remove('show');wStatus.classList.remove('show');}
@@ -2564,6 +2656,7 @@ function begin(cont){
     steps:0,thr:10};resetHpMp();save();}
   $('title').classList.add('hide');
   LOG.init();LOG.ev(cont?'つづきから':'はじめから');
+  if(!ONLINE.A)onlineInit();else onlineSync(true);
   mode='field';updStatus();
   if(!cont)say(["ゆうしゃうんこは たびだった。","しろの ひとに はなしかけて じょうほうを あつめよう。"]);}
 
