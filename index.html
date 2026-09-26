@@ -112,6 +112,18 @@ html,body{height:100%;background:#000;color:#fff;font-family:'DotGothic16',monos
   font-size:4.2cqw;font-family:'DotGothic16',monospace;cursor:pointer;}
 #title .tm.sel{background:#fff;color:#000;}
 #title .tm.dis{color:#666;border-color:#666;}
+#nameIn{position:absolute;inset:0;background:#000;z-index:12;display:none;flex-direction:column;
+  align-items:center;justify-content:center;gap:1.4cqw;color:#fff;font-size:4.2cqw;}
+#nameIn.show{display:flex;}
+#nameIn .nq{color:#ffd23f;font-size:4cqw;}
+#nameIn .nv{border:1cqw solid #fff;padding:1.2cqw 3cqw;min-width:60cqw;text-align:center;letter-spacing:.3cqw;}
+#nameIn .nv i{font-style:normal;color:#666;}
+#nameIn .nv u{text-decoration:none;color:#ffd23f;}
+#nameIn .ng{border:1cqw solid #fff;padding:1cqw 2cqw;}
+#nameIn .nr{display:flex;justify-content:center;}
+#nameIn .nc{width:7.6cqw;text-align:center;cursor:pointer;line-height:1.3;font-size:3.9cqw;position:relative;}
+#nameIn .nc.w{width:auto;padding:0 1.6cqw;}
+#nameIn .nc.sel{background:#fff;color:#000;}
 #ver{position:absolute;right:2.5cqw;bottom:2cqw;font-size:2.6cqw;color:#5a6070;}
 
 #pencil,#fs{position:absolute;top:2.5cqw;z-index:11;width:8cqw;height:8cqw;
@@ -180,8 +192,9 @@ html,body{height:100%;background:#000;color:#fff;font-family:'DotGothic16',monos
       <button class="tm sel" id="tmNew">はじめから</button>
       <button class="tm dis" id="tmCont">つづきから</button>
       <p style="font-size:2.8cqw;color:#777;">十字キー＝いどう／Ａ＝はなす・しらべる／Ｂ＝メニュー</p>
-      <p id="ver">ver 3.34</p>
+      <p id="ver">ver 3.35</p>
     </div>
+    <div id="nameIn"></div>
   </div>
   <div id="pad">
     <div id="dpad">
@@ -1689,7 +1702,7 @@ function drawWorldMap(){
 /* ── ステータス窓 ── */
 function updStatus(){
   const s=stats();
-  wStatus.innerHTML=`ゆうしゃ<br>Ｌ <b>${G.lv}</b><br>
+  wStatus.innerHTML=`${G.name||'ゆうしゃ'}<br>Ｌ <b>${G.lv}</b><br>
     <span class="${G.hp<=s.hpMax*.25?'low':''}">Ｈ ${G.hp}</span><br>
     Ｍ ${G.mp}<br>Ｇ ${G.gold}${typeof ONLINE!=='undefined'&&ONLINE&&ONLINE.on?`<br><span style="color:#8fd0ff">みんな ${othersHere().length+1}</span>`:''}`;
   wStatus.classList.toggle('show',mode!=='title');}
@@ -1697,7 +1710,7 @@ function updStatus(){
 /* ── メッセージ ── */
 let mq=[],mDone=null,prevMode='field';
 function say(lines,done){
-  mq=Array.isArray(lines)?[...lines]:[lines];mDone=done||null;
+  mq=(Array.isArray(lines)?[...lines]:[lines]).map(l=>typeof l==='string'?l.replace(/ゆうしゃうんこ/g,HN()):l);mDone=done||null;
   prevMode=(mode==='battle'||mode==='bmsg'||mode==='bcmd')?'bmsg':'msg';
   mode=prevMode;wCmd.classList.remove('show');step(true);}
 function step(first){
@@ -1821,7 +1834,7 @@ function action(){
     n=findNpc(ex,ey);}
   if(n){talkTo(n);return;}
   const op=ONLINE.on&&otherAt(tx,ty);
-  if(op){const [pid,v]=op;say([`${nickOf(pid)}（Ｌｖ${v.lv||1}）だ。`,
+  if(op){const [pid,v]=op;say([`${nameOf(pid,v)}（Ｌｖ${v.lv||1}）だ。`,
     v.st>=0&&v.sa&&ONLINE.A.now()-v.sa<30000?`「${STAMPS[v.st]}」`:'こちらに てを ふっている。']);return;}
   const c=(CHESTS[G.map]||[]).find(c=>c.x===tx&&c.y===ty);
   if(c){if(got(c))say(["たからばこは からっぽだ。"]);else openChest(c);return;}
@@ -1894,7 +1907,7 @@ function talkTo(n){
   if(n.boss){say(n.lines,()=>startBattle('boss'));return;}
   if(n.boss2){say(n.lines,()=>startBattle('guard'));return;}
   if(n.heal){say(n.lines,()=>{resetHpMp();updStatus();save();LOG.ev('いのりば',G.map);
-    say(["ゆうしゃの HPと MPが ぜんかいした！"]);});return;}
+    say(["ゆうしゃうんこの HPと MPが ぜんかいした！"]);});return;}
   if(n.casino){say(n.lines,()=>casinoGame(n.casino));return;}
   // いずみの むらの どうぐやは いずみが きれいに なると しなものが ふえる
   if(n.shop==='item2'&&G.springFixed){say(n.after||n.lines,()=>openShop('item3'));return;}
@@ -2279,6 +2292,7 @@ var ONLINE={on:false,A:null,pid:'',map:null,unsub:null,others:{},view:{},offset:
 function onlinePid(){let p='';try{p=localStorage.getItem('unkoq-pid')||'';}catch(e){}
   if(!/^p[a-z0-9]{6,12}$/.test(p)){p='p'+Math.random().toString(36).slice(2,10).replace(/[^a-z0-9]/g,'0');
     try{localStorage.setItem('unkoq-pid',p);}catch(e){}}return p;}
+function nameOf(pid,v){return v&&typeof v.n==='string'&&v.n?v.n.slice(0,NAME_MAX)+'のうんこ':nickOf(pid);}
 function nickOf(pid){let h=0;for(const c of pid)h=(h*31+c.charCodeAt(0))>>>0;return NICK[h%NICK.length]+'うんこ';}
 function palOf(pid){let h=7;for(const c of pid)h=(h*17+c.charCodeAt(0))>>>0;return h%6;}
 // Firebase の うすい ラッパー（テストでは window.__UQ_FAKE を つかう）
@@ -2298,7 +2312,7 @@ async function onlineInit(){
         now:()=>Date.now()+ONLINE.offset};}
     ONLINE.on=true;onlineSync(true);
   }catch(e){ONLINE.on=false;}}
-function myState(){return {x:G.x,y:G.y,d:G.dir||'down',sk:G.skin==='gold'?1:0,lv:G.lv,st:ONLINE.st,sa:ONLINE.sa};}
+function myState(){return {n:G.name||'ゆうしゃ',x:G.x,y:G.y,d:G.dir||'down',sk:G.skin==='gold'?1:0,lv:G.lv,st:ONLINE.st,sa:ONLINE.sa};}
 function onlineSync(force){
   if(!ONLINE.on||mode==='title')return;
   const A=ONLINE.A,key=m=>`online/${m}/${ONLINE.pid}`;
@@ -2343,7 +2357,10 @@ function drawOthers(cx,cy){
     const px=Math.round((vw.x-cx)*TS),py=Math.round((vw.y-cy)*TS);
     if(px<-16||py<-16||px>256||py>224)continue;
     drawArt(v.sk?goldArt():heroPal(palOf(pid)),px+2,py+2+(Math.sin(anim*.15+pid.length)>0?0:1),1);
-    if(v.st>=0&&v.sa&&ONLINE.A.now()-v.sa<4000)bubble(STAMPS[v.st]||'',px,py);}}
+    if(v.st>=0&&v.sa&&ONLINE.A.now()-v.sa<4000)bubble(STAMPS[v.st]||'',px,py);
+    else if(v.n){ctx.save();ctx.font='7px sans-serif';ctx.textAlign='center';ctx.textBaseline='bottom';
+      const t=String(v.n).slice(0,NAME_MAX);ctx.fillStyle='#000';ctx.fillText(t,px+9,py+1);
+      ctx.fillStyle='#fff';ctx.fillText(t,px+8,py);ctx.restore();}}}
 function stampMenu(){
   mode='menu';
   const l=STAMPS.map((t,i)=>({id:i,label:t}));l.push({id:'x',label:'やめる'});l.title='スタンプ';
@@ -2361,7 +2378,7 @@ function fieldMenu(){
     if(id==='map'){mode='map';return;}
     if(id==='eq'){equipMenu();return;}
     if(id==='st'){const s=stats();mode='field';
-      say([`ゆうしゃ Ｌｖ${G.lv}　ＨＰ${G.hp}/${s.hpMax}　ＭＰ${G.mp}/${s.mpMax}`,
+      say([`${G.name||'ゆうしゃ'} Ｌｖ${G.lv}　ＨＰ${G.hp}/${s.hpMax}　ＭＰ${G.mp}/${s.mpMax}`,
         `ちから ${s.atk}／みのまもり ${s.def}`,
         `ぶき：${WEAPONS[G.weapon].name}／よろい：${ARMORS[G.armor].name}`,
         `たて：${SHIELDS[G.shield||0].name}／かぶと：${HELMS[G.helm||0].name}`,
@@ -2369,7 +2386,7 @@ function fieldMenu(){
           :`つぎのレベルまで あと ${Math.max(0,nextExp(G.lv)-G.exp)}`,
         G.lv>=20?"りゅうおうと たたかえる ちからが ある！"
           :`りゅうおうに いどむなら Ｌｖ20は ほしい。`,
-        `うんこクエスト ver 3.34`]);return;}
+        `うんこクエスト ver 3.35`]);return;}
     if(id==='it'){itemMenu(false);return;}
     if(id==='sp'){spellMenu(false);return;}});}
 function itemMenu(inBattle){
@@ -2415,7 +2432,7 @@ function spellMenu(inBattle){
       else{mode='field';say(["ＭＰが たりない。"]);}return;}
     if(sp.type==='heal'){G.mp-=sp.mp;const s=stats(),b=G.hp;
       G.hp=sp.full?s.hpMax:Math.min(s.hpMax,G.hp+sp.power);updStatus();save();
-      const l=[`ゆうしゃは ${sp.name}を となえた！`,sp.full?'HPが ぜんかいした！':`HPが ${G.hp-b} かいふくした！`];
+      const l=[`ゆうしゃうんこは ${sp.name}を となえた！`,sp.full?'HPが ぜんかいした！':`HPが ${G.hp-b} かいふくした！`];
       if(inBattle)say(l,enemyTurn);else{mode='field';say(l);}return;}
     /* ── ジュワ〜：城へ もどる ── */
     if(sp.type==='warp'){
@@ -2423,26 +2440,26 @@ function spellMenu(inBattle){
       G.mp-=sp.mp;updStatus();
       G.map='castle';G.x=19;G.y=24;G.dir='down';G.steps=0;save();
       LOG.ev('ジュワ〜','castle');mode='field';
-      say(["ゆうしゃは ジュワ〜を となえた！","からだが ジュワ〜っと とけて…",
+      say(["ゆうしゃうんこは ジュワ〜を となえた！","からだが ジュワ〜っと とけて…",
         "ラダうんこ城に もどってきた！"]);return;}
     /* ── ベチョ：いっかつ ── */
     if(sp.type==='kill'){
       if(!inBattle){mode='field';say(["ここでは つかえない。"]);return;}
       if(battle.boss||battle.key==='guard'||battle.key==='nushi'){
         G.mp-=sp.mp;updStatus();
-        say([`ゆうしゃは ${sp.name}を となえた！`,`しかし ${battle.name}には きかなかった！`],enemyTurn);return;}
+        say([`ゆうしゃうんこは ${sp.name}を となえた！`,`しかし ${battle.name}には きかなかった！`],enemyTurn);return;}
       G.mp-=sp.mp;updStatus();
       // つよい てきほど きかない
       const ratio=battle.hpMax/(stats().hpMax*0.8);
       const chance=Math.max(0.15,Math.min(0.85,1.0-ratio*0.5));
       if(Math.random()<chance){battle.hp=0;hit();
-        say([`ゆうしゃは ${sp.name}を となえた！`,`${battle.name}は ベチョっと つぶれた！`],win);}
-      else say([`ゆうしゃは ${sp.name}を となえた！`,`しかし ${battle.name}は もちこたえた！`],enemyTurn);
+        say([`ゆうしゃうんこは ${sp.name}を となえた！`,`${battle.name}は ベチョっと つぶれた！`],win);}
+      else say([`ゆうしゃうんこは ${sp.name}を となえた！`,`しかし ${battle.name}は もちこたえた！`],enemyTurn);
       return;}
     if(!inBattle){mode='field';say(["ここでは つかえない。"]);return;}
     G.mp-=sp.mp;updStatus();
     const dmg=Math.max(1,sp.power+rnd(-6,6));battle.hp-=dmg;
-    hit();say([`ゆうしゃは ${sp.name}を となえた！`,`${battle.name}に ${dmg}の ダメージ！`],
+    hit();say([`ゆうしゃうんこは ${sp.name}を となえた！`,`${battle.name}に ${dmg}の ダメージ！`],
       ()=>battle.hp<=0?win():enemyTurn());
   },inBattle);}
 
@@ -2467,7 +2484,7 @@ function attack(){
   const base=Math.max(1,Math.floor((s.atk-battle.def/2)*(0.85+Math.random()*0.3)));
   const crit=Math.random()<0.07,dmg=crit?base*2:base;
   battle.hp-=dmg;hit();
-  const l=["ゆうしゃの こうげき！"];
+  const l=["ゆうしゃうんこの こうげき！"];
   if(crit)l.push("かいしんの いちげき！！");
   l.push(`${battle.name}に ${dmg}の ダメージ！`);
   say(l,()=>battle.hp<=0?win():enemyTurn());}
@@ -2478,16 +2495,16 @@ function enemyTurn(){
   const s=stats();
   const dmg=Math.max(1,Math.floor((battle.atk-s.def/3.5)*(0.85+Math.random()*0.3)));
   G.hp-=dmg;updStatus();
-  const l=[`${battle.name}の こうげき！`,`ゆうしゃは ${dmg}の ダメージ！`];
+  const l=[`${battle.name}の こうげき！`,`ゆうしゃうんこは ${dmg}の ダメージ！`];
   if(battle.boss&&Math.random()<0.35){
     const d2=Math.max(1,Math.floor(battle.atk*0.8));G.hp-=d2;updStatus();
-    l.push("りゅうおうは くさいいきを はいた！",`ゆうしゃは ${d2}の ダメージ！`);}
+    l.push("りゅうおうは くさいいきを はいた！",`ゆうしゃうんこは ${d2}の ダメージ！`);}
   if(battle.poison&&Math.random()<0.3){
     const dp=Math.max(1,Math.floor(battle.atk*0.65));G.hp-=dp;updStatus();
-    l.push("ぬしは どくの あわを はいた！",`ゆうしゃは ${dp}の ダメージ！`);}
+    l.push("ぬしは どくの あわを はいた！",`ゆうしゃうんこは ${dp}の ダメージ！`);}
   if(battle.rage&&Math.random()<0.3){
     const d2=Math.max(1,Math.floor(battle.atk*0.75));G.hp-=d2;updStatus();
-    l.push("ぬしは ちからを かいほうした！",`ゆうしゃは ${d2}の ダメージ！`);}
+    l.push("ぬしは ちからを かいほうした！",`ゆうしゃうんこは ${d2}の ダメージ！`);}
   say(l,()=>G.hp<=0?dead():battleCmd());}
 function run(){
   if(battle.boss||battle.key==='guard'||battle.key==='nushi'){say(["…にげられない！"],enemyTurn);return;}
@@ -2539,9 +2556,9 @@ function clear(){
   const t=$('title');
   t.innerHTML=`<h1>りゅうおうを<br>ながした！</h1>
     <p>せかいに さわやかな かぜが もどった。<br>
-    ゆうしゃうんこの なは えいえんに かたりつがれる――</p>
+    ${HN()}の なは えいえんに かたりつがれる――</p>
     <p style="color:#ffd23f;font-size:5cqw;">Ｌｖ${G.lv}　クリア！</p>
-    <p id="ver">ver 3.34</p>
+    <p id="ver">ver 3.35</p>
     <button class="tm sel" onclick="localStorage.removeItem('unkoq-save');location.reload()">もういちど</button>`;
   t.classList.remove('hide');
   wMsg.classList.remove('show');wStatus.classList.remove('show');}
@@ -2647,13 +2664,58 @@ function load(){try{const s=localStorage.getItem('unkoq-save');
       G.map='castle';G.x=19;G.y=24;G.dir='down';}
     return true;}}catch(e){}return false;}
 
+/* ── なまえ：「○○のうんこ」 ── */
+function HN(){return (G.name||'ゆうしゃ')+'のうんこ';}
+const NAME_MAX=6;
+const NROWS=['あいうえおかきくけこ','さしすせそたちつてと','なにぬねのはひふへほ','まみむめもやゆよわん',
+  'らりるれろをっゃゅょ','がぎぐげござじずぜぞ','だぢづでどばびぶべぼ','ぱぴぷぺぽぁぃぅぇぉ','０１２３４５６７８９'];
+const NLAST=['ー','！','？','☆','♪','カナ','けす','おわり'];
+let NI=null;
+const toKata=c=>/[ぁ-ゖ]/.test(c)?String.fromCharCode(c.charCodeAt(0)+0x60):c;
+function nameRows(){return NROWS.map(r=>[...r].map(c=>NI.kata?toKata(c):c)).concat([NLAST.map(c=>c==='カナ'&&NI.kata?'かな':c)]);}
+function defaultName(){const z='０１２３４５６７８９',r=()=>z[Math.floor(Math.random()*10)];return 'ゆうしゃ'+r()+r();}
+function nameEntry(init,done){
+  NI={name:[...init].slice(0,NAME_MAX),r:9,c:7,kata:false,done};mode='name';
+  $('nameIn').classList.add('show');nameRender();}
+function nameRender(){
+  const rows=nameRows(),el=$('nameIn');
+  const nm=NI.name.map(c=>`<span>${c}</span>`).join('')+(NI.name.length<NAME_MAX?'<u>＿</u>':'')+
+    '<i>'+'＿'.repeat(Math.max(0,NAME_MAX-NI.name.length-1))+'</i>';
+  el.innerHTML=`<div class="nq">なまえを きめてね</div><div class="nv">${nm}<span style="color:#8fd0ff">のうんこ</span></div>
+    <div class="ng">${rows.map((row,r)=>`<div class="nr">${row.map((c,i)=>
+      `<div class="nc${r===rows.length-1&&i>=5?' w':''}${r===NI.r&&i===NI.c?' sel':''}" data-r="${r}" data-c="${i}">${c}</div>`).join('')}</div>`).join('')}</div>
+    <div style="font-size:2.8cqw;color:#777">Ａ＝えらぶ／Ｂ＝けす</div>`;
+  el.querySelectorAll('.nc').forEach(d=>d.onclick=()=>{NI.r=+d.dataset.r;NI.c=+d.dataset.c;namePick();});}
+function nameMove(d){const rows=nameRows();
+  if(d==='up')NI.r=(NI.r+rows.length-1)%rows.length;if(d==='down')NI.r=(NI.r+1)%rows.length;
+  const n=rows[NI.r].length;
+  if(d==='left')NI.c=(NI.c+n-1)%n;if(d==='right')NI.c=(NI.c+1)%n;
+  NI.c=Math.min(NI.c,n-1);nameRender();}
+function nameBack(){NI.name.pop();nameRender();}
+function namePick(){
+  const rows=nameRows(),c=rows[NI.r][NI.c];
+  if(NI.r===rows.length-1&&NI.c>=5){
+    if(NI.c===5)NI.kata=!NI.kata;
+    else if(NI.c===6)NI.name.pop();
+    else{const n=NI.name.join('').trim()||defaultName(),cb=NI.done;NI=null;
+      $('nameIn').classList.remove('show');cb(n);return;}
+    nameRender();return;}
+  if(NI.name.length<NAME_MAX)NI.name.push(c);
+  if(NI.name.length>=NAME_MAX){NI.r=rows.length-1;NI.c=7;}
+  nameRender();}
+
 /* ── ゲーム開始 ── */
 function begin(cont){
+  // なまえが まだ なければ さきに きめる
+  if(cont&&!G.name){$('title').classList.add('hide');
+    nameEntry(defaultName(),n=>{G.name=n;save();begin(true);});return;}
+  if(!cont&&!begin.nm){$('title').classList.add('hide');
+    nameEntry(defaultName(),n=>{begin.nm=n;begin(false);});return;}
   if(!cont){G={map:'castle',x:19,y:24,dir:'down',lv:1,exp:0,hp:0,mp:0,gold:0,
     weapon:0,armor:0,shield:0,helm:0,haveW:[0],haveA:[0],haveS:[0],haveH:[0],
     items:{herb:3,wing:0},chests:{},dunVer:1,worldVer:2,townVer:1,coins:0,
     bossDead:false,boss2Dead:false,kingGift:false,springFixed:false,springQuest:false,
-    steps:0,thr:10};resetHpMp();save();}
+    steps:0,thr:10,name:begin.nm};resetHpMp();save();}
   $('title').classList.add('hide');
   LOG.init();LOG.ev(cont?'つづきから':'はじめから');
   if(!ONLINE.A)onlineInit();else onlineSync(true);
@@ -2670,18 +2732,21 @@ $('tmCont').onclick=()=>{if(hasSave&&load())begin(true);};
 
 /* ── 入力 ── */
 function onA(){
+  if(mode==='name'){namePick();return;}
   if(mode==='title'){tIdx===0?begin(false):(hasSave&&load()&&begin(true));return;}
   if(mode==='msg'||mode==='bmsg'){nextMsg();return;}
   if(mode==='map'){mode='field';return;}
   if(mode==='menu'||mode==='bcmd'||mode==='shop'){pickMenu();return;}
   if(mode==='field')action();}
 function onB(){
+  if(mode==='name'){nameBack();return;}
   if(mode==='msg'||mode==='bmsg'){nextMsg();return;}
   if(mode==='map'){mode='field';return;}
   if(mode==='menu'){closeMenu();mode='field';return;}
   if(mode==='shop'){closeMenu();mode='field';BJ=null;SLOTIDLE=false;RACEIDLE=false;return;}
   if(mode==='field')fieldMenu();}
 function onDir(d){
+  if(mode==='name'){nameMove(d);return;}
   if(mode==='title'){if(hasSave){tIdx=(d==='up'||d==='left')?0:1;tRender();}return;}
   if(mode==='field'){move(d);return;}
   if(mode==='menu'||mode==='bcmd'||mode==='shop')moveMenu(d==='up'||d==='left'?-1:1);}

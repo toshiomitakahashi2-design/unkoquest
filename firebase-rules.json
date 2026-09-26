@@ -8,6 +8,7 @@
           ".validate": "newData.hasChildren(['x', 'y', 't'])",
           "x": { ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() < 200" },
           "y": { ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() < 200" },
+          "n": { ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 6 && !newData.val().matches(/[<>&]/)" },
           "d": { ".validate": "newData.isString() && newData.val().length <= 5" },
           "sk": { ".validate": "newData.isNumber()" },
           "lv": { ".validate": "newData.isNumber() && newData.val() >= 1 && newData.val() <= 99" },
