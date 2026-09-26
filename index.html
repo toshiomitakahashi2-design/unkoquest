@@ -134,6 +134,7 @@ html,body{height:100%;background:#000;color:#fff;font-family:'DotGothic16',monos
   background:#000;border:1cqw solid #fff;color:#fff;padding:2.5cqw 3cqw;font-size:3.6cqw;
   line-height:1.7;text-align:center;max-width:80%;display:none;white-space:pre-line;}
 #toast.show{display:block;}
+#toast.top{top:auto;bottom:4cqw;transform:translate(-50%,0);max-width:94%;white-space:nowrap;}
 
 /* ── ドットエディタ ── */
 #editor{position:fixed;inset:0;z-index:60;background:#0d0f16;display:none;flex-direction:column;}
@@ -192,7 +193,7 @@ html,body{height:100%;background:#000;color:#fff;font-family:'DotGothic16',monos
       <button class="tm sel" id="tmNew">はじめから</button>
       <button class="tm dis" id="tmCont">つづきから</button>
       <p style="font-size:2.8cqw;color:#777;">十字キー＝いどう／Ａ＝はなす・しらべる／Ｂ＝メニュー</p>
-      <p id="ver">ver 3.35</p>
+      <p id="ver">ver 3.36</p>
     </div>
     <div id="nameIn"></div>
   </div>
@@ -1766,6 +1767,12 @@ function move(dir){
     if(out)doWarp(out);
     return;}
   if(tileAt(nx,ny)==='+'&&!DOOR_OPEN.has(doorKey(nx,ny))){DOOR_OPEN.add(doorKey(nx,ny));return;}
+  if(ONLINE.on&&otherAt(nx,ny)){
+    const k=G.map+':'+nx+','+ny;ONLINE.bump=ONLINE.bumpK===k?ONLINE.bump+1:1;ONLINE.bumpK=k;
+    const bx=nx+(nx-G.x),by=ny+(ny-G.y);
+    if(ONLINE.bump<8||!freeTile(bx,by,true)){onlineSync(true);return;}
+    ONLINE.bump=0;nx=bx;ny=by;}
+  else ONLINE.bump=0;
   if(blocked(nx,ny)){
     // ひとに ぶつかったら そのまま はなす
     let n=findNpc(nx,ny);
@@ -1834,8 +1841,7 @@ function action(){
     n=findNpc(ex,ey);}
   if(n){talkTo(n);return;}
   const op=ONLINE.on&&otherAt(tx,ty);
-  if(op){const [pid,v]=op;say([`${nameOf(pid,v)}（Ｌｖ${v.lv||1}）だ。`,
-    v.st>=0&&v.sa&&ONLINE.A.now()-v.sa<30000?`「${STAMPS[v.st]}」`:'こちらに てを ふっている。']);return;}
+  if(op){talkPlayer(op);return;}
   const c=(CHESTS[G.map]||[]).find(c=>c.x===tx&&c.y===ty);
   if(c){if(got(c))say(["たからばこは からっぽだ。"]);else openChest(c);return;}
   if(tileAt(tx,ty)==='S'){checkSpring();return;}
@@ -1845,6 +1851,10 @@ function action(){
   if(sc){G.secrets=G.secrets||{};
     if(G.secrets[sc.id]){say(sc.after);return;}
     G.secrets[sc.id]=1;sc.give();updStatus();save();LOG.ev('たからさがし',sc.id);say(sc.found);return;}
+  // めのまえに なにも なくても となりに プレイヤーが いれば はなす
+  const nb=ONLINE.on&&[[0,-1,'up'],[0,1,'down'],[-1,0,'left'],[1,0,'right']]
+    .map(([dx,dy,d])=>[otherAt(G.x+dx,G.y+dy),d]).find(([o])=>o);
+  if(nb){G.dir=nb[1];onlineSync(true);talkPlayer(nb[0]);return;}
   say(["なにも みつからなかった。"]);}
 /* ── たからさがし：あやしい ところを しらべると… ── */
 const SECRETS=[
@@ -2288,7 +2298,7 @@ const FB_SDK='https://www.gstatic.com/firebasejs/10.12.2/';
 const STAMPS=['こんにちは！','よろしく！','ありがとう！','いっしょに いこう！','おさきに〜','まって〜！','やったー！','💩'];
 const NICK=['ぷりぷり','もりもり','ころころ','とぐろ','ほかほか','ぴかぴか','にょろにょろ','ぶりぶり',
   'ふわふわ','ずっしり','ぽかぽか','ゆるゆる','きらきら','どっしり','ちょこん','ぐるぐる'];
-var ONLINE={on:false,A:null,pid:'',map:null,unsub:null,others:{},view:{},offset:0,last:0,beat:0,st:-1,sa:0};
+var ONLINE={seen:{},bump:0,bumpK:'',tm:null,on:false,A:null,pid:'',map:null,unsub:null,others:{},view:{},offset:0,last:0,beat:0,st:-1,sa:0};
 function onlinePid(){let p='';try{p=localStorage.getItem('unkoq-pid')||'';}catch(e){}
   if(!/^p[a-z0-9]{6,12}$/.test(p)){p='p'+Math.random().toString(36).slice(2,10).replace(/[^a-z0-9]/g,'0');
     try{localStorage.setItem('unkoq-pid',p);}catch(e){}}return p;}
@@ -2319,12 +2329,14 @@ function onlineSync(force){
   try{
     if(ONLINE.map!==G.map){
       if(ONLINE.map){A.remove(key(ONLINE.map));if(ONLINE.unsub)ONLINE.unsub();}
-      ONLINE.map=G.map;ONLINE.others={};ONLINE.view={};
+      ONLINE.map=G.map;ONLINE.others={};ONLINE.view={};ONLINE.seen={};
       A.dropOnLeave(key(G.map));
-      ONLINE.unsub=A.watch(`online/${G.map}`,v=>{ONLINE.others=v;updStatus();});
+      ONLINE.unsub=A.watch(`online/${G.map}`,v=>{heardStamps(v);ONLINE.others=v;updStatus();});
       force=true;}
     const now=Date.now();
+    clearTimeout(ONLINE.tm);
     if(force||now-ONLINE.last>120){ONLINE.last=now;ONLINE.beat=now;A.set(key(G.map),myState());}
+    else ONLINE.tm=setTimeout(()=>onlineSync(true),130);
   }catch(e){}}
 setInterval(()=>{if(ONLINE.on&&(ONLINE.map!==G.map||Date.now()-ONLINE.beat>20000))onlineSync(true);},1000);
 // いまの マップに いる ほかの プレイヤー（ふるい データは むし）
@@ -2361,9 +2373,35 @@ function drawOthers(cx,cy){
     else if(v.n){ctx.save();ctx.font='7px sans-serif';ctx.textAlign='center';ctx.textBaseline='bottom';
       const t=String(v.n).slice(0,NAME_MAX);ctx.fillStyle='#000';ctx.fillText(t,px+9,py+1);
       ctx.fillStyle='#fff';ctx.fillText(t,px+8,py);ctx.restore();}}}
-function stampMenu(){
+// あいてに はなしかけて、スタンプで こたえる
+function talkPlayer([pid,v]){
+  const heard=v.st>=0&&v.sa&&ONLINE.A.now()-v.sa<30000;
+  say([`${nameOf(pid,v)}（Ｌｖ${v.lv||1}）だ。`,heard?`「${STAMPS[v.st]}」`:'こちらに てを ふっている。'],
+    ()=>stampMenu('なんて いう？'));}
+// そこに たてるか（かべ・ひと・ワープ でない）
+function freeTile(x,y,warpOk){const m=curMap();
+  if(y<0||x<0||y>=m.length||x>=m[0].length||blocked(x,y))return false;
+  if(tileAt(x,y)==='+'&&!DOOR_OPEN.has(doorKey(x,y)))return false;
+  if(!warpOk&&(WARPS[G.map]||[]).some(w=>w.x===x&&w.y===y))return false;
+  return !(ONLINE.on&&otherAt(x,y));}
+// かさなって しまったら（ワープの でぐち など）あとから きた ほうが よこへ ずれる
+function unstack(){
+  if(!ONLINE.on||mode!=='field')return;
+  const o=othersHere().find(([p,v])=>v.x===G.x&&v.y===G.y);if(!o)return;
+  if(o[0]>ONLINE.pid)return;   // pid の おおきい ほうが よける
+  for(const [dx,dy] of [[0,1],[1,0],[-1,0],[0,-1],[1,1],[-1,1],[1,-1],[-1,-1]])
+    if(freeTile(G.x+dx,G.y+dy)){G.x+=dx;G.y+=dy;onlineSync(true);return;}}
+setInterval(unstack,700);
+// となりの ひとの スタンプは メッセージでも しらせる
+function heardStamps(v){
+  for(const [pid,o] of Object.entries(v||{})){
+    if(pid===ONLINE.pid||!o)continue;
+    const old=ONLINE.seen[pid];ONLINE.seen[pid]=o.sa||0;
+    if(old===undefined||!o.sa||old===o.sa||ONLINE.A.now()-o.sa>10000)continue;
+    if(Math.abs(o.x-G.x)+Math.abs(o.y-G.y)<=2&&STAMPS[o.st])toast(`${nameOf(pid,o)}「${STAMPS[o.st]}」`,2500,true);}}
+function stampMenu(title){
   mode='menu';
-  const l=STAMPS.map((t,i)=>({id:i,label:t}));l.push({id:'x',label:'やめる'});l.title='スタンプ';
+  const l=STAMPS.map((t,i)=>({id:i,label:t}));l.push({id:'x',label:'やめる'});l.title=title||'スタンプ';
   menu(null,l,id=>{mode='field';if(id==='x')return;
     ONLINE.st=id;ONLINE.sa=ONLINE.A.now();onlineSync(true);LOG.ev('スタンプ',STAMPS[id]);});}
 
@@ -2386,7 +2424,7 @@ function fieldMenu(){
           :`つぎのレベルまで あと ${Math.max(0,nextExp(G.lv)-G.exp)}`,
         G.lv>=20?"りゅうおうと たたかえる ちからが ある！"
           :`りゅうおうに いどむなら Ｌｖ20は ほしい。`,
-        `うんこクエスト ver 3.35`]);return;}
+        `うんこクエスト ver 3.36`]);return;}
     if(id==='it'){itemMenu(false);return;}
     if(id==='sp'){spellMenu(false);return;}});}
 function itemMenu(inBattle){
@@ -2558,7 +2596,7 @@ function clear(){
     <p>せかいに さわやかな かぜが もどった。<br>
     ${HN()}の なは えいえんに かたりつがれる――</p>
     <p style="color:#ffd23f;font-size:5cqw;">Ｌｖ${G.lv}　クリア！</p>
-    <p id="ver">ver 3.35</p>
+    <p id="ver">ver 3.36</p>
     <button class="tm sel" onclick="localStorage.removeItem('unkoq-save');location.reload()">もういちど</button>`;
   t.classList.remove('hide');
   wMsg.classList.remove('show');wStatus.classList.remove('show');}
@@ -2790,8 +2828,8 @@ $('game').addEventListener('click',()=>{
   if(mode==='map'){mode='field';return;}
   if(mode==='msg'||mode==='bmsg')nextMsg();});
 let toastT=null;
-function toast(msg,ms){
-  const t=$('toast');t.textContent=msg;t.classList.add('show');
+function toast(msg,ms,top){
+  const t=$('toast');t.textContent=msg;t.classList.add('show');t.classList.toggle('top',!!top);
   clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),ms||2800);}
 const fsEl=()=>document.fullscreenElement||document.webkitFullscreenElement||null;
 function syncFsIcon(){$('fs').textContent=fsEl()?'⛶':'⛶';}
