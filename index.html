@@ -180,7 +180,7 @@ html,body{height:100%;background:#000;color:#fff;font-family:'DotGothic16',monos
       <button class="tm sel" id="tmNew">はじめから</button>
       <button class="tm dis" id="tmCont">つづきから</button>
       <p style="font-size:2.8cqw;color:#777;">十字キー＝いどう／Ａ＝はなす・しらべる／Ｂ＝メニュー</p>
-      <p id="ver">ver 3.28</p>
+      <p id="ver">ver 3.29</p>
     </div>
   </div>
   <div id="pad">
@@ -384,6 +384,9 @@ function initArt(){
   rct(ART.dcastle,7,10,2,5,'#140a18');
   dots(ART.dcastle,[[4,8],[11,8],[7,7],[8,7]],'#e5484d');
   ART.tower=mk(16,16,'#3a8c3a');                        // うんこの とう
+  ART.oddrock=mk(16,16,'#3a8c3a');                      // あやしい いし（てっぺん）
+  rct(ART.oddrock,4,7,8,7,'#8a8290');rct(ART.oddrock,5,6,6,1,'#a8a0b0');rct(ART.oddrock,3,9,10,4,'#7a7280');
+  dots(ART.oddrock,[[6,8],[9,10]],'#5a5260');dots(ART.oddrock,[[11,4],[12,3],[13,4],[12,5]],'#fff6a0');
   // たてものの かべ（そざい いろいろ）
   ART.wood=mk(16,16,'#8a5a2a');for(let y=0;y<16;y+=4)rct(ART.wood,0,y,16,1,'#5a3a1a');
   dots(ART.wood,[[3,1],[3,2],[11,5],[11,6],[6,9],[6,10],[13,13],[13,14]],'#6a4a1a');
@@ -489,7 +492,7 @@ const ART_LABEL={hero:"ゆうしゃ",npc:"むらびと",king:"おうさま",shop
  carpet:"じゅうたん",counter:"カウンター",stairs:"かいだん",chest:"たからばこ",mud:"よごれたいずみ",spring:"きれいないずみ",chestOpen:"あいたはこ",down:"くだりかいだん",up:"のぼりかいだん",
  castle:"しろ",town:"まち",cave:"どうくつ",dcastle:"まおうじょう",tower:"とう",
  wood:"きの かべ",stone:"おおいしの かべ",brick:"レンガの かべ",cwallC:"カジノの かべ",bed:"ベッド",barrel:"たる",crate:"きばこ",
- rack:"ぶきかけ",anvil:"かなとこ",barrelO:"そとの たる",crateO:"そとの きばこ",dummy:"わらにんぎょう",flower:"はな",well:"いど",
+ rack:"ぶきかけ",anvil:"かなとこ",barrelO:"そとの たる",crateO:"そとの きばこ",dummy:"わらにんぎょう",flower:"はな",well:"いど",oddrock:"あやしい いし",
  signItem:"どうぐやの かんばん",signWeapon:"ぶきやの かんばん",signInn:"やどやの かんばん",signCasino:"カジノの かんばん",
  table:"カジノの テーブル",slotm:"スロットマシン",
  dwall:"まおうのかべ",dfloor:"まおうのゆか",cwall:"どうくつのかべ",cfloor:"どうくつのゆか"};
@@ -502,15 +505,15 @@ const TILE={'.':'grass',',':'bush','#':'tree','~':'water','^':'mount','=':'road'
  '>':'down','<':'up','S':'mud','v':'town','c':'castle','n':'town','C':'castle','T':'town','t':'town','O':'cave','o':'cave','R':'dcastle',
  'W':'dwall','F':'dfloor','X':'cwall','f':'cfloor','g':'grass','Y':'tower',
  'w':'wood','s':'stone','r':'brick','j':'cwallC','b':'bed','u':'barrel','x':'crate','E':'rack','D':'anvil',
- 'U':'barrelO','G':'crateO','m':'dummy','*':'flower','I':'well',
+ 'U':'barrelO','G':'crateO','m':'dummy','*':'flower','I':'well','q':'oddrock',
  'Z':'signItem','V':'signWeapon','Q':'signInn','J':'signCasino','H':'table'};
 const BLOCKED=new Set(['#','~','^','B','K','W','X','S','Z','V','Q','J','H',
-  'w','s','r','j','b','u','x','E','D','U','G','m','I']);
+  'w','s','r','j','b','u','x','E','D','U','G','m','I','q']);
 
 const WORLD=[
 "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
 "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
-"~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~,,.~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+"~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~,q.~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
 "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~,,,,,~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
 "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~,..~.~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
 "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~,.~~.~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
@@ -1190,7 +1193,7 @@ const NPCS={
    afterLv:["ほう… ずいぶん たくましく なったのう。",
    "そなたなら ドラゴンロードにも まけまい。"],
    afterBoss:["でかしたぞ ゆうしゃうんこ！","くにに さわやかな かぜが もどった。"]},
-  {x:17,y:7,art:'npc',lines:["おうさまの まえでは しずかにな。"]},
+  {x:17,y:7,art:'npc',lines:["おうさまの まえでは しずかにな。","…ここだけの はなし、おうさまは ぎょくざの うしろに","なにか かくしているらしいぞ。"]},
   {x:22,y:7,art:'npc',lines:["なかにわの いけは この しろの じまんだ。"]},
   {x:19,y:23,art:'npc',move:true,lines:["しろの そとには まものの うんこが おる。","くさむらは とくに あぶないぞ。"]},
   {x:23,y:22,art:'npc',heal:true,lines:["ここは しろの いのりば。","つかれた からだを いやして あげましょう。"]},
@@ -1223,7 +1226,8 @@ const NPCS={
   {x:7,y:5,art:'shop',shop:'item',lines:["どうぐやです。","たびの じゅんびは ここで。"]},
   {x:36,y:5,art:'shop',shop:'weapon0',lines:["ぶきやだよ。","かけだしの ゆうしゃむけの しなが あるよ。"]},
   {x:10,y:18,art:'shop',shop:'inn0',lines:["やどやへ ようこそ。","このへんは まだ あんぜんだから やすいよ。"]},
-  {x:20,y:20,art:'npc',lines:["ここは はじまりの まち。","まわりを もりに かこまれた ちいさな まちさ。"]},
+  {x:20,y:20,art:'npc',lines:["ここは はじまりの まち。","まわりを もりに かこまれた ちいさな まちさ。",
+    "そうそう、たいりくの いちばん きたの はしっこには","でんせつの なにかが ねむっているって いいつたえが あるよ。"]},
   {x:29,y:12,art:'npc',move:true,lines:["しろの まわりは スライムの うんこしか でない。","まずは ここで レベルを あげるといい。"]},
   {x:38,y:19,art:'npc',move:true,lines:["おおきな まちは みなみひがしの みずうみの ほとり。","そこまで いくと てきが つよくなるよ。"]},
   {x:19,y:24,art:'npc',move:true,lines:["やどは ばしょによって ねだんが ちがうんだ。","あぶない ところほど たかいのさ。"]},
@@ -1236,7 +1240,7 @@ const NPCS={
   {x:19,y:4,art:'shop',shop:'weapon1',lines:["ぶきやだ。","たてと ぼうしも おいてるよ。"]},
   {x:14,y:21,art:'shop',shop:'inn',lines:["やどやへ ようこそ。"]},
   {x:22,y:15,art:'npc',lines:["この まちは おおきな みずうみの ほとり。","みずうみを めじるしに すれば まよわないよ。"]},
-  {x:15,y:16,art:'npc',lines:["ふんすいの ひろばは まちの じまんさ。"]},
+  {x:15,y:16,art:'npc',lines:["ふんすいの ひろばは まちの じまんさ。","むかしから ふんすいに コインを なげて","ねがいごとを する ひとが おおいんだよ。"]},
   {x:23,y:25,art:'npc',lines:["ひがしの みなとまちには つよい ぶきが あるらしい。","でも たかいんだ…"]},
   {x:28,y:25,art:'npc',lines:["いらなくなった ぶきや よろいは","みせで うることが できるよ。"]},
   {x:36,y:24,art:'npc',lines:["ドラゴンロードの しろは みなみの はてに あるって。","ひがしの とうげを こえて ずっと にしへ いくんだ。"]},
@@ -1456,7 +1460,7 @@ let G={map:'castle',x:19,y:24,dir:'down',lv:1,exp:0,hp:0,mp:0,gold:0,
 let mode='title',anim=0;
 
 function stats(){const s=statFor(G.lv);
-  return{hpMax:s.hpMax,mpMax:s.mpMax,
+  return{hpMax:s.hpMax+(G.bonusHp||0),mpMax:s.mpMax,
     atk:s.atk+WEAPONS[G.weapon].atk,
     def:s.def+ARMORS[G.armor].def+SHIELDS[G.shield||0].def+HELMS[G.helm||0].def};}
 function resetHpMp(){const s=stats();G.hp=s.hpMax;G.mp=s.mpMax;}
@@ -1489,7 +1493,7 @@ function drawMap(){
     let key=TILE[m[my][mx]]||'grass';
     if(key==='mud'&&G.springFixed)key='spring';
     // とびらは ちかづくと ひらく
-    if(key==='door'&&Math.abs(mx-G.x)<=1&&Math.abs(my-G.y)<=1)key='doorOpen';
+    if(key==='door'&&DOOR_OPEN.has(doorKey(mx,my)))key='doorOpen';
     drawArt(key,vx*TS,vy*TS,1);}
   (CHESTS[G.map]||[]).forEach(c=>{
     drawArt(got(c)?'chestOpen':'chest',(c.x-cx)*TS,(c.y-cy)*TS,1);});
@@ -1640,7 +1644,7 @@ const MAPCOL={'~':'#2452c8','#':'#1c5a22',',':'#3f9a40','.':'#5cb048','g':'#5cb0
   'f':'#8a7a5e','%':'#c04040','+':'#8a6030','K':'#8a5a2a','S':'#4a4230','<':'#f4f4f4','>':'#f4f4f4',
   'Z':'#b07a3a','V':'#b07a3a','Q':'#b07a3a','J':'#b07a3a','H':'#1f7a3a',
   'w':'#8a5a2a','s':'#7a7e8c','r':'#b0503a','j':'#5a2a78','b':'#e8e8f0','u':'#8a5a2a','x':'#b07a3a','E':'#6a4a1a','D':'#50505a',
-  'U':'#8a5a2a','G':'#b07a3a','m':'#d8c070','*':'#e070c0','I':'#7a7e8c'};
+  'U':'#8a5a2a','G':'#b07a3a','m':'#d8c070','*':'#e070c0','I':'#7a7e8c','q':'#a8a0b0'};
 const MAPPLACE={C:'#ffffff',c:'#ffffff',n:'#ff7060',T:'#ff7060',t:'#ff7060',v:'#ff7060',
   O:'#141018',o:'#141018',R:'#b040e0',Y:'#d8d0c0'};
 function drawWorldMap(){
@@ -1714,6 +1718,12 @@ function pickMenu(){const it=mi[mIdx];if(!it||it.dis)return;
 function closeMenu(){wCmd.classList.remove('show');}
 
 /* ── いどう ── */
+/* とびら：となりから そちらへ すすもうと すると ひらく（1かいめは ひらくだけ）
+   はなれると しまる */
+const DOOR_OPEN=new Set();
+const doorKey=(x,y)=>G.map+':'+x+','+y;
+function closeFarDoors(){for(const k of [...DOOR_OPEN]){const [m,xy]=k.split(':'),[x,y]=xy.split(',').map(Number);
+  if(m!==G.map||Math.max(Math.abs(x-G.x),Math.abs(y-G.y))>1)DOOR_OPEN.delete(k);}}
 function move(dir){
   if(mode!=='field')return;
   G.dir=dir;let nx=G.x,ny=G.y;
@@ -1724,6 +1734,7 @@ function move(dir){
     const out=MAPS[G.map].open&&(WARPS[G.map]||[]).find(w=>w.to==='world');
     if(out)doWarp(out);
     return;}
+  if(tileAt(nx,ny)==='+'&&!DOOR_OPEN.has(doorKey(nx,ny))){DOOR_OPEN.add(doorKey(nx,ny));return;}
   if(blocked(nx,ny)){
     // ひとに ぶつかったら そのまま はなす
     let n=findNpc(nx,ny);
@@ -1736,7 +1747,7 @@ function move(dir){
     const c=(CHESTS[G.map]||[]).find(c=>c.x===nx&&c.y===ny&&!got(c));
     if(c){openChest(c);return;}
     return;}
-  G.x=nx;G.y=ny;
+  G.x=nx;G.y=ny;closeFarDoors();
   const w=(WARPS[G.map]||[]).find(w=>w.x===nx&&w.y===ny);
   if(w){doWarp(w);return;}
   if(MAPS[G.map].enc){
@@ -1793,7 +1804,32 @@ function action(){
   const c=(CHESTS[G.map]||[]).find(c=>c.x===tx&&c.y===ty);
   if(c){if(got(c))say(["たからばこは からっぽだ。"]);else openChest(c);return;}
   if(tileAt(tx,ty)==='S'){checkSpring();return;}
+  // あやしい ばしょ（めのまえ → あしもと の じゅん）
+  const sc=SECRETS.find(s=>s.map===G.map&&s.at.some(([x,y])=>x===tx&&y===ty))
+    ||SECRETS.find(s=>s.map===G.map&&s.at.some(([x,y])=>x===G.x&&y===G.y));
+  if(sc){G.secrets=G.secrets||{};
+    if(G.secrets[sc.id]){say(sc.after);return;}
+    G.secrets[sc.id]=1;sc.give();updStatus();save();LOG.ev('たからさがし',sc.id);say(sc.found);return;}
   say(["なにも みつからなかった。"]);}
+/* ── たからさがし：あやしい ところを しらべると… ── */
+const SECRETS=[
+ {id:'hesokuri',map:'castle',at:[[19,2]],
+  found:["ぎょくざの うしろを しらべた…","ゆかの いしが ひとつ ぐらぐらしている。",
+    "もちあげてみると… おうさまの へそくり 1000Ｇが かくしてあった！","…みなかったことに しておこう。"],
+  after:["ゆかの いしの した。 もう なにも ない。","おうさまが ちょっと さびしそうだ。"],
+  give:()=>{G.gold+=1000;}},
+ {id:'fountain',map:'town',at:[[12,15],[13,15],[12,16],[13,16]],
+  found:["ふんすいの そこを のぞきこんだ…","キラッ！ みずの なかで なにかが ひかっている！",
+    "カジノコインを 100まい ひろった！","だれかの ねがいごとが かなうと いいね。"],
+  after:["ふんすいの みずが きらきら ひかっている。","…もう コインは しずんでいない。"],
+  give:()=>{G.coins=(G.coins||0)+100;}},
+ {id:'legend',map:'world',at:[[47,2]],
+  found:["たいりくの てっぺん。 ふしぎな いしが ぽつんと ある。","いしの したを ほってみると…",
+    "なんと 「でんせつの うんこ」が うまっていた！","からだの おくから ちからが わいてくる…",
+    "さいだいHPが 30 あがった！"],
+  after:["でんせつの うんこが ねむっていた ばしょだ。","いまも すこし あたたかい。"],
+  give:()=>{G.bonusHp=(G.bonusHp||0)+30;G.hp+=30;}},
+];
 function checkSpring(){
   if(G.springFixed){
     const st=stats();
@@ -1809,7 +1845,7 @@ function checkSpring(){
     "どろの なかから なにかが せりあがってきた！"],()=>startBattle('nushi'));}
 /* ── むらびとが うろうろ あるく ── */
 function npcCanWalk(x,y,self){
-  if(BLOCKED.has(tileAt(x,y)))return false;
+  if(BLOCKED.has(tileAt(x,y))||tileAt(x,y)==='+')return false;
   if(G.x===x&&G.y===y)return false;
   if((NPCS[G.map]||[]).some(n=>n!==self&&n.x===x&&n.y===y))return false;
   if((CHESTS[G.map]||[]).some(c=>c.x===x&&c.y===y))return false;
@@ -2115,7 +2151,7 @@ function fieldMenu(){
           :`つぎのレベルまで あと ${Math.max(0,nextExp(G.lv)-G.exp)}`,
         G.lv>=20?"りゅうおうと たたかえる ちからが ある！"
           :`りゅうおうに いどむなら Ｌｖ20は ほしい。`,
-        `うんこクエスト ver 3.28`]);return;}
+        `うんこクエスト ver 3.29`]);return;}
     if(id==='it'){itemMenu(false);return;}
     if(id==='sp'){spellMenu(false);return;}});}
 function itemMenu(inBattle){
@@ -2272,7 +2308,7 @@ function clear(){
     <p>せかいに さわやかな かぜが もどった。<br>
     ゆうしゃうんこの なは えいえんに かたりつがれる――</p>
     <p style="color:#ffd23f;font-size:5cqw;">Ｌｖ${G.lv}　クリア！</p>
-    <p id="ver">ver 3.28</p>
+    <p id="ver">ver 3.29</p>
     <button class="tm sel" onclick="localStorage.removeItem('unkoq-save');location.reload()">もういちど</button>`;
   t.classList.remove('hide');
   wMsg.classList.remove('show');wStatus.classList.remove('show');}
