@@ -200,7 +200,7 @@ html,body{height:100%;background:#000;color:#fff;font-family:'DotGothic16',monos
       <button class="tm sel" id="tmNew">はじめから</button>
       <button class="tm dis" id="tmCont">つづきから</button>
       <p style="font-size:2.8cqw;color:#777;">十字キー＝いどう／Ａ＝はなす・しらべる／Ｂ＝メニュー</p>
-      <p id="ver">ver 3.38</p>
+      <p id="ver">ver 3.39</p>
     </div>
     <div id="nameIn"></div>
   </div>
@@ -1218,7 +1218,7 @@ const NPCS={
   {x:22,y:7,art:'npc',lines:["なかにわの いけは この しろの じまんだ。"]},
   {x:19,y:23,art:'npc',move:true,lines:["しろの そとには まものの うんこが おる。","くさむらは とくに あぶないぞ。"]},
   {x:23,y:22,art:'npc',heal:true,lines:["ここは しろの いのりば。","つかれた からだを いやして あげましょう。"]},
-  {x:6,y:5,art:'npc',lines:["ここは しょこ。","「ジュワ〜」を おぼえれば この しろに いっしゅんで もどれる。"]},
+  {x:6,y:5,art:'npc',lines:["ここは しょこ。","「ジュワ〜」を おぼえれば いったことの ある まちや しろに いっしゅんで とべる。"]},
   {x:33,y:5,art:'npc',lines:["ほうもつこの たからばこは","ゆうしゃどのなら もっていって よいと おおせだ。"]},
   {x:6,y:24,art:'npc',move:true,lines:["おれたち へいしも たたかいたいんだが","うんこじゃ つるぎが もてなくてな…"]},
   {x:33,y:24,art:'npc',move:true,lines:["ちゅうぼうだよ。","うんこの ごはんは… きかないでくれ。"]},
@@ -1269,7 +1269,7 @@ const NPCS={
   {x:6,y:17,art:'npc',move:true,lines:["メタルスライムの うんこは にげあしが はやいけど","たおすと どっさり けいけんちが もらえるよ！"]},
   {x:38,y:18,art:'npc',move:true,lines:["みずうみの ほとりの はたけさ。","うんこが よく そだつんだ。"]},
   {x:14,y:30,art:'npc',move:true,lines:["みなみにしに やまに かこまれた しろが あるんだ。","ウンコール城って いうらしい。"]},
-  {x:28,y:19,art:'npc',move:true,lines:["ジュワ〜の じゅもんは べんりだよ。","どこからでも きたの しろに もどれる。"]},
+  {x:28,y:19,art:'npc',move:true,lines:["ジュワ〜の じゅもんは べんりだよ。","いちど いった まちや しろなら どこからでも とべる。"]},
   {x:32,y:27,art:'npc',move:true,lines:["たては みのまもりを あげてくれる。","かうなら はやめが いいよ。"]},
  ],
  town2:[
@@ -1818,9 +1818,16 @@ function move(dir){
       const t=tileAt(nx,ny);
       if(t!=='='&&t!=='-'&&t!=='g'){startBattle(pickEnemy(t));save();return;}}}
   if(G.steps%12===0)save();}
+/* ジュワ〜で とべる ばしょ（まちの いりぐち） */
+const JUWA=[{to:'castle',x:19,y:24},{to:'newtown',x:22,y:32},{to:'town',x:22,y:32},
+  {to:'village',x:22,y:32},{to:'castle2',x:19,y:28},{to:'town2',x:22,y:32}];
+function markVisited(){G.visited=G.visited||{castle:1};
+  if(JUWA.some(j=>j.to===G.map))G.visited[G.map]=1;
+  // まえの セーブ：たからばこを あけた まちは いったことに する
+  Object.keys(G.chests||{}).forEach(k=>{const m=k.split(':')[0];if(JUWA.some(j=>j.to===m))G.visited[m]=1;});}
 function doWarp(w){
   const from=G.map;
-  G.map=w.to;G.x=w.tx;G.y=w.ty;G.steps=0;onlineSync(true);
+  G.map=w.to;G.x=w.tx;G.y=w.ty;G.steps=0;markVisited();onlineSync(true);
   LOG.ev('エリア移動',from+'→'+w.to);
   const nm=MAPS[w.to].name;
   save();
@@ -2447,7 +2454,7 @@ function fieldMenu(){
           :`つぎのレベルまで あと ${Math.max(0,nextExp(G.lv)-G.exp)}`,
         G.lv>=20?"りゅうおうと たたかえる ちからが ある！"
           :`りゅうおうに いどむなら Ｌｖ20は ほしい。`,
-        `うんこクエスト ver 3.38`]);return;}
+        `うんこクエスト ver 3.39`]);return;}
     if(id==='it'){itemMenu(false);return;}
     if(id==='sp'){spellMenu(false);return;}});}
 function itemMenu(inBattle){
@@ -2498,11 +2505,17 @@ function spellMenu(inBattle){
     /* ── ジュワ〜：城へ もどる ── */
     if(sp.type==='warp'){
       if(inBattle){say(["せんとうちゅうは つかえない！"],battleCmd);return;}
-      G.mp-=sp.mp;updStatus();
-      G.map='castle';G.x=19;G.y=24;G.dir='down';G.steps=0;save();
-      LOG.ev('ジュワ〜','castle');mode='field';
-      say(["ゆうしゃうんこは ジュワ〜を となえた！","からだが ジュワ〜っと とけて…",
-        "ラダうんこ城に もどってきた！"]);return;}
+      markVisited();
+      const l=JUWA.filter(j=>G.visited[j.to]).map(j=>({id:j.to,label:MAPS[j.to].name}));
+      l.push({id:'x',label:'やめる'});l.title='どこへ とぶ？';
+      menu(null,l,to=>{
+        if(to==='x'){mode='field';return;}
+        const j=JUWA.find(j=>j.to===to);
+        G.mp-=sp.mp;updStatus();
+        G.map=to;G.x=j.x;G.y=j.y;G.dir='up';G.steps=0;onlineSync(true);save();
+        LOG.ev('ジュワ〜',to);mode='field';
+        say(["ゆうしゃうんこは ジュワ〜を となえた！","からだが ジュワ〜っと とけて…",
+          `${MAPS[to].name}に ついた！`]);});return;}
     /* ── ベチョ：いっかつ ── */
     if(sp.type==='kill'){
       if(!inBattle){mode='field';say(["ここでは つかえない。"]);return;}
@@ -2619,7 +2632,7 @@ function clear(){
     <p>せかいに さわやかな かぜが もどった。<br>
     ${HN()}の なは えいえんに かたりつがれる――</p>
     <p style="color:#ffd23f;font-size:5cqw;">Ｌｖ${G.lv}　クリア！</p>
-    <p id="ver">ver 3.38</p>
+    <p id="ver">ver 3.39</p>
     <button class="tm sel" onclick="localStorage.removeItem('unkoq-save');location.reload()">もういちど</button>`;
   t.classList.remove('hide');
   wMsg.classList.remove('show');wStatus.classList.remove('show');}
