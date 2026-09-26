@@ -107,21 +107,22 @@ html,body{height:100%;background:#000;color:#fff;font-family:'DotGothic16',monos
   background:#182850;
   flex-direction:column;align-items:center;justify-content:center;gap:2.4cqw;text-align:center;}
 #title.hide{display:none;}
-#title h1{position:relative;line-height:0;}
+#title h1{position:relative;line-height:0;margin-top:3cqw;}
 #title h1 .vh{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);}
 #title .tmenu.cl .tm{color:#fff;}
 #title h1.ct{line-height:1.3;font-size:9cqw;color:#ffd23f;text-shadow:0 .6cqw 0 #7a3000;}
 #tLogo{width:92cqw;height:auto;image-rendering:pixelated;}
-#title .tonl{font-size:6cqw;font-weight:bold;color:#ffd23f;letter-spacing:2.4cqw;margin:-1cqw 0 3cqw 2.4cqw;
+#title .tonl{font-size:6cqw;font-weight:bold;color:#ffd23f;letter-spacing:2.4cqw;margin:-1cqw 0 2cqw 2.4cqw;
   text-shadow:.5cqw .5cqw 0 #7a3000;}
 #title p{font-size:3.4cqw;color:#bbb;line-height:1.8;position:relative;}
-#title .tmenu{position:relative;display:flex;flex-direction:column;align-items:flex-start;gap:1.6cqw;}
+#title .tmenu{position:relative;display:flex;flex-direction:column;align-items:flex-start;gap:1.2cqw;}
 #title .tm{border:0;background:none;color:#fc9838;padding:0;letter-spacing:.6cqw;font-weight:bold;
   font-size:5.4cqw;font-family:'DotGothic16',monospace;cursor:pointer;}
 #title .tm::before{content:'▶';visibility:hidden;margin-right:1cqw;}
 #title .tm.sel::before{visibility:visible;animation:bl .7s steps(1) infinite;}
 #title .tm.dis{color:#7a5a4a;}
-#title .tcopy{font-size:4cqw;color:#f878f8;letter-spacing:.4cqw;margin-top:4cqw;}
+#title #ver{position:absolute;right:2.5cqw;bottom:2cqw;font-size:2.6cqw;color:#5a6a9a;line-height:1;}
+#title .tcopy{font-size:4cqw;color:#f878f8;letter-spacing:.4cqw;margin-top:2cqw;}
 #nameIn{position:absolute;inset:0;background:#000;z-index:12;display:none;flex-direction:column;
   align-items:center;justify-content:center;gap:1.4cqw;color:#fff;font-size:4.2cqw;}
 #nameIn.show{display:flex;}
@@ -205,14 +206,14 @@ html,body{height:100%;background:#000;color:#fff;font-family:'DotGothic16',monos
     <div class="fcwin" id="wCmd"></div>
     <div class="fcwin" id="wMsg"></div>
     <div id="title">
-      <h1><canvas id="tLogo" width="268" height="96"></canvas><span class="vh">UNKO QUEST</span></h1>
+      <h1><canvas id="tLogo" width="268" height="106"></canvas><span class="vh">UNKO QUEST</span></h1>
       <div class="tonl">ONLINE</div>
       <div class="tmenu">
         <button class="tm sel" id="tmNew">START</button>
         <button class="tm dis" id="tmCont">CONTINUE</button>
       </div>
       <p class="tcopy">© 2026 saishonodesign</p>
-      <p id="ver">ver 4.3</p>
+      <p id="ver">ver 4.4</p>
     </div>
     <div id="nameIn"></div>
   </div>
@@ -2466,7 +2467,7 @@ function fieldMenu(){
           :`つぎのレベルまで あと ${Math.max(0,nextExp(G.lv)-G.exp)}`,
         G.lv>=20?"りゅうおうと たたかえる ちからが ある！"
           :`りゅうおうに いどむなら Ｌｖ20は ほしい。`,
-        `うんこクエスト ver 4.3`]);return;}
+        `うんこクエスト ver 4.4`]);return;}
     if(id==='it'){itemMenu(false);return;}
     if(id==='sp'){spellMenu(false);return;}});}
 function itemMenu(inBattle){
@@ -2644,7 +2645,7 @@ function clear(){
     <p>せかいに さわやかな かぜが もどった。<br>
     ${HN()}の なは えいえんに かたりつがれる――</p>
     <p style="color:#ffd23f;font-size:5cqw;">Ｌｖ${G.lv}　クリア！</p>
-    <p id="ver">ver 4.3</p>
+    <p id="ver">ver 4.4</p>
     <div class="tmenu cl"><button class="tm sel" onclick="localStorage.removeItem('unkoq-save');location.reload()">もういちど</button></div>`;
   t.classList.remove('hide');
   wMsg.classList.remove('show');wStatus.classList.remove('show');}
@@ -2852,10 +2853,12 @@ function drawTitleLogo(){
   L.clearRect(0,0,W,H);
   // 1) もじの かたち（あたまもじは おおきく・すこし アーチ）
   const M=mk(),m=M.getContext('2d');m.fillStyle='#000';
-  const word='UNKO QUEST',TOP=4,wid=[...word].reduce((a,ch,i)=>a+(ch===' '?7:7*(i===0||i===5?4:3)+4),-4);
-  let x=Math.round((W-wid)/2)+6;
+  // りょうはしの U と T を おおきく、アーチも まんなかで ひだりみぎ おなじに
+  const word='UNKO QUEST',TOP=14,isBig=i=>i===0||i===word.length-1,
+    wid=[...word].reduce((a,ch,i)=>a+(ch===' '?7:7*(isBig(i)?4:3)+4),-4);
+  let x=Math.round((W-wid)/2);
   [...word].forEach((ch,i)=>{if(ch===' '){x+=7;return;}
-    const big=i===0||i===5,sc=big?4:3,g=LOGO_FONT[ch],u=(x+10-W/2)/110;
+    const big=isBig(i),sc=big?4:3,g=LOGO_FONT[ch],u=(x+7*sc/2-W/2)/(wid/2);
     const y0=TOP+(big?30:39)+Math.round(8*(1-u*u));
     g.forEach((row,yy)=>[...row].forEach((c,xx)=>{if(c==='#')m.fillRect(x+xx*sc,y0+yy*sc,sc,sc);}));
     x+=7*sc+4;});
@@ -2865,7 +2868,7 @@ function drawTitleLogo(){
   const U=["......##......",".....####.....","......####....",".....######...","....########..",
     "...##########.","....########..","..############","..#############",".###############",
     "################","################",".##############."];
-  const ux=Math.round(W/2)-32,uy=0;U.forEach((row,y)=>[...row].forEach((c,xx)=>{if(c==='#'){L.fillStyle='#000';L.fillRect(ux+xx*4,uy+y*4,4,4);}}));
+  const ux=Math.round(W/2)-32,uy=6;U.forEach((row,y)=>[...row].forEach((c,xx)=>{if(c==='#'){L.fillStyle='#000';L.fillRect(ux+xx*4,uy+y*4,4,4);}}));
     L.fillStyle='#ff3030';L.fillRect(ux+20,uy+22,4,3);L.fillRect(ux+36,uy+22,4,3);   // ひかる め
   // 3) あつみ（した へ のびる）と ふちどり
   const S=mk(),sx=S.getContext('2d');for(let k=0;k<=6;k++)sx.drawImage(M,Math.round(k*.4),k);
