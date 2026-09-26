@@ -180,7 +180,7 @@ html,body{height:100%;background:#000;color:#fff;font-family:'DotGothic16',monos
       <button class="tm sel" id="tmNew">はじめから</button>
       <button class="tm dis" id="tmCont">つづきから</button>
       <p style="font-size:2.8cqw;color:#777;">十字キー＝いどう／Ａ＝はなす・しらべる／Ｂ＝メニュー</p>
-      <p id="ver">ver 3.32</p>
+      <p id="ver">ver 3.33</p>
     </div>
   </div>
   <div id="pad">
@@ -1315,7 +1315,7 @@ const NPCS={
   {x:24,y:5,art:'e4',lines:["いけー！ ウルフ〜！","ばいりつ 8ばいは ゆめが あるぜ！"]},
   {x:28,y:5,art:'e6',lines:["きんの ぼくは いつも スライムに かける。","かたいのが いちばんさ。"]},
   {x:9,y:9,art:'e2',move:true,lines:["カジノが ちかに あるなんて ひみつきち みたい！"]},
-  {x:23,y:10,art:'npc',move:true,lines:["コインを ためて ゴールドうんこのよろいを もらうんだ。"]},
+  {x:23,y:10,art:'npc',move:true,lines:["コインを ためて ゴールドうんこのよろいを もらうんだ。","けいひんの たねを たべると ずっと つよく なれるって！","きんぴかペンキも ちょっと きになる…"]},
   {x:16,y:13,art:'e5',move:true,lines:["ゴーレムだけど きょうは あそびに きたよ。","たたかうのは おやすみ。"]},
   {x:26,y:15,art:'e1',move:true,lines:["ぷるぷる… コインが なくなっちゃった…"]},
  ],
@@ -1388,7 +1388,7 @@ const ENEMY={
 };
 const WEAPONS=[{name:"すあし",atk:0},{name:"きのぼう",atk:6},{name:"どうのつるぎ",atk:16},
  {name:"てつのおの",atk:23},{name:"はがねのつるぎ",atk:30},{name:"ほのおのつるぎ",atk:48},
- {name:"さいごのつるぎ",atk:70}];
+ {name:"さいごのつるぎ",atk:70},{name:"ゴールドうんこのつるぎ",atk:62}];   // 7：カジノの けいひん
 const ARMORS=[{name:"ぬののふく",def:0},{name:"かわのよろい",def:6},{name:"くさりかたびら",def:14},
  {name:"てつのよろい",def:20},{name:"はがねのよろい",def:26},{name:"まほうのよろい",def:42},
  {name:"ゴールドうんこのよろい",def:50}];   // カジノの けいひん
@@ -1461,8 +1461,8 @@ let mode='title',anim=0;
 
 function stats(){const s=statFor(G.lv);
   return{hpMax:s.hpMax+(G.bonusHp||0),mpMax:s.mpMax,
-    atk:s.atk+WEAPONS[G.weapon].atk,
-    def:s.def+ARMORS[G.armor].def+SHIELDS[G.shield||0].def+HELMS[G.helm||0].def};}
+    atk:s.atk+WEAPONS[G.weapon].atk+(G.bonusAtk||0),
+    def:s.def+ARMORS[G.armor].def+SHIELDS[G.shield||0].def+HELMS[G.helm||0].def+(G.bonusDef||0)};}
 function resetHpMp(){const s=stats();G.hp=s.hpMax;G.mp=s.mpMax;}
 
 function curMap(){return MAPS[G.map].d;}
@@ -1504,7 +1504,7 @@ function drawMap(){
     const nb=Math.sin(anim*.15+n.phase)>0?0:1;
     drawArt(n.art,(n.x-cx)*TS+2,(n.y-cy)*TS+2+nb,1);});
   const bob=Math.sin(anim*.15)>0?0:1;
-  drawArt('hero',(G.x-cx)*TS+2,(G.y-cy)*TS+2+bob,1);
+  drawArt(heroArt(),(G.x-cx)*TS+2,(G.y-cy)*TS+2+bob,1);
 }
 let battle=null,flash=false;
 /* ── せんとうの はいけい（★ここを かえると 景色が かわります）──
@@ -1640,6 +1640,14 @@ function render(){
     ctx.fillRect(0,0,256,3);ctx.fillRect(0,221,256,3);
     ctx.fillRect(0,0,3,224);ctx.fillRect(253,0,3,224);}}
 
+/* きんぴかペンキ：ゆうしゃの いろを きんに かえた えを つくって つかう */
+function heroArt(){
+  if(G.skin!=='gold')return 'hero';
+  if(!ART.heroGold){const g=['#fff6a0','#ffd23f','#e8b820','#b88a10','#6a4a08'];
+    ART.heroGold=ART.hero.map(r=>r.map(c=>{if(!c)return c;const n=parseInt(c.slice(1),16),v=((n>>16)+((n>>8)&255)+(n&255))/3;
+      return v>220?'#ffffff':g[Math.min(4,Math.floor((255-v)/51))];}));}
+  return 'heroGold';}
+
 /* ── ちず：いまの マップ ぜんたいを ちいさく みせる ── */
 const MAPCOL={'~':'#2452c8','#':'#1c5a22',',':'#3f9a40','.':'#5cb048','g':'#5cb048','^':'#8a8272',
   '-':'#c08a4a','=':'#d0b078','B':'#3a3e4c','W':'#241c30','X':'#2e2820','_':'#b0a08a','F':'#6a5a7a',
@@ -1661,6 +1669,12 @@ function drawWorldMap(){
   for(let y=0;y<H;y++)for(let x=0;x<W;x++){const c=MAPPLACE[m[y][x]];if(!c)continue;
     const r=Math.max(2,s);ctx.fillStyle='#000';ctx.fillRect(ox+x*s-r/2-1,oy+y*s-r/2-1,s+r+2,s+r+2);
     ctx.fillStyle=c;ctx.fillRect(ox+x*s-r/2,oy+y*s-r/2,s+r,s+r);}
+  // たからのちず：まだ あけていない たからばこ と あやしい ばしょ
+  if(G.hasTmap&&Math.sin(anim*0.3)>-0.2){
+    const spark=(x,y)=>{const cx=ox+x*s+s/2,cy=oy+y*s+s/2,r=Math.max(3,s);
+      ctx.fillStyle='#fff6a0';ctx.fillRect(cx-r,cy-0.5,r*2,1.5);ctx.fillRect(cx-0.5,cy-r,1.5,r*2);ctx.fillStyle='#ffd23f';ctx.fillRect(cx-1,cy-1,2,2);};
+    (CHESTS[G.map]||[]).forEach(c=>{if(!got(c))spark(c.x,c.y);});
+    SECRETS.filter(q=>q.map===G.map&&!(G.secrets||{})[q.id]).forEach(q=>spark(...q.at[0]));}
   // ゆうしゃ（てんめつ）
   if(Math.sin(anim*0.2)>-0.7){const r=Math.max(7,s+3),cx=ox+G.x*s+s/2,cy=oy+G.y*s+s/2;
     ctx.fillStyle='#000';ctx.fillRect(cx-r/2-1,cy-r/2-1,r+2,r+2);
@@ -1752,7 +1766,8 @@ function move(dir){
   G.x=nx;G.y=ny;closeFarDoors();
   const w=(WARPS[G.map]||[]).find(w=>w.x===nx&&w.y===ny);
   if(w){doWarp(w);return;}
-  if(MAPS[G.map].enc){
+  if(MAPS[G.map].enc&&G.repel>0){G.repel--;if(!G.repel)toast('にげにげのこうの こうかが きれた…');}
+  else if(MAPS[G.map].enc){
     G.steps+=MAPS[G.map].pool?1:0.5;   // 大地図は どうくつの はんぶんしか でない
     if(G.steps>=G.thr){G.steps=0;G.thr=6+Math.floor(Math.random()*11);   // へいきん 11ほに 1かい（もとの 9ほより 20% すくなく）
       const t=tileAt(nx,ny);
@@ -1901,10 +1916,22 @@ const SLOT=[{k:'7',name:'７',w:1,pay:500},{k:'e6',name:'きんのうんこ',w:1
   {k:'boss',name:'りゅうおう',w:1.1,pay:100},{k:'e5',name:'ゴーレム',w:1.2,pay:50},
   {k:'e4',name:'ウルフ',w:1.5,pay:30},{k:'e3',name:'ゴースト',w:2.2,pay:10},{k:'e1',name:'スライム',w:3.4,pay:5}];
 const SLOT_W=SLOT.reduce((a,t)=>a+t.w,0);
+const GOLD_SWORD=7;
+const addItem=(k,n)=>{G.items[k]=(G.items[k]||0)+n;};
 const PRIZES=[
- {id:'herb',label:'やくそう ×10',coin:50,give:()=>{G.items.herb=(G.items.herb||0)+10;}},
- {id:'wing',label:'きえさりのつばさ ×5',coin:80,give:()=>{G.items.wing=(G.items.wing||0)+5;}},
- {id:'gold',label:'ゴールドうんこのよろい',coin:1500,give:()=>{if(!G.haveA.includes(GOLD_ARMOR))G.haveA.push(GOLD_ARMOR);}}];
+ {id:'plush',label:'うんこのぬいぐるみ',coin:10,desc:'だきしめると ほっこりする。…ちょっと くさい。',give:()=>addItem('plush',1)},
+ {id:'bomb',label:'うんこばくだん ×3',coin:40,desc:'たたかいで なげると ドカーン！ てきに 150くらいの ダメージ。',give:()=>addItem('bomb',3)},
+ {id:'herb',label:'やくそう ×10',coin:50,desc:'HPを 40 かいふくする くすりくさ。',give:()=>addItem('herb',10)},
+ {id:'mp',label:'まんたんドリンク',coin:60,desc:'のむと MPが ぜんかいする。たたかいでも つかえる。',give:()=>addItem('mp',1)},
+ {id:'wing',label:'きえさりのつばさ ×5',coin:80,desc:'つかうと ラダうんこ城へ もどれる。',give:()=>addItem('wing',5)},
+ {id:'repel',label:'にげにげのこう',coin:100,desc:'たくと 100ぽの あいだ てきが よってこない。',give:()=>addItem('repel',1)},
+ {id:'seedA',label:'ちからのたね',coin:300,desc:'たべると ちからが 2 あがる。なんこでも OK！',give:()=>{G.bonusAtk=(G.bonusAtk||0)+2;},msg:'ちからが 2 あがった！'},
+ {id:'seedD',label:'まもりのたね',coin:300,desc:'たべると みのまもりが 2 あがる。なんこでも OK！',give:()=>{G.bonusDef=(G.bonusDef||0)+2;},msg:'みのまもりが 2 あがった！'},
+ {id:'seedH',label:'いのちのたね',coin:300,desc:'たべると さいだいHPが 10 あがる。なんこでも OK！',give:()=>{G.bonusHp=(G.bonusHp||0)+10;G.hp+=10;},msg:'さいだいHPが 10 あがった！'},
+ {id:'tmap',label:'たからのちず',coin:400,once:()=>G.hasTmap,desc:'「ちず」に まだ あけていない たからばこと あやしい ばしょが きらきら うつる。',give:()=>{G.hasTmap=true;},msg:'「ちず」を ひらくと おたからが きらきら ひかって みえる！'},
+ {id:'paint',label:'きんぴかペンキ',coin:500,once:()=>G.hasPaint,desc:'ゆうしゃが きんぴかに なる。みためだけ。「どうぐ」で もとに もどせる。',give:()=>{G.hasPaint=true;G.skin='gold';},msg:'ゆうしゃは きんぴかに なった！ まぶしい！'},
+ {id:'gold',label:'ゴールドうんこのよろい',coin:1500,once:()=>G.haveA.includes(GOLD_ARMOR),desc:'みのまもり 50。まほうのよろいより つよい きんの よろい。',give:()=>{if(!G.haveA.includes(GOLD_ARMOR))G.haveA.push(GOLD_ARMOR);},msg:'「そうび」で みにつけよう。'},
+ {id:'goldW',label:'ゴールドうんこのつるぎ',coin:2500,once:()=>G.haveW.includes(GOLD_SWORD),desc:'こうげき 62。さいごのつるぎに つぐ きんの つるぎ。',give:()=>{if(!G.haveW.includes(GOLD_SWORD))G.haveW.push(GOLD_SWORD);},msg:'「そうび」で みにつけよう。'}];
 const coinTitle=t=>`${t}　コイン ${G.coins||0}まい`;
 function betMenu(title,onBet,back){
   mode='shop';G.coins=G.coins||0;
@@ -1925,13 +1952,18 @@ function casinoBuy(){
     say([`コインを ${id}まい かった！`],casinoBuy);});}
 function casinoPrize(){
   mode='shop';G.coins=G.coins||0;
-  const l=PRIZES.map(p=>({id:p.id,label:`${p.label}　${p.coin}まい`,
-    dis:G.coins<p.coin||(p.id==='gold'&&G.haveA.includes(GOLD_ARMOR))}));
+  const l=PRIZES.map(p=>{const had=p.once&&p.once();
+    return {id:p.id,label:`${p.label}　${had?'こうかんずみ':p.coin+'まい'}`,dis:had||G.coins<p.coin};});
   l.push({id:'x',label:'やめる'});l.title=coinTitle('けいひん');
   menu(null,l,id=>{
     if(id==='x'){mode='field';return;}
-    const p=PRIZES.find(p=>p.id===id);G.coins-=p.coin;p.give();updStatus();save();LOG.ev('けいひん',p.label);
-    say([`${p.label}を てにいれた！`].concat(p.id==='gold'?['「そうび」で みにつけよう。']:[]),casinoPrize);});}
+    const p=PRIZES.find(p=>p.id===id);
+    // せつめいを みせてから こうかん
+    const c=[{id:'y',label:`${p.coin}まいで こうかん`},{id:'n',label:'やめる'}];c.title=p.desc;
+    menu(null,c,a=>{
+      if(a==='n'){casinoPrize();return;}
+      G.coins-=p.coin;p.give();updStatus();save();LOG.ev('けいひん',p.label);
+      say([`${p.label}を てにいれた！`].concat(p.msg?[p.msg]:[]),casinoPrize);});});}
 
 /* カジノの ゲームは プレイがめんの うえの わくの なかに かく
    （なかみは 256×224 で かいて、わくに あわせて ちぢめる） */
@@ -2068,7 +2100,7 @@ function drawBJ(){
   const hideD=!BJ.done;ctx.textBaseline='top';ctx.font='bold 9px sans-serif';ctx.fillStyle='#fff';ctx.textAlign='left';
   drawArt('shop',8,76,1);ctx.fillStyle='#fff';ctx.font='bold 9px sans-serif';ctx.fillText('ディーラー'+(hideD?'':`（${bjVal(BJ.d)}）`),26,65);
   BJ.d.forEach((c,i)=>drawCard(c,26+i*23,76,hideD&&i===1));
-  drawArt('hero',8,126,1);ctx.font='bold 9px sans-serif';ctx.fillStyle='#fff';ctx.fillText(`あなた（${bjVal(BJ.p)}）`,26,114);
+  drawArt(heroArt(),8,126,1);ctx.font='bold 9px sans-serif';ctx.fillStyle='#fff';ctx.fillText(`あなた（${bjVal(BJ.p)}）`,26,114);
   BJ.p.forEach((c,i)=>drawCard(c,26+i*23,125));
   // した：メッセージ
   if(BJ.done){const t={bj:'ブラックジャック！',win:'あなたの かち！',push:'ひきわけ',lose:'ディーラーの かち…',bust:'21を こえた… まけ'}[BJ.res];
@@ -2245,13 +2277,18 @@ function fieldMenu(){
           :`つぎのレベルまで あと ${Math.max(0,nextExp(G.lv)-G.exp)}`,
         G.lv>=20?"りゅうおうと たたかえる ちからが ある！"
           :`りゅうおうに いどむなら Ｌｖ20は ほしい。`,
-        `うんこクエスト ver 3.32`]);return;}
+        `うんこクエスト ver 3.33`]);return;}
     if(id==='it'){itemMenu(false);return;}
     if(id==='sp'){spellMenu(false);return;}});}
 function itemMenu(inBattle){
   const list=[];
   if(G.items.herb>0)list.push({id:'herb',label:`やくそう(${G.items.herb})`});
   if(G.items.wing>0&&!inBattle)list.push({id:'wing',label:`きえさりのつばさ(${G.items.wing})`});
+  if(G.items.mp>0)list.push({id:'mp',label:`まんたんドリンク(${G.items.mp})`});
+  if(G.items.bomb>0&&inBattle)list.push({id:'bomb',label:`うんこばくだん(${G.items.bomb})`});
+  if(G.items.repel>0&&!inBattle)list.push({id:'repel',label:`にげにげのこう(${G.items.repel})`});
+  if(G.items.plush>0)list.push({id:'plush',label:`うんこのぬいぐるみ`});
+  if(G.hasPaint&&!inBattle)list.push({id:'paint',label:`きんぴかペンキ`});
   if(!list.length){if(inBattle){say(["どうぐを もっていない！"],battleCmd);}
     else{mode='field';say(["どうぐを もっていない。"]);}return;}
   list.push({id:'x',label:'やめる'});
@@ -2261,6 +2298,16 @@ function itemMenu(inBattle){
       G.hp=Math.min(s.hpMax,G.hp+40);updStatus();save();
       if(inBattle)say(["やくそうを つかった！",`HPが ${G.hp-b} かいふくした！`],enemyTurn);
       else{mode='field';say(["やくそうを つかった！",`HPが ${G.hp-b} かいふくした！`]);}return;}
+    const done=l=>{updStatus();save();if(inBattle)say(l,enemyTurn);else{mode='field';say(l);}};
+    if(id==='mp'){G.items.mp--;const b=G.mp;G.mp=stats().mpMax;done(["まんたんドリンクを のんだ！",`MPが ${G.mp-b} かいふくした！`]);return;}
+    if(id==='bomb'){G.items.bomb--;const dmg=140+Math.floor(Math.random()*21);battle.hp-=dmg;hit();updStatus();save();
+      say(["うんこばくだんを なげた！","ドカーン！！ …くさい！",`${battle.name}に ${dmg}の ダメージ！`],()=>battle.hp<=0?win():enemyTurn());return;}
+    if(id==='repel'){G.items.repel--;G.repel=100;done(["にげにげのこうを たいた。","ふしぎな かおりが ただよう…","しばらく てきが よってこない！"]);return;}
+    if(id==='plush'){const L=[["ぬいぐるみを だきしめた。","…ちょっと くさい。"],["ぬいぐるみが こっちを みている きがする…"],
+        ["ぬいぐるみに なまえを つけた。","「うんちゃん」。"],["ぬいぐるみを なでた。","こころが すこし やすらいだ。"]];
+      const k=Math.floor(Math.random()*5);if(k===4){G.hp=Math.min(stats().hpMax,G.hp+1);done(["ぬいぐるみが ほほえんだ きがした。","HPが 1 かいふくした！"]);return;}
+      done(L[k]);return;}
+    if(id==='paint'){G.skin=G.skin==='gold'?'':'gold';done([G.skin?"ペンキを ぬった。 ゆうしゃは きんぴかに なった！":"ペンキを おとした。 いつもの ゆうしゃに もどった。"]);return;}
     if(id==='wing'){G.items.wing--;G.map='castle';G.x=19;G.y=24;G.steps=0;updStatus();save();
       mode='field';say(["つばさを つかった！","からだが きえさり…","ラダうんこ城に もどってきた！"]);}
   },inBattle);}
@@ -2402,7 +2449,7 @@ function clear(){
     <p>せかいに さわやかな かぜが もどった。<br>
     ゆうしゃうんこの なは えいえんに かたりつがれる――</p>
     <p style="color:#ffd23f;font-size:5cqw;">Ｌｖ${G.lv}　クリア！</p>
-    <p id="ver">ver 3.32</p>
+    <p id="ver">ver 3.33</p>
     <button class="tm sel" onclick="localStorage.removeItem('unkoq-save');location.reload()">もういちど</button>`;
   t.classList.remove('hide');
   wMsg.classList.remove('show');wStatus.classList.remove('show');}
