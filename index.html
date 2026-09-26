@@ -103,15 +103,28 @@ html,body{height:100%;background:#000;color:#fff;font-family:'DotGothic16',monos
   #btnA{margin-bottom:min(5dvh,34px);}
 }
 /* ── タイトル ── */
-#title{position:absolute;inset:0;background:#000;z-index:10;display:flex;
-  flex-direction:column;align-items:center;justify-content:center;gap:3cqw;text-align:center;}
+#title{position:absolute;inset:0;z-index:10;display:flex;overflow:hidden;
+  background:linear-gradient(#000 0%,#060a24 55%,#101a48 100%);
+  flex-direction:column;align-items:center;justify-content:center;gap:2.4cqw;text-align:center;}
 #title.hide{display:none;}
-#title h1{font-size:9cqw;color:#ffd23f;letter-spacing:.4cqw;line-height:1.3;}
-#title p{font-size:3.4cqw;color:#bbb;line-height:1.8;}
-#title .tm{border:1cqw solid #fff;border-radius:1.6cqw;background:#000;color:#fff;padding:1.5cqw 5cqw;
-  font-size:4.2cqw;font-family:'DotGothic16',monospace;cursor:pointer;}
-#title .tm.sel{background:#fff;color:#000;}
-#title .tm.dis{color:#666;border-color:#666;}
+#title .star{position:absolute;width:.8cqw;height:.8cqw;background:#fff;}
+#title .star.tw{animation:tw 1.6s steps(1) infinite;}
+@keyframes tw{50%{opacity:.15}}
+#title .tsub{font-size:3cqw;color:#8fd0ff;letter-spacing:1.2cqw;position:relative;}
+#title h1{position:relative;line-height:0;}
+#title h1 .vh{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);}
+#title h1.ct{line-height:1.3;font-size:9cqw;color:#ffd23f;text-shadow:0 .6cqw 0 #7a3000;}
+#tLogo{width:82cqw;height:auto;image-rendering:pixelated;}
+#tSword{width:74cqw;height:auto;image-rendering:pixelated;position:relative;margin-top:-1cqw;}
+#title p{font-size:3.4cqw;color:#bbb;line-height:1.8;position:relative;}
+#title .tmenu{position:relative;border:1cqw solid #fff;border-radius:2cqw;background:rgba(0,0,0,.75);
+  padding:1.2cqw 5cqw 1.2cqw 3cqw;display:flex;flex-direction:column;align-items:flex-start;}
+#title .tm{border:0;background:none;color:#fff;padding:.4cqw 0;
+  font-size:4.4cqw;font-family:'DotGothic16',monospace;cursor:pointer;}
+#title .tm::before{content:'　';}
+#title .tm.sel::before{content:'▶';animation:bl .7s steps(1) infinite;}
+#title .tm.dis{color:#555;}
+#title .tcopy{font-size:2.8cqw;color:#8a8a9a;letter-spacing:.3cqw;}
 #nameIn{position:absolute;inset:0;background:#000;z-index:12;display:none;flex-direction:column;
   align-items:center;justify-content:center;gap:1.4cqw;color:#fff;font-size:4.2cqw;}
 #nameIn.show{display:flex;}
@@ -195,12 +208,15 @@ html,body{height:100%;background:#000;color:#fff;font-family:'DotGothic16',monos
     <div class="fcwin" id="wCmd"></div>
     <div class="fcwin" id="wMsg"></div>
     <div id="title">
-      <h1>うんこ<br>クエスト</h1>
-      <p>りゅうおうの うんこが よみがえり<br>くには くさい やみに つつまれた…</p>
-      <button class="tm sel" id="tmNew">はじめから</button>
-      <button class="tm dis" id="tmCont">つづきから</button>
-      <p style="font-size:2.8cqw;color:#777;">十字キー＝いどう／Ａ＝はなす・しらべる／Ｂ＝メニュー</p>
-      <p id="ver">ver 4.0</p>
+      <h1><canvas id="tLogo" width="200" height="86"></canvas><span class="vh">うんこクエスト</span></h1>
+      <canvas id="tSword" width="100" height="11"></canvas>
+      <div class="tsub">ＵＮＫＯ　ＱＵＥＳＴ</div>
+      <div class="tmenu">
+        <button class="tm sel" id="tmNew">はじめから</button>
+        <button class="tm dis" id="tmCont">つづきから</button>
+      </div>
+      <p class="tcopy">© 2026 ＵＮＫＯ ＳＯＦＴ</p>
+      <p id="ver">ver 4.1</p>
     </div>
     <div id="nameIn"></div>
   </div>
@@ -2454,7 +2470,7 @@ function fieldMenu(){
           :`つぎのレベルまで あと ${Math.max(0,nextExp(G.lv)-G.exp)}`,
         G.lv>=20?"りゅうおうと たたかえる ちからが ある！"
           :`りゅうおうに いどむなら Ｌｖ20は ほしい。`,
-        `うんこクエスト ver 4.0`]);return;}
+        `うんこクエスト ver 4.1`]);return;}
     if(id==='it'){itemMenu(false);return;}
     if(id==='sp'){spellMenu(false);return;}});}
 function itemMenu(inBattle){
@@ -2628,12 +2644,12 @@ function clear(){
   LOG.ev('クリア','Lv'+G.lv);LOG.flush(true);
   mode='clear';
   const t=$('title');
-  t.innerHTML=`<h1>りゅうおうを<br>ながした！</h1>
+  t.innerHTML=`<h1 class="ct">りゅうおうを<br>ながした！</h1>
     <p>せかいに さわやかな かぜが もどった。<br>
     ${HN()}の なは えいえんに かたりつがれる――</p>
     <p style="color:#ffd23f;font-size:5cqw;">Ｌｖ${G.lv}　クリア！</p>
-    <p id="ver">ver 4.0</p>
-    <button class="tm sel" onclick="localStorage.removeItem('unkoq-save');location.reload()">もういちど</button>`;
+    <p id="ver">ver 4.1</p>
+    <div class="tmenu"><button class="tm sel" onclick="localStorage.removeItem('unkoq-save');location.reload()">もういちど</button></div>`;
   t.classList.remove('hide');
   wMsg.classList.remove('show');wStatus.classList.remove('show');}
 
@@ -2822,6 +2838,34 @@ function begin(cont){
   if(!ONLINE.A)onlineInit();else onlineSync(true);
   mode='field';updStatus();
   if(!cont)say(["ゆうしゃうんこは たびだった。","しろの ひとに はなしかけて じょうほうを あつめよう。"]);}
+
+/* ── タイトルの かざり：ほしぞら と つるぎ ── */
+(function(){
+  const t=$('title');
+  for(let i=0;i<34;i++){const d=document.createElement('div');d.className='star'+(i%4===0?' tw':'');
+    d.style.left=(Math.random()*100)+'%';d.style.top=(Math.random()*62)+'%';
+    d.style.animationDelay=(Math.random()*1.6)+'s';if(i%5===0)d.style.opacity=.5;t.prepend(d);}
+  // ロゴ：ちいさく かいて おおきく のばす（ドットの ふんいき）
+  const drawLogo=()=>{const L=$('tLogo').getContext('2d');L.clearRect(0,0,200,86);
+    L.textAlign='center';L.textBaseline='alphabetic';L.lineJoin='round';
+    const word=(t,x,y,sz)=>{L.font=`${sz}px 'DotGothic16',monospace`;
+      for(let k=4;k>=1;k--){L.fillStyle=k>2?'#1a0800':'#7a3000';L.strokeStyle=L.fillStyle;L.lineWidth=5;
+        L.strokeText(t,x,y+k);L.fillText(t,x,y+k);}          // あつみ
+      L.strokeStyle='#2a0e00';L.lineWidth=5;L.strokeText(t,x,y);
+      const g=L.createLinearGradient(0,y-sz*.85,0,y);
+      g.addColorStop(0,'#fffbd0');g.addColorStop(.35,'#ffe060');g.addColorStop(.5,'#ffb020');g.addColorStop(.75,'#e07010');g.addColorStop(1,'#a84008');
+      L.fillStyle=g;L.fillText(t,x,y);};
+    word('うんこ',100,27,24);word('クエスト',100,76,46);};
+  drawLogo();if(document.fonts){document.fonts.load("46px 'DotGothic16'").then(drawLogo).catch(()=>{});document.fonts.ready.then(drawLogo);}
+  const c=$('tSword').getContext('2d'),px=(x,y,w,h,col)=>{c.fillStyle=col;c.fillRect(x,y,w,h);};
+  // つか・つば
+  px(2,4,3,3,'#e8b820');px(3,5,1,1,'#fff6a0');               // つかがしら
+  px(5,4,10,3,'#7a3a1a');for(let x=6;x<15;x+=2)px(x,4,1,3,'#a85a2a');   // にぎり
+  px(15,0,3,11,'#e8b820');px(16,1,1,9,'#fff6a0');px(15,4,3,3,'#d02828');px(16,5,1,1,'#ff8a8a');   // つばと あかい たま
+  // は
+  px(18,3,74,5,'#9aa4b8');px(18,4,74,1,'#ffffff');px(18,5,74,1,'#d8e0ee');px(18,7,74,1,'#5a6478');
+  px(92,4,4,3,'#9aa4b8');px(92,4,4,1,'#ffffff');px(96,5,3,1,'#d8e0ee');
+})();
 
 /* ── タイトル操作 ── */
 let tIdx=0;const hasSave=!!localStorage.getItem('unkoq-save');
