@@ -180,7 +180,7 @@ html,body{height:100%;background:#000;color:#fff;font-family:'DotGothic16',monos
       <button class="tm sel" id="tmNew">はじめから</button>
       <button class="tm dis" id="tmCont">つづきから</button>
       <p style="font-size:2.8cqw;color:#777;">十字キー＝いどう／Ａ＝はなす・しらべる／Ｂ＝メニュー</p>
-      <p id="ver">ver 3.29</p>
+      <p id="ver">ver 3.30</p>
     </div>
   </div>
   <div id="pad">
@@ -1626,11 +1626,13 @@ function render(){
   if(mode==='title')return;
   if(battle&&(mode==='battle'||mode==='bmsg'||mode==='bcmd'))drawBattle();
   else if(mode==='map')drawWorldMap();
-  else if(mode==='slot'&&SLOTA)drawSlot();
-  else if(mode==='race'&&RACE)drawRace();
+  else if(mode==='slot'&&SLOTA){drawMap();inFrame(drawSlot);}
+  else if(mode==='race'&&RACE){drawMap();inFrame(drawRace);}
+  else if(BJ&&G.map==='casino'&&(mode==='shop'||mode==='msg')){drawMap();inFrame(drawBJ);}
   else drawMap();
-  // ちず・スロット・レースの あいだは ステータスを かくす
-  wStatus.style.visibility=(mode==='map'||mode==='slot'||mode==='race')?'hidden':'';
+  // ちず・カジノの ゲームの あいだは ステータスを かくす
+  const game=mode==='slot'||mode==='race'||(BJ&&G.map==='casino'&&(mode==='shop'||mode==='msg'));
+  wStatus.style.visibility=(mode==='map'||game)?'hidden':'';
   // ＨＰが あぶないときは ふちが あかく ひかる
   const s=stats();
   if(G.hp>0&&G.hp<=s.hpMax*0.25&&Math.sin(anim*0.18)>0){
@@ -1907,6 +1909,7 @@ function betMenu(title,onBet,back){
   l.push({id:'x',label:'やめる'});l.title=coinTitle(title);
   menu(null,l,id=>{if(id==='x'){(back||(()=>{mode='field';}))();return;}onBet(id);});}
 function casinoGame(kind){
+  BJ=null;
   if(kind==='buy')casinoBuy();else if(kind==='prize')casinoPrize();
   else if(kind==='slot')casinoSlot();else if(kind==='bj')bjBet();else if(kind==='race')raceMenu();}
 function casinoBuy(){
@@ -1926,6 +1929,16 @@ function casinoPrize(){
     if(id==='x'){mode='field';return;}
     const p=PRIZES.find(p=>p.id===id);G.coins-=p.coin;p.give();updStatus();save();LOG.ev('けいひん',p.label);
     say([`${p.label}を てにいれた！`].concat(p.id==='gold'?['「そうび」で みにつけよう。']:[]),casinoPrize);});}
+
+/* カジノの ゲームは プレイがめんの うえの わくの なかに かく
+   （なかみは 256×224 で かいて、わくに あわせて ちぢめる） */
+const FR={x:10,y:12,w:236,h:200};
+function inFrame(draw){
+  ctx.fillStyle='#000';ctx.fillRect(FR.x-3,FR.y-3,FR.w+6,FR.h+6);
+  ctx.fillStyle='#fff';ctx.fillRect(FR.x-1,FR.y-1,FR.w+2,FR.h+2);
+  ctx.save();ctx.beginPath();ctx.rect(FR.x+2,FR.y+2,FR.w-4,FR.h-4);ctx.clip();
+  ctx.translate(FR.x+2,FR.y+2);ctx.scale((FR.w-4)/256,(FR.h-4)/224);
+  draw();ctx.restore();}
 
 /* スロット：リールが まわって ひとつずつ とまる */
 let SLOTA=null;
@@ -1977,24 +1990,45 @@ const bjStr=h=>h.map(c=>c.s+RANKS[c.r-1]).join(' ');
 function bjBet(){betMenu('ブラックジャック',bet=>{
   G.coins-=bet;const d=bjDeck();BJ={bet,deck:d,p:[d.pop(),d.pop()],d:[d.pop(),d.pop()]};
   if(bjVal(BJ.p)===21){bjEnd(bjVal(BJ.d)===21?'push':'bj');return;}
-  bjTurn();},()=>{mode='field';});}
+  bjTurn();},()=>{BJ=null;mode='field';});}
 function bjTurn(){
   mode='shop';
-  const l=[{id:'hit',label:'ヒット（もう 1まい）'},{id:'stand',label:'スタンド（しょうぶ）'},
-    {id:'dbl',label:`ダブル（かけを 2ばい）`,dis:BJ.p.length!==2||G.coins<BJ.bet}];
-  l.title=`ディーラー： ${BJ.d[0].s+RANKS[BJ.d[0].r-1]} ？<br>あなた： ${bjStr(BJ.p)}（${bjVal(BJ.p)}）　かけ ${BJ.bet}まい`;
+  const l=[{id:'hit',label:'ヒット'},{id:'stand',label:'スタンド'},
+    {id:'dbl',label:'ダブル',dis:BJ.p.length!==2||G.coins<BJ.bet}];
   menu(null,l,id=>{
     if(id==='hit'){BJ.p.push(BJ.deck.pop());if(bjVal(BJ.p)>21){bjEnd('bust');return;}bjTurn();return;}
     if(id==='dbl'){G.coins-=BJ.bet;BJ.bet*=2;BJ.p.push(BJ.deck.pop());if(bjVal(BJ.p)>21){bjEnd('bust');return;}}
     while(bjVal(BJ.d)<17)BJ.d.push(BJ.deck.pop());
     const pv=bjVal(BJ.p),dv=bjVal(BJ.d);
-    bjEnd(dv>21||pv>dv?'win':pv===dv?'push':'lose');});}
+    bjEnd(dv>21||pv>dv?'win':pv===dv?'push':'lose');},true);}
 function bjEnd(r){
   const b=BJ.bet,pay={bj:Math.floor(b*2.5),win:b*2,push:b}[r]||0;G.coins+=pay;save();
   const l=[`ディーラー： ${bjStr(BJ.d)}（${bjVal(BJ.d)}）`,`あなた： ${bjStr(BJ.p)}（${bjVal(BJ.p)}）`];
   l.push({bj:`ブラックジャック！ コインを ${pay}まい てにいれた！`,win:`あなたの かち！ コインを ${pay}まい てにいれた！`,
     push:'ひきわけ。かけた コインは もどってきた。',lose:'ディーラーの かち…',bust:'21を こえてしまった… まけ。'}[r]);
-  if(pay>b)LOG.ev('ブラックジャック',pay);BJ=null;say(l,bjBet);}
+  if(pay>b)LOG.ev('ブラックジャック',pay);
+  BJ.done=true;BJ.res=r;BJ.pay=pay;say(l.slice(2),bjBet);}
+function drawCard(c,x,y,hide){
+  ctx.fillStyle='#000';ctx.fillRect(x+2,y+2,34,46);
+  if(hide){ctx.fillStyle='#2a4aa0';ctx.fillRect(x,y,34,46);ctx.fillStyle='#f4f0e8';ctx.fillRect(x+3,y+3,28,40);
+    ctx.fillStyle='#2a4aa0';for(let i=0;i<5;i++)for(let j=0;j<7;j++)if((i+j)%2)ctx.fillRect(x+4+i*5,y+4+j*5,5,5);return;}
+  ctx.fillStyle='#f4f0e8';ctx.fillRect(x,y,34,46);ctx.strokeStyle='#8a8272';ctx.lineWidth=1;ctx.strokeRect(x+.5,y+.5,33,45);
+  const red=c.s==='♥'||c.s==='♦';ctx.fillStyle=red?'#d02828':'#1a1a24';ctx.textBaseline='top';ctx.textAlign='left';
+  ctx.font='bold 11px sans-serif';ctx.fillText(RANKS[c.r-1],x+3,y+2);
+  ctx.font='20px sans-serif';ctx.textAlign='center';ctx.fillText(c.s,x+17,y+18);ctx.textAlign='left';}
+function drawBJ(){
+  ctx.fillStyle='#5a3a1a';ctx.fillRect(0,0,256,224);ctx.fillStyle='#1f7a3a';ctx.fillRect(6,6,244,212);
+  ctx.strokeStyle='#e8c860';ctx.lineWidth=1;ctx.beginPath();ctx.ellipse(128,112,108,40,0,0,Math.PI*2);ctx.stroke();
+  ctx.fillStyle='#fff';ctx.font='bold 11px sans-serif';ctx.textBaseline='top';
+  const hideD=!BJ.done;
+  ctx.fillText('ディーラー'+(hideD?'':`（${bjVal(BJ.d)}）`),14,12);
+  BJ.d.forEach((c,i)=>drawCard(c,14+i*38,28,hideD&&i===1));
+  ctx.fillStyle='#fff';ctx.font='bold 11px sans-serif';ctx.textBaseline='top';ctx.fillText(`あなた（${bjVal(BJ.p)}）`,14,114);
+  BJ.p.forEach((c,i)=>drawCard(c,14+i*38,130));
+  ctx.fillStyle='#ffd23f';ctx.font='11px sans-serif';ctx.fillText(`かけ ${BJ.bet}まい　コイン ${G.coins}まい`,14,194);
+  if(BJ.done){const t={bj:'ブラックジャック！',win:'かち！',push:'ひきわけ',lose:'まけ…',bust:'バースト…'}[BJ.res];
+    ctx.font='bold 20px sans-serif';ctx.textAlign='center';ctx.fillStyle='#000';ctx.fillText(t,129,89);
+    ctx.fillStyle=BJ.pay>BJ.bet?'#ffd23f':'#fff';ctx.fillText(t,128,88);ctx.textAlign='left';}}
 
 /* うんこレース：かつ うんこを あてる */
 const RACERS=[{art:'e1',name:'スライムのうんこ',odds:2,p:0.43},{art:'e2',name:'ゴブリンのうんこ',odds:3,p:0.29},
@@ -2151,7 +2185,7 @@ function fieldMenu(){
           :`つぎのレベルまで あと ${Math.max(0,nextExp(G.lv)-G.exp)}`,
         G.lv>=20?"りゅうおうと たたかえる ちからが ある！"
           :`りゅうおうに いどむなら Ｌｖ20は ほしい。`,
-        `うんこクエスト ver 3.29`]);return;}
+        `うんこクエスト ver 3.30`]);return;}
     if(id==='it'){itemMenu(false);return;}
     if(id==='sp'){spellMenu(false);return;}});}
 function itemMenu(inBattle){
@@ -2308,7 +2342,7 @@ function clear(){
     <p>せかいに さわやかな かぜが もどった。<br>
     ゆうしゃうんこの なは えいえんに かたりつがれる――</p>
     <p style="color:#ffd23f;font-size:5cqw;">Ｌｖ${G.lv}　クリア！</p>
-    <p id="ver">ver 3.29</p>
+    <p id="ver">ver 3.30</p>
     <button class="tm sel" onclick="localStorage.removeItem('unkoq-save');location.reload()">もういちど</button>`;
   t.classList.remove('hide');
   wMsg.classList.remove('show');wStatus.classList.remove('show');}
@@ -2445,7 +2479,7 @@ function onB(){
   if(mode==='msg'||mode==='bmsg'){nextMsg();return;}
   if(mode==='map'){mode='field';return;}
   if(mode==='menu'){closeMenu();mode='field';return;}
-  if(mode==='shop'){closeMenu();mode='field';return;}
+  if(mode==='shop'){closeMenu();mode='field';BJ=null;return;}
   if(mode==='field')fieldMenu();}
 function onDir(d){
   if(mode==='title'){if(hasSave){tIdx=(d==='up'||d==='left')?0:1;tRender();}return;}
