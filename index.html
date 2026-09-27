@@ -219,10 +219,18 @@ html,body{height:100%;background-color:#23252c;color:#fff;
 #brandbar .br{color:var(--navy);font-weight:bold;font-size:clamp(13px,3.8vmin,20px);letter-spacing:.22em;}
 #pad{padding-top:6vh;}
 @media (orientation:portrait){
-  #app{border-width:10px;padding:calc(12px + var(--sat)) calc(12px + var(--sar)) calc(12px + var(--sab)) calc(12px + var(--sal));}
-  #dpad{--k:clamp(38px,13.5vw,62px);}
-  .ab{--b:clamp(46px,14.5vw,70px);}
-  #btns{gap:clamp(26px,8vw,38px);}
+  /* たてもち：がめんの うえ・ひだり・みぎの あきを おなじに。したの あきを ひだりみぎ はんぶんずつ にして
+     じゅうじキーと A/B を それぞれの まんなかに。UNKO QUEST は がめんの ひだりはしに、ONLINE は A/B の まんなかに */
+  #app{border-width:10px;--m:19px;
+    padding:calc(var(--m) + var(--sat)) calc(var(--m) + var(--sar)) calc(12px + var(--sab)) calc(var(--m) + var(--sal));}
+  #brandbar{display:grid;grid-template-columns:1fr 1fr;align-items:center;padding:0;
+    margin-top:calc(var(--bz) + 2px + var(--m) - 10px);}
+  #brandbar .bl{justify-self:start;font-size:clamp(12px,3.6vw,18px);padding:3px 9px;border-width:3px;}
+  #brandbar .br{justify-self:center;padding-left:.22em;}
+  #pad{display:grid;grid-template-columns:1fr 1fr;align-items:center;justify-items:center;padding:0 0 4vh;}
+  #dpad{--k:clamp(38px,12vw,60px);}
+  .ab{--b:clamp(44px,14vw,68px);}
+  #btns{gap:clamp(22px,7vw,32px);}
 }
 /* じゅうじキー：こんいろの じゅうじ ＋ ぎんいろの くぼみ */
 #dpad{filter:drop-shadow(0 3px 2px rgba(0,0,0,.35));}
@@ -280,7 +288,7 @@ html,body{height:100%;background-color:#23252c;color:#fff;
         <button class="tm dis" id="tmCont">CONTINUE</button>
       </div>
       <p class="tcopy">© 2026 saishonodesign</p>
-      <p id="ver">ver 4.16</p>
+      <p id="ver">ver 4.17</p>
     </div>
     <div id="nameIn"></div>
   </div>
@@ -2635,7 +2643,7 @@ function fieldMenu(){
           :`つぎのレベルまで あと ${Math.max(0,nextExp(G.lv)-G.exp)}`,
         G.lv>=20?"りゅうおうと たたかえる ちからが ある！"
           :`りゅうおうに いどむなら Ｌｖ20は ほしい。`,
-        `うんこクエスト ver 4.16`]);return;}
+        `うんこクエスト ver 4.17`]);return;}
     if(id==='it'){itemMenu(false);return;}
     if(id==='sp'){spellMenu(false);return;}});}
 function itemMenu(inBattle){
@@ -2813,7 +2821,7 @@ function clear(){
     <p>せかいに さわやかな かぜが もどった。<br>
     ${HN()}の なは えいえんに かたりつがれる――</p>
     <p style="color:#ffd23f;font-size:5cqw;">Ｌｖ${G.lv}　クリア！</p>
-    <p id="ver">ver 4.16</p>
+    <p id="ver">ver 4.17</p>
     <div class="tmenu cl"><button class="tm sel" onclick="localStorage.removeItem('unkoq-save');location.reload()">もういちど</button></div>`;
   t.classList.remove('hide');
   wMsg.classList.remove('show');wStatus.classList.remove('show');}
