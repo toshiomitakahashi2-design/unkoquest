@@ -246,12 +246,17 @@ html,body{height:100%;background-color:#23252c;color:#fff;
   #app{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;justify-items:center;
     --pl:max(8px,calc(var(--sal) - 18px));--pr:max(8px,calc(var(--sar) - 18px));   /* ノッチの ぶんだけ よける（ボタンが かからない ていど） */
     padding:calc(6px + var(--sat)) var(--pr) calc(6px + var(--sat)) var(--pl);gap:12px;max-width:none;width:100%;border-width:8px;
-    --k:clamp(40px,12.6dvh,66px);--b:clamp(52px,15.5dvh,84px);--bg:clamp(20px,3vw,30px);}
+    --k:clamp(40px,12.6dvh,66px);--b:clamp(52px,15.5dvh,84px);--bg:clamp(20px,3vw,30px);
+    --bt:clamp(12px,5dvh,28px);--bf:clamp(14px,4.4dvh,24px);}
   #dpad{grid-column:1;}
-  #screen{grid-column:2;height:min(calc(100dvh - var(--sat) - 52px),calc((100vw - 64px - var(--pl) - var(--pr) - 2*max(3*var(--k) + 16px,2*var(--b) + var(--bg) + 30px))*0.875));}
-  #btns{grid-column:3;justify-self:end;gap:var(--bg);margin-right:12px;}
-  #brandbar .bl{font-size:clamp(14px,4.4dvh,24px);padding:3px 10px;border-width:3px;}
-  #brandbar{position:absolute;top:calc(clamp(10px,4dvh,26px) + var(--sat));left:calc(clamp(16px,3vw,34px) + var(--sal));right:calc(clamp(16px,3vw,34px) + var(--sar));width:auto;margin:0;}
+  #screen{grid-column:2;height:min(calc(100dvh - 2*var(--sat) - 66px),calc((100vw - 40px - var(--pl) - var(--pr) - 2*max(3.6*var(--k) + 8px,2*var(--b) + var(--bg) + 2*var(--ring) + 8px))*0.875));}
+  #btns{grid-column:3;grid-row:1;justify-self:center;gap:var(--bg);}
+  #dpad{grid-row:1;justify-self:center;}
+  #brandbar{display:contents;}
+  #brandbar .bl{grid-column:1;grid-row:1;align-self:start;justify-self:start;
+    margin:calc(var(--bt) - 6px) 0 0 calc(var(--bt) - var(--pl));font-size:var(--bf);padding:3px 10px;border-width:3px;}
+  #brandbar .br{grid-column:3;grid-row:1;align-self:start;justify-self:center;margin-top:calc(var(--bt) - 6px);
+    height:calc(2.1*var(--bf) + 12px);display:flex;align-items:center;padding-left:.22em;}
   #dpad{transform:translateY(9dvh);}
   #btns{transform:translateY(17dvh);}
 }
@@ -275,7 +280,7 @@ html,body{height:100%;background-color:#23252c;color:#fff;
         <button class="tm dis" id="tmCont">CONTINUE</button>
       </div>
       <p class="tcopy">© 2026 saishonodesign</p>
-      <p id="ver">ver 4.15</p>
+      <p id="ver">ver 4.16</p>
     </div>
     <div id="nameIn"></div>
   </div>
@@ -2630,7 +2635,7 @@ function fieldMenu(){
           :`つぎのレベルまで あと ${Math.max(0,nextExp(G.lv)-G.exp)}`,
         G.lv>=20?"りゅうおうと たたかえる ちからが ある！"
           :`りゅうおうに いどむなら Ｌｖ20は ほしい。`,
-        `うんこクエスト ver 4.15`]);return;}
+        `うんこクエスト ver 4.16`]);return;}
     if(id==='it'){itemMenu(false);return;}
     if(id==='sp'){spellMenu(false);return;}});}
 function itemMenu(inBattle){
@@ -2808,7 +2813,7 @@ function clear(){
     <p>せかいに さわやかな かぜが もどった。<br>
     ${HN()}の なは えいえんに かたりつがれる――</p>
     <p style="color:#ffd23f;font-size:5cqw;">Ｌｖ${G.lv}　クリア！</p>
-    <p id="ver">ver 4.15</p>
+    <p id="ver">ver 4.16</p>
     <div class="tmenu cl"><button class="tm sel" onclick="localStorage.removeItem('unkoq-save');location.reload()">もういちど</button></div>`;
   t.classList.remove('hide');
   wMsg.classList.remove('show');wStatus.classList.remove('show');}
