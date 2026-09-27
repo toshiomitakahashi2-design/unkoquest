@@ -213,7 +213,7 @@ html,body{height:100%;background:#000;color:#fff;font-family:'DotGothic16',monos
         <button class="tm dis" id="tmCont">CONTINUE</button>
       </div>
       <p class="tcopy">© 2026 saishonodesign</p>
-      <p id="ver">ver 4.4</p>
+      <p id="ver">ver 4.5</p>
     </div>
     <div id="nameIn"></div>
   </div>
@@ -1985,7 +1985,7 @@ function talkTo(n){
 const COIN_PRICE=20,GOLD_ARMOR=6;
 const SLOT=[{k:'7',name:'７',w:1,pay:500},{k:'e6',name:'きんのうんこ',w:1.1,pay:200},
   {k:'boss',name:'りゅうおう',w:1.1,pay:100},{k:'e5',name:'ゴーレム',w:1.2,pay:50},
-  {k:'e4',name:'ウルフ',w:1.5,pay:30},{k:'e3',name:'ゴースト',w:2.2,pay:10},{k:'e1',name:'スライム',w:3.4,pay:5}];
+  {k:'e4',name:'ウルフ',w:1.5,pay:30},{k:'e3',name:'ゴースト',w:2.4,pay:15},{k:'e1',name:'スライム',w:4.4,pay:8}];
 const SLOT_W=SLOT.reduce((a,t)=>a+t.w,0);
 const GOLD_SWORD=7;
 const addItem=(k,n)=>{G.items[k]=(G.items[k]||0)+n;};
@@ -2190,7 +2190,10 @@ function raceMenu(){
     if(id==='x'){RACEIDLE=false;mode='field';return;}
     RACEPICK=id;
     betMenu(RACERS[id].name+'に',bet=>{
-      G.coins-=bet;let r=Math.random(),win=3;for(let i=0;i<4;i++){if((r-=RACERS[i].p)<0){win=i;break;}}
+      G.coins-=bet;
+      // えらんだ うんこは すこし かちやすい（1.12ばい）
+      const ps=RACERS.map((q,i)=>i===id?q.p*1.12:q.p),tot=ps.reduce((a,b)=>a+b,0);
+      let r=Math.random()*tot,win=3;for(let i=0;i<4;i++){if((r-=ps[i])<0){win=i;break;}}
       const T=RACERS.map((_,i)=>i===win?150:150+12+Math.floor(Math.random()*50));
       RACE={pick:id,bet,win,T,t0:anim,ph:RACERS.map(()=>Math.random()*6)};mode='race';},raceMenu);});}
 function drawRace(){
@@ -2467,7 +2470,7 @@ function fieldMenu(){
           :`つぎのレベルまで あと ${Math.max(0,nextExp(G.lv)-G.exp)}`,
         G.lv>=20?"りゅうおうと たたかえる ちからが ある！"
           :`りゅうおうに いどむなら Ｌｖ20は ほしい。`,
-        `うんこクエスト ver 4.4`]);return;}
+        `うんこクエスト ver 4.5`]);return;}
     if(id==='it'){itemMenu(false);return;}
     if(id==='sp'){spellMenu(false);return;}});}
 function itemMenu(inBattle){
@@ -2645,7 +2648,7 @@ function clear(){
     <p>せかいに さわやかな かぜが もどった。<br>
     ${HN()}の なは えいえんに かたりつがれる――</p>
     <p style="color:#ffd23f;font-size:5cqw;">Ｌｖ${G.lv}　クリア！</p>
-    <p id="ver">ver 4.4</p>
+    <p id="ver">ver 4.5</p>
     <div class="tmenu cl"><button class="tm sel" onclick="localStorage.removeItem('unkoq-save');location.reload()">もういちど</button></div>`;
   t.classList.remove('hide');
   wMsg.classList.remove('show');wStatus.classList.remove('show');}
