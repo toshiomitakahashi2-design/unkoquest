@@ -101,10 +101,10 @@ html,body{height:100%;background-color:#23252c;color:#fff;
   #app{flex-direction:row;align-items:center;justify-content:center;
     gap:min(2.2vw,22px);padding:3px 6px;max-width:none;height:100dvh;}
   #pad{display:contents;}
-  #app{--k:clamp(48px,15dvh,77px);--b:clamp(65px,19.2dvh,103px);}   /* ボタンは たてもちの 1.2ばい */
+  #app{--k:clamp(48px,15dvh,77px);--b:clamp(56px,16.5dvh,88px);}   /* ボタンは たてもちの 1.2ばい */
   #dpad{order:1;flex:0 0 auto;--k:inherit;}
   #screen{order:2;flex:0 1 auto;width:auto;min-width:0;
-    height:min(86dvh,calc((100vw - 3*var(--k) - 2*var(--b) - 110px)*0.875));}
+    height:min(86dvh,calc((100vw - 3*var(--k) - 2*var(--b) - 160px)*0.875));}
   #btns{order:3;flex:0 0 auto;flex-direction:row;gap:min(2.6vw,20px);
     align-items:flex-end;}
   #btns .ab{--b:inherit;}
@@ -206,8 +206,8 @@ html,body{height:100%;background-color:#23252c;color:#fff;
 :root{--navy:#182850;--navyD:#0c1530;--org:#fc9838;--bz:clamp(6px,1.8vmin,12px);--ring:clamp(4px,1.1vmin,7px);}
 #app{position:relative;border:clamp(8px,2.4vmin,16px) solid var(--navy);border-radius:clamp(12px,3vmin,24px);
   padding:clamp(14px,4vmin,26px);gap:0;
-  background:repeating-linear-gradient(90deg,rgba(255,255,255,.14) 0 1px,rgba(0,0,0,.035) 1px 2px,transparent 2px 4px),
-    linear-gradient(#f0f1f4,#cfd2d9 55%,#b3b7c1);
+  background:repeating-linear-gradient(90deg,rgba(255,255,255,.12) 0 1px,rgba(0,0,0,.05) 1px 2px,transparent 2px 4px),
+    linear-gradient(#c9ccd3,#a9adb7 55%,#9195a0);
   box-shadow:inset 0 0 0 2px var(--navyD),inset 0 3px 10px rgba(255,255,255,.8),0 0 0 2px #000;}
 #screen{border:3px solid var(--org);border-radius:3px;
   box-shadow:0 0 0 var(--bz) var(--navy),0 0 0 calc(var(--bz) + 2px) var(--navyD),0 4px 10px calc(var(--bz) + 2px) rgba(0,0,0,.28);}
@@ -218,9 +218,9 @@ html,body{height:100%;background-color:#23252c;color:#fff;
 #brandbar .br{color:var(--navy);font-weight:bold;font-size:clamp(13px,3.8vmin,20px);letter-spacing:.22em;}
 #pad{padding-top:6vh;}
 @media (orientation:portrait){
-  #dpad{--k:clamp(40px,13.5vw,62px);}
-  .ab{--b:clamp(52px,16vw,78px);}
-  #btns{gap:clamp(14px,4.5vw,22px);}
+  #dpad{--k:clamp(36px,11.8vw,58px);}
+  .ab{--b:clamp(44px,12.5vw,64px);}
+  #btns{gap:clamp(54px,16.5vw,72px);}
 }
 /* じゅうじキー：こんいろの じゅうじ ＋ ぎんいろの くぼみ */
 #dpad{filter:drop-shadow(0 3px 2px rgba(0,0,0,.35));}
@@ -230,16 +230,20 @@ html,body{height:100%;background-color:#23252c;color:#fff;
 #dpad button,#dpad .c{background:linear-gradient(#2c3e72,var(--navy) 60%,var(--navyD));color:var(--org);}
 #dpad .c::after{background:var(--navyD);}
 #dpad button:active{background:var(--org);color:var(--navy);}
-/* A・B：つやの ある オレンジの まるボタン ＋ はいいろの リング */
-.ab,#btnA{background:radial-gradient(circle at 36% 30%,#fff0dc 0 8%,#ffbf80 20%,var(--org) 45%,#d0680e 75%,#8a3a00 100%);
-  color:#fff;text-shadow:0 1px 0 #7a3000,0 0 3px rgba(122,48,0,.6);
-  box-shadow:0 0 0 var(--ring) #a9adb7,0 0 0 calc(var(--ring) + 2px) #6a6e78,0 4px 8px calc(var(--ring) + 2px) rgba(0,0,0,.3);}
-.ab:active{background:radial-gradient(circle at 40% 36%,#f0a060 0 14%,#d87818 50%,#8a3a00 100%);color:#fff;transform:translateY(2px);
-  box-shadow:0 0 0 var(--ring) #a9adb7,0 0 0 calc(var(--ring) + 2px) #6a6e78,0 2px 4px calc(var(--ring) + 2px) rgba(0,0,0,.3);}
+/* A・B：たいらな オレンジの まるボタン ＋ はいいろの リング、もじは ボタンの よこ */
+.ab,#btnA{position:relative;background:var(--org);color:transparent;text-shadow:none;
+  box-shadow:inset 0 0 0 2px #e07e22,0 0 0 var(--ring) #b4b8c1,0 0 0 calc(var(--ring) + 2px) #5e626c;}
+.ab::after{position:absolute;top:50%;transform:translateY(-50%);
+  color:var(--navy);font-weight:bold;font-size:calc(var(--b)*.3);}
+#btnA::after{content:'A';right:100%;margin-right:calc(var(--ring) + .4em);}   /* もじは 2つの ボタンの あいだ */
+#btnB::after{content:'B';left:100%;margin-left:calc(var(--ring) + .4em);}
+.ab:active{background:#d87818;color:transparent;transform:translateY(2px);
+  box-shadow:inset 0 0 0 2px #b05a0a,0 0 0 var(--ring) #b4b8c1,0 0 0 calc(var(--ring) + 2px) #5e626c;}
 @media (orientation:landscape){
-  #app{padding:clamp(10px,3dvh,20px) clamp(12px,2.4vw,24px);gap:min(2.2vw,22px);}
+  #app{padding:clamp(10px,3dvh,20px) 12px;gap:16px;}
   #brandbar{position:absolute;top:clamp(10px,4dvh,26px);left:clamp(16px,3vw,34px);right:clamp(16px,3vw,34px);width:auto;margin:0;}
   #dpad,#btns{transform:translateY(9dvh);}
+  #btns{gap:clamp(56px,8vw,70px);}
 }
 </style>
 </head>
@@ -261,7 +265,7 @@ html,body{height:100%;background-color:#23252c;color:#fff;
         <button class="tm dis" id="tmCont">CONTINUE</button>
       </div>
       <p class="tcopy">© 2026 saishonodesign</p>
-      <p id="ver">ver 4.8</p>
+      <p id="ver">ver 4.9</p>
     </div>
     <div id="nameIn"></div>
   </div>
@@ -2616,7 +2620,7 @@ function fieldMenu(){
           :`つぎのレベルまで あと ${Math.max(0,nextExp(G.lv)-G.exp)}`,
         G.lv>=20?"りゅうおうと たたかえる ちからが ある！"
           :`りゅうおうに いどむなら Ｌｖ20は ほしい。`,
-        `うんこクエスト ver 4.8`]);return;}
+        `うんこクエスト ver 4.9`]);return;}
     if(id==='it'){itemMenu(false);return;}
     if(id==='sp'){spellMenu(false);return;}});}
 function itemMenu(inBattle){
@@ -2794,7 +2798,7 @@ function clear(){
     <p>せかいに さわやかな かぜが もどった。<br>
     ${HN()}の なは えいえんに かたりつがれる――</p>
     <p style="color:#ffd23f;font-size:5cqw;">Ｌｖ${G.lv}　クリア！</p>
-    <p id="ver">ver 4.8</p>
+    <p id="ver">ver 4.9</p>
     <div class="tmenu cl"><button class="tm sel" onclick="localStorage.removeItem('unkoq-save');location.reload()">もういちど</button></div>`;
   t.classList.remove('hide');
   wMsg.classList.remove('show');wStatus.classList.remove('show');}
