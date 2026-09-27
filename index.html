@@ -213,7 +213,7 @@ html,body{height:100%;background:#000;color:#fff;font-family:'DotGothic16',monos
         <button class="tm dis" id="tmCont">CONTINUE</button>
       </div>
       <p class="tcopy">© 2026 saishonodesign</p>
-      <p id="ver">ver 4.5</p>
+      <p id="ver">ver 4.6</p>
     </div>
     <div id="nameIn"></div>
   </div>
@@ -1055,7 +1055,7 @@ const CASINO=[
 "B______________%%%_____________B",
 "B______________%%%_____________B",
 "B______________%%%_____________B",
-"B_KKKKK__KKKKK_%%%_____________B",
+"B_KKKKK__KKKKK_%%%___KKKKK_____B",
 "B______________%%%_____________B",
 "B______________%%%_____________B",
 "B______________%%%_____________B",
@@ -1340,6 +1340,7 @@ const NPCS={
   {x:10,y:1,art:'slotm',casino:'slot',lines:["うんこスロットだ。"]},
   // ブラックジャック・うんこレース
   {x:16,y:2,art:'shop',casino:'bj',lines:["ブラックジャックの テーブルへ ようこそ。","21に ちかいほうが かち。21を こえたら まけだよ。"]},
+  {x:23,y:17,art:'shop',casino:'mb',lines:["モンスターバトルの うけつけだよ！","かつと おもう モンスターに かけてね。"]},
   {x:26,y:3,art:'shop',casino:'race',lines:["うんこレースの うけつけだよ！","1ちゃくを あてたら ばいりつぶん コインが もらえるよ。"]},
   // あそんでいる うんこたち
   {x:4,y:2,art:'e1',lines:["スロット たのしい〜！","７が 3つ そろうと 500ばい なんだって！"]},
@@ -1352,6 +1353,8 @@ const NPCS={
   {x:23,y:10,art:'npc',move:true,lines:["コインを ためて ゴールドうんこのよろいを もらうんだ。","けいひんの たねを たべると ずっと つよく なれるって！","きんぴかペンキも ちょっと きになる…"]},
   {x:16,y:13,art:'e5',move:true,lines:["ゴーレムだけど きょうは あそびに きたよ。","たたかうのは おやすみ。"]},
   {x:26,y:15,art:'e1',move:true,lines:["ぷるぷる… コインが なくなっちゃった…"]},
+  {x:20,y:13,art:'e4',lines:["モンスターバトルは ゴーレムが かたいけど","はやい あいてには てこずるんだよな〜。"]},
+  {x:27,y:12,art:'npc',lines:["オッズが たかい ほうに かけると","あたったとき すごいよ！"]},
  ],
  cave2b:[
   {x:12,y:14,art:'d3',boss2:true,lines:[
@@ -1665,9 +1668,10 @@ function render(){
   else if((mode==='slot'&&SLOTA)||(SLOTIDLE&&G.map==='casino'&&(mode==='shop'||mode==='msg'))){drawMap();inFrame(drawSlot,true);}
   else if((mode==='race'&&RACE)||(RACEIDLE&&G.map==='casino'&&(mode==='shop'||mode==='msg'))){drawMap();inFrame(drawRace,true);}
   else if(BJ&&G.map==='casino'&&(mode==='shop'||mode==='msg')){drawMap();inFrame(drawBJ,true);}
+  else if((mode==='mbattle'&&MB)||((MBIDLE||MB)&&G.map==='casino'&&(mode==='shop'||mode==='msg'))){drawMap();inFrame(drawMB,true);}
   else drawMap();
   // ちず・カジノの ゲームの あいだは ステータスを かくす
-  const game=mode==='slot'||mode==='race'||((BJ||SLOTIDLE||RACEIDLE)&&G.map==='casino'&&(mode==='shop'||mode==='msg'));
+  const game=mode==='slot'||mode==='race'||mode==='mbattle'||((BJ||SLOTIDLE||RACEIDLE||MBIDLE||MB)&&G.map==='casino'&&(mode==='shop'||mode==='msg'));
   wStatus.style.visibility=(mode==='map'||game)?'hidden':'';
   // ＨＰが あぶないときは ふちが あかく ひかる
   const s=stats();
@@ -2010,7 +2014,8 @@ function betMenu(title,onBet,back){
   l.push({id:'x',label:'やめる'});l.title='かける コイン';
   menu(null,l,id=>{if(id==='x'){(back||(()=>{mode='field';}))();return;}onBet(id);});}
 function casinoGame(kind){
-  BJ=null;SLOTIDLE=false;RACEIDLE=false;
+  BJ=null;SLOTIDLE=false;RACEIDLE=false;MBIDLE=false;
+  if(kind==='mb'){mbMenu();return;}
   if(kind==='buy')casinoBuy();else if(kind==='prize')casinoPrize();
   else if(kind==='slot')casinoSlot();else if(kind==='bj')bjBet();else if(kind==='race')raceMenu();}
 function casinoBuy(){
@@ -2232,6 +2237,98 @@ function drawRace(){
     if(A.pick===A.win){const pay=A.bet*R.odds;G.coins+=pay;l.push(`あたり！ コインを ${pay}まい てにいれた！`);LOG.ev('うんこレース',pay);}
     else l.push('ざんねん… はずれ。');
     save();say(l,raceMenu);}}
+
+/* モンスターバトル：2ひきが たたかう。かつほうを あてる
+   オッズは そのカードで じっさいに なんども たたかわせた かちりつから きめる */
+const MBMON=[{art:'e1',name:'スライム',hp:40,atk:13,def:6,spd:10},{art:'e2',name:'ゴブリン',hp:40,atk:13,def:7,spd:7},
+  {art:'e3',name:'ゴースト',hp:34,atk:15,def:4,spd:13},{art:'e4',name:'ウルフ',hp:38,atk:15,def:5,spd:11},
+  {art:'e5',name:'ゴーレム',hp:48,atk:12,def:10,spd:3},{art:'e6',name:'きんのうんこ',hp:44,atk:13,def:9,spd:8}];
+let MB=null,MBIDLE=false,MBCARD=null,MBPICK=-1;
+// たたかいを 1かい うごかす（ev：だれが なにを したか の ならび）
+function mbSim(a,b){
+  const hp=[a.hp,b.hp],m=[a,b],ev=[];
+  for(let t=0;t<60&&hp[0]>0&&hp[1]>0;t++){
+    const first=m[0].spd*(0.6+Math.random()*0.8)>=m[1].spd*(0.6+Math.random()*0.8)?0:1;
+    for(const i of [first,1-first]){if(hp[0]<=0||hp[1]<=0)break;
+      const j=1-i,r=Math.random();let dmg=0,kind='hit';
+      if(r<1/16)kind='miss';
+      else{dmg=Math.max(1,Math.round(m[i].atk*24/(24+m[j].def)*(0.75+Math.random()*0.5)));if(r>1-1/12){kind='crit';dmg*=2;}}
+      hp[j]=Math.max(0,hp[j]-dmg);ev.push({i,dmg,kind,hp:hp.slice()});}}
+  return {ev,win:hp[0]>0?0:1};}
+function mbCard(){
+  // かたよりすぎる くみあわせ（かちりつ 20% みまん）は つかわない
+  let m,p0;
+  for(let tries=0;tries<30;tries++){
+    const a=Math.floor(Math.random()*MBMON.length);let b=Math.floor(Math.random()*(MBMON.length-1));if(b>=a)b++;
+    m=[MBMON[a],MBMON[b]];let w=0;const N=400;for(let k=0;k<N;k++)if(mbSim(m[0],m[1]).win===0)w++;
+    p0=w/N;if(p0>=0.2&&p0<=0.8)break;}
+  p0=Math.min(0.8,Math.max(0.2,p0));
+  const odds=[p0,1-p0].map(p=>Math.max(1.1,Math.floor(0.95/p*10)/10));
+  return {m,odds};}
+function mbMenu(){
+  mode='shop';G.coins=G.coins||0;MBIDLE=true;MBPICK=-1;if(!MBCARD)MBCARD=mbCard();
+  const C=MBCARD,l=C.m.map((q,i)=>({id:i,label:`${q.name} ×${C.odds[i].toFixed(1)}`}));
+  l.push({id:'n',label:'べつの カード'},{id:'x',label:'やめる'});l.title='どっちが かつ？';
+  menu(null,l,id=>{
+    if(id==='x'){MBIDLE=false;mode='field';return;}
+    if(id==='n'){MBCARD=null;mbMenu();return;}
+    MBPICK=id;
+    betMenu(C.m[id].name+'に',bet=>{
+      G.coins-=bet;const S=mbSim(C.m[0],C.m[1]);
+      MB={pick:id,bet,card:C,sim:S,t0:anim};MBCARD=null;save();mode='mbattle';},mbMenu);});}
+const MB_GO=50,MB_EV=38;
+function drawMB(){
+  const A=MB,C=A?A.card:MBCARD,f=A?anim-A.t0:0,pick=A?A.pick:MBPICK;
+  ctx.fillStyle='#140a20';ctx.fillRect(0,0,232,196);ctx.textBaseline='middle';
+  if(!C)return;
+  // うえ：タイトルと オッズ
+  panel(4,4,146,52,Math.floor(anim/10)%2?'#ffd23f':'#fff');
+  ctx.textAlign='center';ctx.fillStyle='#ffd23f';ctx.font='bold 11px sans-serif';ctx.fillText('モンスターバトル',77,13);
+  C.m.forEach((q,i)=>{const y=30+i*15;
+    if(i===pick){ctx.fillStyle='rgba(255,210,63,.25)';ctx.fillRect(6,y-7,142,14);}
+    drawArt(q.art,9,y-6,1);ctx.font='9px sans-serif';ctx.textAlign='left';ctx.fillStyle=i===pick?'#ffd23f':'#fff';
+    ctx.fillText(q.name,24,y);ctx.textAlign='right';ctx.fillStyle='#ffd23f';ctx.fillText('×'+C.odds[i].toFixed(1),144,y);});
+  coinPanel(154,A&&A.bet,pick>=0?C.m[pick].name+'に':'');
+  // まんなか：とうぎじょう
+  rr(4,62,224,96,8,'#3a2a50','#fff');
+  ctx.fillStyle='#c29a6a';ctx.beginPath();ctx.ellipse(116,128,100,22,0,0,Math.PI*2);ctx.fill();
+  ctx.strokeStyle='#8a6a3a';ctx.lineWidth=1;ctx.beginPath();ctx.ellipse(116,128,100,22,0,0,Math.PI*2);ctx.stroke();
+  // いまの じょうたい
+  let k=-1,hp=[C.m[0].hp,C.m[1].hp],e=null,ef=0;
+  if(A){k=Math.min(A.sim.ev.length-1,Math.floor((f-MB_GO)/MB_EV));
+    if(f>=MB_GO){e=A.sim.ev[Math.max(0,k)];ef=(f-MB_GO)%MB_EV;
+      const done=k>0?A.sim.ev[k-1]:null;hp=(ef>=12?e.hp:(done?done.hp:hp)).slice();
+      if(f>=MB_GO+A.sim.ev.length*MB_EV){e=null;hp=A.sim.ev[A.sim.ev.length-1].hp.slice();}}}
+  const end=A&&f>=MB_GO+A.sim.ev.length*MB_EV;
+  C.m.forEach((q,i)=>{
+    let x=i?150:46,y=98;
+    if(e&&e.i===i&&ef<12)x+=(i?-1:1)*Math.sin(ef/12*Math.PI)*28;          // とびかかる
+    if(e&&e.i!==i&&e.kind!=='miss'&&ef>=10&&ef<24)x+=((ef>>1)%2?2:-2);      // ゆれる
+    const down=end&&A.sim.win!==i;
+    if(!(e&&e.i!==i&&e.kind!=='miss'&&ef>=10&&ef<24&&(ef>>1)%2)){
+      if(down){ctx.globalAlpha=.35;drawArt(q.art,x,y+8,3);ctx.globalAlpha=1;}
+      else drawArt(q.art,x,y+(Math.sin(anim*.12+i*2)>0?0:1),3);}
+    // HP バー
+    const bx=i?140:36,mx=q.hp,w=Math.round(52*hp[i]/mx);
+    ctx.fillStyle='#000';ctx.fillRect(bx,70,56,8);ctx.fillStyle=hp[i]/mx>.3?'#48d048':'#e04848';ctx.fillRect(bx+2,72,w,4);
+    ctx.fillStyle='#fff';ctx.font='8px sans-serif';ctx.textAlign='center';ctx.fillText(`${hp[i]}/${mx}`,bx+28,84);
+    // ダメージの すうじ
+    if(e&&e.i!==i&&ef>=10&&ef<30){ctx.font='bold 12px sans-serif';ctx.fillStyle=e.kind==='crit'?'#ffd23f':'#fff';
+      ctx.fillText(e.kind==='miss'?'ミス':e.dmg,x+18,y-4-(ef-10)*0.6);}});
+  ctx.textAlign='left';
+  // した：メッセージ
+  if(!A){msgBar(pick>=0?`${C.m[pick].name}に かける！`:'どっちが かつ？');return;}
+  if(f<MB_GO/2)msgBar(`${C.m[0].name} たい ${C.m[1].name}`);
+  else if(f<MB_GO)msgBar('ファイト！','#ffd23f');
+  else if(!end){const who=C.m[e.i].name;
+    msgBar(e.kind==='miss'?`${who}の こうげき！ ミス！`:e.kind==='crit'?`かいしんの いちげき！ ${e.dmg}`:`${who}の こうげき！ ${e.dmg}`,e.kind==='crit'?'#ffd23f':'#fff');}
+  else{const W=C.m[A.sim.win],hit=A.pick===A.sim.win,pay=Math.floor(A.bet*C.odds[A.sim.win]);
+    msgBar(`${W.name}の かち！`+(hit?`　${pay}まい`:''),hit&&Math.floor(f/6)%2?'#ffd23f':'#fff');
+    if(!A.done&&f>MB_GO+A.sim.ev.length*MB_EV+50){A.done=true;   // さいごの ばめんは メッセージの あいだも のこす
+      const l=[`しょうしゃは ${W.name}！`];
+      if(hit){G.coins+=pay;l.push(`あたり！ コインを ${pay}まい てにいれた！`);LOG.ev('モンスターバトル',pay);}
+      else l.push('ざんねん… はずれ。');
+      save();say(l,()=>{MB=null;mbMenu();});}}}
 
 function openChest(c){
   G.chests[G.map+':'+c.x+','+c.y]=1;
@@ -2470,7 +2567,7 @@ function fieldMenu(){
           :`つぎのレベルまで あと ${Math.max(0,nextExp(G.lv)-G.exp)}`,
         G.lv>=20?"りゅうおうと たたかえる ちからが ある！"
           :`りゅうおうに いどむなら Ｌｖ20は ほしい。`,
-        `うんこクエスト ver 4.5`]);return;}
+        `うんこクエスト ver 4.6`]);return;}
     if(id==='it'){itemMenu(false);return;}
     if(id==='sp'){spellMenu(false);return;}});}
 function itemMenu(inBattle){
@@ -2648,7 +2745,7 @@ function clear(){
     <p>せかいに さわやかな かぜが もどった。<br>
     ${HN()}の なは えいえんに かたりつがれる――</p>
     <p style="color:#ffd23f;font-size:5cqw;">Ｌｖ${G.lv}　クリア！</p>
-    <p id="ver">ver 4.5</p>
+    <p id="ver">ver 4.6</p>
     <div class="tmenu cl"><button class="tm sel" onclick="localStorage.removeItem('unkoq-save');location.reload()">もういちど</button></div>`;
   t.classList.remove('hide');
   wMsg.classList.remove('show');wStatus.classList.remove('show');}
@@ -2913,7 +3010,7 @@ function onB(){
   if(mode==='msg'||mode==='bmsg'){nextMsg();return;}
   if(mode==='map'){mode='field';return;}
   if(mode==='menu'){closeMenu();mode='field';return;}
-  if(mode==='shop'){closeMenu();mode='field';BJ=null;SLOTIDLE=false;RACEIDLE=false;return;}
+  if(mode==='shop'){closeMenu();mode='field';BJ=null;SLOTIDLE=false;RACEIDLE=false;MBIDLE=false;return;}
   if(mode==='field')fieldMenu();}
 function onDir(d){
   if(mode==='name'){nameMove(d);return;}
