@@ -104,7 +104,7 @@ html,body{height:100%;background-color:#23252c;color:#fff;
   #app{--k:clamp(48px,15dvh,77px);--b:clamp(65px,19.2dvh,103px);}   /* ボタンは たてもちの 1.2ばい */
   #dpad{order:1;flex:0 0 auto;--k:inherit;}
   #screen{order:2;flex:0 1 auto;width:auto;min-width:0;
-    height:min(92dvh,calc((100vw - 3*var(--k) - 2*var(--b) - 70px)*0.875));}
+    height:min(86dvh,calc((100vw - 3*var(--k) - 2*var(--b) - 110px)*0.875));}
   #btns{order:3;flex:0 0 auto;flex-direction:row;gap:min(2.6vw,20px);
     align-items:flex-end;}
   #btns .ab{--b:inherit;}
@@ -201,6 +201,46 @@ html,body{height:100%;background-color:#23252c;color:#fff;
 .bgitem input[type=color]{width:32px;height:24px;border:1px solid #3a4458;background:none;padding:0;}
 .bgkind{margin-left:auto;font-size:10px;}
 .bgkind select{background:#1e2534;color:#eee;border:1px solid #3a4458;font-size:10px;padding:2px 4px;}
+
+/* ══ ゲーム＆ウォッチふうの ほんたい（いろは タイトルがめんに あわせる） ══ */
+:root{--navy:#182850;--navyD:#0c1530;--org:#fc9838;--bz:clamp(6px,1.8vmin,12px);--ring:clamp(4px,1.1vmin,7px);}
+#app{position:relative;border:clamp(8px,2.4vmin,16px) solid var(--navy);border-radius:clamp(12px,3vmin,24px);
+  padding:clamp(14px,4vmin,26px);gap:0;
+  background:repeating-linear-gradient(90deg,rgba(255,255,255,.14) 0 1px,rgba(0,0,0,.035) 1px 2px,transparent 2px 4px),
+    linear-gradient(#f0f1f4,#cfd2d9 55%,#b3b7c1);
+  box-shadow:inset 0 0 0 2px var(--navyD),inset 0 3px 10px rgba(255,255,255,.8),0 0 0 2px #000;}
+#screen{border:3px solid var(--org);border-radius:3px;
+  box-shadow:0 0 0 var(--bz) var(--navy),0 0 0 calc(var(--bz) + 2px) var(--navyD),0 4px 10px calc(var(--bz) + 2px) rgba(0,0,0,.28);}
+#brandbar{display:flex;justify-content:space-between;align-items:center;width:100%;pointer-events:none;
+  margin-top:calc(var(--bz) + clamp(10px,3vmin,18px));padding:0 2px;}
+#brandbar .bl{border:2px solid var(--navy);border-radius:5px;padding:2px 7px;color:var(--navy);font-weight:bold;
+  font-size:clamp(10px,2.9vmin,15px);line-height:1.05;text-align:center;letter-spacing:.08em;}
+#brandbar .br{color:var(--navy);font-weight:bold;font-size:clamp(13px,3.8vmin,20px);letter-spacing:.22em;}
+#pad{padding-top:6vh;}
+@media (orientation:portrait){
+  #dpad{--k:clamp(40px,13.5vw,62px);}
+  .ab{--b:clamp(52px,16vw,78px);}
+  #btns{gap:clamp(14px,4.5vw,22px);}
+}
+/* じゅうじキー：こんいろの じゅうじ ＋ ぎんいろの くぼみ */
+#dpad{filter:drop-shadow(0 3px 2px rgba(0,0,0,.35));}
+#dpad::before{content:'';position:absolute;inset:-10%;border-radius:50%;z-index:-1;
+  background:radial-gradient(circle,#b9bcc5 58%,#8e929c 66%,#dfe1e6 70%,#c3c6ce 100%);
+  box-shadow:inset 0 3px 6px rgba(0,0,0,.35);}
+#dpad button,#dpad .c{background:linear-gradient(#2c3e72,var(--navy) 60%,var(--navyD));color:var(--org);}
+#dpad .c::after{background:var(--navyD);}
+#dpad button:active{background:var(--org);color:var(--navy);}
+/* A・B：つやの ある オレンジの まるボタン ＋ はいいろの リング */
+.ab,#btnA{background:radial-gradient(circle at 36% 30%,#fff0dc 0 8%,#ffbf80 20%,var(--org) 45%,#d0680e 75%,#8a3a00 100%);
+  color:#fff;text-shadow:0 1px 0 #7a3000,0 0 3px rgba(122,48,0,.6);
+  box-shadow:0 0 0 var(--ring) #a9adb7,0 0 0 calc(var(--ring) + 2px) #6a6e78,0 4px 8px calc(var(--ring) + 2px) rgba(0,0,0,.3);}
+.ab:active{background:radial-gradient(circle at 40% 36%,#f0a060 0 14%,#d87818 50%,#8a3a00 100%);color:#fff;transform:translateY(2px);
+  box-shadow:0 0 0 var(--ring) #a9adb7,0 0 0 calc(var(--ring) + 2px) #6a6e78,0 2px 4px calc(var(--ring) + 2px) rgba(0,0,0,.3);}
+@media (orientation:landscape){
+  #app{padding:clamp(10px,3dvh,20px) clamp(12px,2.4vw,24px);gap:min(2.2vw,22px);}
+  #brandbar{position:absolute;top:clamp(10px,4dvh,26px);left:clamp(16px,3vw,34px);right:clamp(16px,3vw,34px);width:auto;margin:0;}
+  #dpad,#btns{transform:translateY(9dvh);}
+}
 </style>
 </head>
 <body>
@@ -221,10 +261,11 @@ html,body{height:100%;background-color:#23252c;color:#fff;
         <button class="tm dis" id="tmCont">CONTINUE</button>
       </div>
       <p class="tcopy">© 2026 saishonodesign</p>
-      <p id="ver">ver 4.7</p>
+      <p id="ver">ver 4.8</p>
     </div>
     <div id="nameIn"></div>
   </div>
+  <div id="brandbar"><div class="bl">UNKO<br>QUEST</div><div class="br">ONLINE</div></div>
   <div id="pad">
     <div id="dpad">
       <button class="u" data-dir="up">▲</button><button class="l" data-dir="left">◀</button>
@@ -2575,7 +2616,7 @@ function fieldMenu(){
           :`つぎのレベルまで あと ${Math.max(0,nextExp(G.lv)-G.exp)}`,
         G.lv>=20?"りゅうおうと たたかえる ちからが ある！"
           :`りゅうおうに いどむなら Ｌｖ20は ほしい。`,
-        `うんこクエスト ver 4.7`]);return;}
+        `うんこクエスト ver 4.8`]);return;}
     if(id==='it'){itemMenu(false);return;}
     if(id==='sp'){spellMenu(false);return;}});}
 function itemMenu(inBattle){
@@ -2753,7 +2794,7 @@ function clear(){
     <p>せかいに さわやかな かぜが もどった。<br>
     ${HN()}の なは えいえんに かたりつがれる――</p>
     <p style="color:#ffd23f;font-size:5cqw;">Ｌｖ${G.lv}　クリア！</p>
-    <p id="ver">ver 4.7</p>
+    <p id="ver">ver 4.8</p>
     <div class="tmenu cl"><button class="tm sel" onclick="localStorage.removeItem('unkoq-save');location.reload()">もういちど</button></div>`;
   t.classList.remove('hide');
   wMsg.classList.remove('show');wStatus.classList.remove('show');}
