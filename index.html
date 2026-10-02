@@ -288,7 +288,7 @@ html,body{height:100%;background-color:#23252c;color:#fff;
         <button class="tm dis" id="tmCont">CONTINUE</button>
       </div>
       <p class="tcopy">© 2026 saishonodesign</p>
-      <p id="ver">ver 4.18</p>
+      <p id="ver">ver 4.19</p>
     </div>
     <div id="nameIn"></div>
   </div>
@@ -1419,9 +1419,9 @@ const NPCS={
   {x:23,y:17,art:'shop',casino:'mb',lines:["モンスターバトルの うけつけだよ！","かつと おもう モンスターに かけてね。"]},
   {x:26,y:3,art:'shop',casino:'race',lines:["うんこレースの うけつけだよ！","1ちゃくを あてたら ばいりつぶん コインが もらえるよ。"]},
   // あそんでいる うんこたち
-  {x:4,y:2,art:'e1',lines:["スロット たのしい〜！","７が 3つ そろうと 500ばい なんだって！"]},
-  {x:8,y:2,art:'e3',lines:["また すっちゃった…","あと 1かいだけ… あと 1かいだけ…"]},
-  {x:14,y:4,art:'e2',lines:["ブラックジャックは 17いじょうで とまるのが コツさ。"]},
+  {x:4,y:2,art:'e1',lines:["スロット たのしい〜！","ゆうがたの カジノは あついんだって！","でも よふかしすると つめたく なるよ。"]},
+  {x:8,y:2,art:'e3',lines:["また すっちゃった…","でも 10かい つづけて まけると","つきが まわって くるって うわさ…"]},
+  {x:14,y:4,art:'e2',lines:["ブラックジャックは 17いじょうで とまるのが コツさ。","つきが ある ときは いい カードが くるんだぜ。"]},
   {x:18,y:4,art:'npc',lines:["ディーラー つよすぎ〜","でも ダブルで かったときは きもちいいよ！"]},
   {x:24,y:5,art:'e4',lines:["いけー！ ウルフ〜！","ばいりつ 8ばいは ゆめが あるぜ！"]},
   {x:28,y:5,art:'e6',lines:["きんの ぼくは いつも スライムに かける。","かたいのが いちばんさ。"]},
@@ -2044,7 +2044,8 @@ function talkTo(n){
     say(["ゆうしゃうんこの HPと MPが ぜんかいした！"]);});return;}
   if(n.casino){if(n.casino==='slot'){SLOTM=n.x;if(!CAS)casRoll();const st=CAS.slot[n.x]||3,r=Math.random();
       const hint=st===6?'この だい… なんだか キラキラ ひかってる！':st===5&&r<.5?'この だい、ほんのり あたたかい…':st===1&&r<.5?'この だい… ひんやり つめたい かんじが する':'';
-      say(hint?n.lines.concat([hint]):n.lines,()=>casinoGame('slot'));return;}
+      const M=MACH[n.x],l=[`うんこスロット「${M.n}」だ。`,M.d];
+      say(hint?l.concat([hint]):l,()=>casinoGame('slot'));return;}
     say(n.lines,()=>casinoGame(n.casino));return;}
   // いずみの むらの どうぐやは いずみが きれいに なると しなものが ふえる
   if(n.shop==='item2'&&G.springFixed){say(n.after||n.lines,()=>openShop('item3'));return;}
@@ -2143,23 +2144,51 @@ const SLOT_SET=[null,                               // ７ きん りゅう ゴ�
   [1,1.1,1.1,1.2,1.5,2.4,4.4],                      // 3：ふつう     やく96%
   [1.05,1.15,1.1,1.2,1.5,2.6,4.9],                  // 4            やく98%
   [1.15,1.2,1.1,1.2,1.5,2.8,5.4],                   // 5            やく102%
-  [1.3,1.3,1.1,1.2,1.5,3.0,6.0]];                   // 6：あつい     やく109%
-const RACE_BOOST=[0,0.9,1.0,1.08,1.16,1.26,1.4];    // えらんだ うんこの かちやすさ
-const MB_EDGE=[0,0.86,0.9,0.94,0.97,1.0,1.04];      // モンスターバトルの オッズの つけかた
+  [1.3,1.3,1.1,1.2,1.5,3.0,6.0],                    // 6：あつい     やく112%
+  [1.4,1.4,1.1,1.2,1.5,3.3,6.8]];                   // 7：つきが まわってきた（ほぼ れんぱいの ごほうび）
+const RACE_BOOST=[0,0.9,1.0,1.08,1.16,1.26,1.4,1.6];    // えらんだ うんこの かちやすさ
+const MB_EDGE=[0,0.86,0.9,0.94,0.97,1.0,1.04,1.1];      // モンスターバトルの オッズの つけかた
+const BJ_Q=[0,-0.2,-0.1,0,0.06,0.12,0.2,0.35];        // ブラックジャックの つき（＋：じぶんに いい カード／－：ディーラーに）
+// スロットの だいの こせい（ずっと かわらない）
+const MACH={2:{n:'あまえんぼう',d:'いつも ちょっぴり あまい だいらしい。',adj:0.6},
+  4:{n:'きまぐれ',d:'まわすたびに きぶんが かわる だいらしい。',vol:1.6},
+  6:{n:'よるがた',d:'ゆうがたから よるに げんきに なる だいらしい。',night:true},
+  8:{n:'がんこ',d:'なかなか せっていが かわらない だいらしい。',sticky:true,adj:-0.3},
+  10:{n:'おうえん',d:'まけが つづくと はげまして くれる だいらしい。',th:6}};
+// じかんたい（スマホの とけい）
+function casHour(){const h=new Date().getHours();
+  return h>=16&&h<19?{adj:1,n:'ゆうがた'}:h>=6&&h<10?{adj:0.5,n:'あさイチ'}:(h>=22||h<6)?{adj:-1,n:'よふかし'}:{adj:0,n:''};}
+// れんぱい：10かい つづけて まけると つきが まわってくる（かつまで）
+function casStreak(g,th){const n=((G.casLose||{})[g])||0;return n>=(th||10)?2.5:0;}
+function casResult(g,won){G.casLose=G.casLose||{};
+  if(won){G.casLose[g]=0;return;}
+  const n=G.casLose[g]=(G.casLose[g]||0)+1;
+  if(n===10||(g==='slot'&&n===6&&MACH[SLOTM]&&MACH[SLOTM].th))toast('…なんだか つきが まわってきた きが する！',2400);}
+const casClamp=v=>Math.max(1,Math.min(7,Math.round(v)));
+// いまの つよさ（1〜7）
+function casLevel(g){if(!CAS)casRoll();const t=casHour().adj;
+  if(g==='slot'){const M=MACH[SLOTM]||{};let v=(CAS.slot[SLOTM]||3)+(M.adj||0)+t+casStreak('slot',M.th);
+    if(M.night){const h=new Date().getHours();v+=h>=18&&h<22?1.5:-0.5;}
+    if(M.vol)v+=(Math.random()*2-1)*M.vol;
+    return casClamp(v);}
+  if(g==='bj')return casClamp(3+(CAS.tide-3)*0.6+t+casStreak('bj'));
+  return casClamp(CAS.tide+t+casStreak(g));}
 let CAS=null,SLOTM=0;
 function casSet(){const r=Math.random();return r<.25?1:r<.5?2:r<.7?3:r<.85?4:r<.95?5:6;}
-function casRoll(){CAS={tide:casSet(),slot:{},plays:0};[2,4,6,8,10].forEach(x=>CAS.slot[x]=casSet());}
+function casRoll(){const old=CAS;CAS={tide:casSet(),slot:{},plays:0};
+  [2,4,6,8,10].forEach(x=>CAS.slot[x]=old&&MACH[x].sticky&&Math.random()<0.8?old.slot[x]:casSet());}
 function casPlayed(){if(!CAS)casRoll();if(++CAS.plays>=30){casRoll();toast('カジノの ながれが かわった きが する…',2200);}}
 function casEnter(){casRoll();
   if(CAS.tide>=5)toast('なんだか カジノが ざわざわ している…！',2400);
   else if(CAS.tide<=1)toast('カジノは しーんと しずまりかえっている…',2400);}
-function spinReel(set){const w=SLOT_SET[set||3],tot=w.reduce((a,b)=>a+b,0);let r=Math.random()*tot;
+function spinReel(set){const w=SLOT_SET[set||3]||SLOT_SET[3],tot=w.reduce((a,b)=>a+b,0);let r=Math.random()*tot;
   for(let i=0;i<SLOT.length;i++){if((r-=w[i])<0)return SLOT[i];}return SLOT[SLOT.length-1];}
 function casinoSlot(){
-  SLOTIDLE=true;if(!CAS)casRoll();const set=CAS.slot[SLOTM]||3;
+  SLOTIDLE=true;if(!CAS)casRoll();
   betMenu('スロット',bet=>{
+    const set=casLevel('slot');
     G.coins-=bet;const r=[spinReel(set),spinReel(set),spinReel(set)];casPlayed();
-    const win=r[0]===r[1]&&r[1]===r[2]?bet*r[0].pay:0;G.coins+=win;save();
+    const win=r[0]===r[1]&&r[1]===r[2]?bet*r[0].pay:0;G.coins+=win;casResult('slot',win>0);save();
     SLOTA={r,bet,win,t0:anim,stop:[45,70,95]};mode='slot';},()=>{SLOTIDLE=false;mode='field';});}
 const SEVEN=["...........",".#########.",".#########.","........##.",".......##..","......##...",".....##....","....##.....","....##.....","...##......","...##......"];
 function drawSym(t,x,y,sc){sc=sc||1;
@@ -2220,8 +2249,16 @@ function bjDeck(){const d=[];for(const s of SUITS)for(let r=1;r<=13;r++)d.push({
 function bjVal(h){let v=0,a=0;h.forEach(c=>{v+=Math.min(10,c.r);if(c.r===1)a++;});
   while(a>0&&v+10<=21){v+=10;a--;}return v;}
 const bjStr=h=>h.map(c=>c.s+RANKS[c.r-1]).join(' ');
+// つきの ある ほうは 2まい ひいて いいほうを とる（のこりは やまに もどす）
+function bjDraw(hand,mine){const q=BJ.q,d=BJ.deck;let c=d.pop();
+  if(q&&Math.random()<Math.abs(q)&&d.length){const c2=d.pop(),lucky=(q>0)===mine;
+    const score=x=>{const v=bjVal(hand.concat([x]));return v>21?-1:v;};
+    // じぶんに いい ばあいは 21に ちかい ほう、わるい ばあいは とおい（バーストしやすい）ほう
+    const better=score(c2)>score(c);if(lucky?better:!better){d.unshift(c);c=c2;}else d.unshift(c2);}
+  hand.push(c);}
 function bjBet(){betMenu('ブラックジャック',bet=>{
-  G.coins-=bet;const d=bjDeck();BJ={bet,deck:d,p:[d.pop(),d.pop()],d:[d.pop(),d.pop()]};
+  G.coins-=bet;const d=bjDeck();BJ={bet,deck:d,p:[],d:[],q:BJ_Q[casLevel('bj')]};casPlayed();
+  bjDraw(BJ.p,true);bjDraw(BJ.d,false);bjDraw(BJ.p,true);bjDraw(BJ.d,false);
   if(bjVal(BJ.p)===21){bjEnd(bjVal(BJ.d)===21?'push':'bj');return;}
   bjTurn();},()=>{BJ=null;mode='field';});}
 function bjTurn(){
@@ -2229,9 +2266,9 @@ function bjTurn(){
   const l=[{id:'hit',label:'ヒット'},{id:'stand',label:'スタンド'},
     {id:'dbl',label:'ダブル',dis:BJ.p.length!==2||G.coins<BJ.bet}];
   menu(null,l,id=>{
-    if(id==='hit'){BJ.p.push(BJ.deck.pop());if(bjVal(BJ.p)>21){bjEnd('bust');return;}bjTurn();return;}
-    if(id==='dbl'){G.coins-=BJ.bet;BJ.bet*=2;BJ.p.push(BJ.deck.pop());if(bjVal(BJ.p)>21){bjEnd('bust');return;}}
-    while(bjVal(BJ.d)<17)BJ.d.push(BJ.deck.pop());
+    if(id==='hit'){bjDraw(BJ.p,true);if(bjVal(BJ.p)>21){bjEnd('bust');return;}bjTurn();return;}
+    if(id==='dbl'){G.coins-=BJ.bet;BJ.bet*=2;bjDraw(BJ.p,true);if(bjVal(BJ.p)>21){bjEnd('bust');return;}}
+    while(bjVal(BJ.d)<17)bjDraw(BJ.d,false);
     const pv=bjVal(BJ.p),dv=bjVal(BJ.d);
     bjEnd(dv>21||pv>dv?'win':pv===dv?'push':'lose');},true);}
 function bjEnd(r){
@@ -2240,6 +2277,7 @@ function bjEnd(r){
   l.push({bj:`ブラックジャック！ コインを ${pay}まい てにいれた！`,win:`あなたの かち！ コインを ${pay}まい てにいれた！`,
     push:'ひきわけ。かけた コインは もどってきた。',lose:'ディーラーの かち…',bust:'21を こえてしまった… まけ。'}[r]);
   if(pay>b)LOG.ev('ブラックジャック',pay);
+  if(r!=='push')casResult('bj',pay>b);
   BJ.done=true;BJ.res=r;BJ.pay=pay;say(l.slice(2),bjBet);}
 function drawCard(c,x,y,hide){
   ctx.fillStyle='#000';ctx.fillRect(x+1,y+1,20,28);
@@ -2296,10 +2334,11 @@ function raceMenu(){
     betMenu(RACERS[id].name+'に',bet=>{
       G.coins-=bet;
       // えらんだ うんこの かちやすさは カジノの ながれしだい
-      if(!CAS)casRoll();const bo=RACE_BOOST[CAS.tide];casPlayed();
+      const bo=RACE_BOOST[casLevel('race')];casPlayed();
       const ps=RACERS.map((q,i)=>i===id?q.p*bo:q.p),tot=ps.reduce((a,b)=>a+b,0);
       let r=Math.random()*tot,win=3;for(let i=0;i<4;i++){if((r-=ps[i])<0){win=i;break;}}
       const T=RACERS.map((_,i)=>i===win?150:150+12+Math.floor(Math.random()*50));
+      casResult('race',win===id);
       RACE={pick:id,bet,win,T,t0:anim,ph:RACERS.map(()=>Math.random()*6)};mode='race';},raceMenu);});}
 function drawRace(){
   const A=RACE,f=A?anim-A.t0:0,GO=30,st=24,fin=204,pick=A?A.pick:RACEPICK;
@@ -2363,7 +2402,7 @@ function mbCard(){
     m=[MBMON[a],MBMON[b]];let w=0;const N=400;for(let k=0;k<N;k++)if(mbSim(m[0],m[1]).win===0)w++;
     p0=w/N;if(p0>=0.2&&p0<=0.8)break;}
   p0=Math.min(0.8,Math.max(0.2,p0));
-  if(!CAS)casRoll();const edge=MB_EDGE[CAS.tide];
+  const edge=MB_EDGE[casLevel('mb')];
   const odds=[p0,1-p0].map(p=>Math.max(1.1,Math.floor(edge/p*10)/10));
   return {m,odds};}
 function mbMenu(){
@@ -2375,7 +2414,7 @@ function mbMenu(){
     if(id==='n'){MBCARD=null;mbMenu();return;}
     MBPICK=id;
     betMenu(C.m[id].name+'に',bet=>{
-      G.coins-=bet;const S=mbSim(C.m[0],C.m[1]);casPlayed();
+      G.coins-=bet;const S=mbSim(C.m[0],C.m[1]);casPlayed();casResult('mb',S.win===id);
       MB={pick:id,bet,card:C,sim:S,t0:anim};MBCARD=null;save();mode='mbattle';},mbMenu);});}
 const MB_GO=50,MB_EV=38;
 function drawMB(){
@@ -2668,7 +2707,7 @@ function fieldMenu(){
           :`つぎのレベルまで あと ${Math.max(0,nextExp(G.lv)-G.exp)}`,
         G.lv>=20?"りゅうおうと たたかえる ちからが ある！"
           :`りゅうおうに いどむなら Ｌｖ20は ほしい。`,
-        `うんこクエスト ver 4.18`]);return;}
+        `うんこクエスト ver 4.19`]);return;}
     if(id==='it'){itemMenu(false);return;}
     if(id==='sp'){spellMenu(false);return;}});}
 function itemMenu(inBattle){
@@ -2846,7 +2885,7 @@ function clear(){
     <p>せかいに さわやかな かぜが もどった。<br>
     ${HN()}の なは えいえんに かたりつがれる――</p>
     <p style="color:#ffd23f;font-size:5cqw;">Ｌｖ${G.lv}　クリア！</p>
-    <p id="ver">ver 4.18</p>
+    <p id="ver">ver 4.19</p>
     <div class="tmenu cl"><button class="tm sel" onclick="localStorage.removeItem('unkoq-save');location.reload()">もういちど</button></div>`;
   t.classList.remove('hide');
   wMsg.classList.remove('show');wStatus.classList.remove('show');}
