@@ -288,7 +288,7 @@ html,body{height:100%;background-color:#23252c;color:#fff;
         <button class="tm dis" id="tmCont">CONTINUE</button>
       </div>
       <p class="tcopy">© 2026 saishonodesign</p>
-      <p id="ver">ver 4.17</p>
+      <p id="ver">ver 4.18</p>
     </div>
     <div id="nameIn"></div>
   </div>
@@ -1921,6 +1921,7 @@ function markVisited(){G.visited=G.visited||{castle:1};
 function doWarp(w){
   const from=G.map;
   G.map=w.to;G.x=w.tx;G.y=w.ty;G.steps=0;markVisited();onlineSync(true);
+  if(w.to==='casino')setTimeout(casEnter,600);
   LOG.ev('エリア移動',from+'→'+w.to);
   const nm=MAPS[w.to].name;
   save();
@@ -2041,7 +2042,10 @@ function talkTo(n){
   if(n.boss2){say(n.lines,()=>startBattle('guard'));return;}
   if(n.heal){say(n.lines,()=>{resetHpMp();updStatus();save();LOG.ev('いのりば',G.map);
     say(["ゆうしゃうんこの HPと MPが ぜんかいした！"]);});return;}
-  if(n.casino){say(n.lines,()=>casinoGame(n.casino));return;}
+  if(n.casino){if(n.casino==='slot'){SLOTM=n.x;if(!CAS)casRoll();const st=CAS.slot[n.x]||3,r=Math.random();
+      const hint=st===6?'この だい… なんだか キラキラ ひかってる！':st===5&&r<.5?'この だい、ほんのり あたたかい…':st===1&&r<.5?'この だい… ひんやり つめたい かんじが する':'';
+      say(hint?n.lines.concat([hint]):n.lines,()=>casinoGame('slot'));return;}
+    say(n.lines,()=>casinoGame(n.casino));return;}
   // いずみの むらの どうぐやは いずみが きれいに なると しなものが ふえる
   if(n.shop==='item2'&&G.springFixed){say(n.after||n.lines,()=>openShop('item3'));return;}
   if(n.shop){say(n.lines,()=>openShop(n.shop));return;}
@@ -2131,11 +2135,30 @@ function inFrame(draw,native){
    がめんは ほんとうの おおきさ（ちぢめない）で わくの なかに かく */
 let SLOTA=null,SLOTIDLE=false;
 const SLOTR=[0,1,2].map(()=>{const a=SLOT.map((_,i)=>i);for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return {strip:a,pos:0};});
-function spinReel(){let r=Math.random()*SLOT_W;for(const t of SLOT){if((r-=t.w)<0)return t;}return SLOT[SLOT.length-1];}
+/* カジノの「せってい」：あたりやすさは ランダム。カジノに はいるたび と 30かい あそぶたびに かわる
+   スロットは 1だいずつ べつの せってい（1〜6）、レースと モンスターバトルは カジノ ぜんたいの ながれ（1〜6） */
+const SLOT_SET=[null,                               // ７ きん りゅう ゴレ ウル ゴス スラ  （もどり の めやす）
+  [0.8,1.0,1.1,1.25,1.6,2.4,3.6],                   // 1：つめたい   やく86%
+  [0.9,1.05,1.1,1.2,1.55,2.4,4.0],                  // 2            やく91%
+  [1,1.1,1.1,1.2,1.5,2.4,4.4],                      // 3：ふつう     やく96%
+  [1.05,1.15,1.1,1.2,1.5,2.6,4.9],                  // 4            やく98%
+  [1.15,1.2,1.1,1.2,1.5,2.8,5.4],                   // 5            やく102%
+  [1.3,1.3,1.1,1.2,1.5,3.0,6.0]];                   // 6：あつい     やく109%
+const RACE_BOOST=[0,0.9,1.0,1.08,1.16,1.26,1.4];    // えらんだ うんこの かちやすさ
+const MB_EDGE=[0,0.86,0.9,0.94,0.97,1.0,1.04];      // モンスターバトルの オッズの つけかた
+let CAS=null,SLOTM=0;
+function casSet(){const r=Math.random();return r<.25?1:r<.5?2:r<.7?3:r<.85?4:r<.95?5:6;}
+function casRoll(){CAS={tide:casSet(),slot:{},plays:0};[2,4,6,8,10].forEach(x=>CAS.slot[x]=casSet());}
+function casPlayed(){if(!CAS)casRoll();if(++CAS.plays>=30){casRoll();toast('カジノの ながれが かわった きが する…',2200);}}
+function casEnter(){casRoll();
+  if(CAS.tide>=5)toast('なんだか カジノが ざわざわ している…！',2400);
+  else if(CAS.tide<=1)toast('カジノは しーんと しずまりかえっている…',2400);}
+function spinReel(set){const w=SLOT_SET[set||3],tot=w.reduce((a,b)=>a+b,0);let r=Math.random()*tot;
+  for(let i=0;i<SLOT.length;i++){if((r-=w[i])<0)return SLOT[i];}return SLOT[SLOT.length-1];}
 function casinoSlot(){
-  SLOTIDLE=true;
+  SLOTIDLE=true;if(!CAS)casRoll();const set=CAS.slot[SLOTM]||3;
   betMenu('スロット',bet=>{
-    G.coins-=bet;const r=[spinReel(),spinReel(),spinReel()];
+    G.coins-=bet;const r=[spinReel(set),spinReel(set),spinReel(set)];casPlayed();
     const win=r[0]===r[1]&&r[1]===r[2]?bet*r[0].pay:0;G.coins+=win;save();
     SLOTA={r,bet,win,t0:anim,stop:[45,70,95]};mode='slot';},()=>{SLOTIDLE=false;mode='field';});}
 const SEVEN=["...........",".#########.",".#########.","........##.",".......##..","......##...",".....##....","....##.....","....##.....","...##......","...##......"];
@@ -2272,8 +2295,9 @@ function raceMenu(){
     RACEPICK=id;
     betMenu(RACERS[id].name+'に',bet=>{
       G.coins-=bet;
-      // えらんだ うんこは すこし かちやすい（1.12ばい）
-      const ps=RACERS.map((q,i)=>i===id?q.p*1.12:q.p),tot=ps.reduce((a,b)=>a+b,0);
+      // えらんだ うんこの かちやすさは カジノの ながれしだい
+      if(!CAS)casRoll();const bo=RACE_BOOST[CAS.tide];casPlayed();
+      const ps=RACERS.map((q,i)=>i===id?q.p*bo:q.p),tot=ps.reduce((a,b)=>a+b,0);
       let r=Math.random()*tot,win=3;for(let i=0;i<4;i++){if((r-=ps[i])<0){win=i;break;}}
       const T=RACERS.map((_,i)=>i===win?150:150+12+Math.floor(Math.random()*50));
       RACE={pick:id,bet,win,T,t0:anim,ph:RACERS.map(()=>Math.random()*6)};mode='race';},raceMenu);});}
@@ -2339,7 +2363,8 @@ function mbCard(){
     m=[MBMON[a],MBMON[b]];let w=0;const N=400;for(let k=0;k<N;k++)if(mbSim(m[0],m[1]).win===0)w++;
     p0=w/N;if(p0>=0.2&&p0<=0.8)break;}
   p0=Math.min(0.8,Math.max(0.2,p0));
-  const odds=[p0,1-p0].map(p=>Math.max(1.1,Math.floor(0.95/p*10)/10));
+  if(!CAS)casRoll();const edge=MB_EDGE[CAS.tide];
+  const odds=[p0,1-p0].map(p=>Math.max(1.1,Math.floor(edge/p*10)/10));
   return {m,odds};}
 function mbMenu(){
   mode='shop';G.coins=G.coins||0;MBIDLE=true;MBPICK=-1;if(!MBCARD)MBCARD=mbCard();
@@ -2350,7 +2375,7 @@ function mbMenu(){
     if(id==='n'){MBCARD=null;mbMenu();return;}
     MBPICK=id;
     betMenu(C.m[id].name+'に',bet=>{
-      G.coins-=bet;const S=mbSim(C.m[0],C.m[1]);
+      G.coins-=bet;const S=mbSim(C.m[0],C.m[1]);casPlayed();
       MB={pick:id,bet,card:C,sim:S,t0:anim};MBCARD=null;save();mode='mbattle';},mbMenu);});}
 const MB_GO=50,MB_EV=38;
 function drawMB(){
@@ -2643,7 +2668,7 @@ function fieldMenu(){
           :`つぎのレベルまで あと ${Math.max(0,nextExp(G.lv)-G.exp)}`,
         G.lv>=20?"りゅうおうと たたかえる ちからが ある！"
           :`りゅうおうに いどむなら Ｌｖ20は ほしい。`,
-        `うんこクエスト ver 4.17`]);return;}
+        `うんこクエスト ver 4.18`]);return;}
     if(id==='it'){itemMenu(false);return;}
     if(id==='sp'){spellMenu(false);return;}});}
 function itemMenu(inBattle){
@@ -2821,7 +2846,7 @@ function clear(){
     <p>せかいに さわやかな かぜが もどった。<br>
     ${HN()}の なは えいえんに かたりつがれる――</p>
     <p style="color:#ffd23f;font-size:5cqw;">Ｌｖ${G.lv}　クリア！</p>
-    <p id="ver">ver 4.17</p>
+    <p id="ver">ver 4.18</p>
     <div class="tmenu cl"><button class="tm sel" onclick="localStorage.removeItem('unkoq-save');location.reload()">もういちど</button></div>`;
   t.classList.remove('hide');
   wMsg.classList.remove('show');wStatus.classList.remove('show');}
