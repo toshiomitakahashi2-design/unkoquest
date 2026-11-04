@@ -321,7 +321,7 @@ html,body{height:100%;background-color:#23252c;color:#fff;
         <button class="tm" id="tmCh2" style="display:none">CHAPTER 2</button>
       </div>
       <p class="tcopy">© 2026 saishonodesign</p>
-      <p id="ver">ver 7.2</p>
+      <p id="ver">ver 7.3</p>
     </div>
     <div id="nameIn"></div>
   </div>
@@ -2716,7 +2716,7 @@ addQ('oasis',5,{qa:["オアシスの いけ、みずかさが ふえた きが�
 addQ('town2',6,{qa:["みなとの みずも きれいに なって さかなが よく とれるって！"]});
 addQ('castle2',5,{qa:["さいだんの ほとりに きれいな みずが ながれるように なったぞ。"]});
 /* ── くろちゃん（はじまりの まち）── */
-NPCS.newtown.push({x:13,y:12,art:'kuro',kuro:true,lines:["よう！ わいは くろちゃんや。"]});
+NPCS.newtown.push({x:13,y:12,art:'kuro',kuro:true,gone:()=>!!G.kuroMet,lines:["よう！ わいは くろちゃんや。"]});   // ver 7.3：あった あとは ぼうけんに でる
 /* ── だい2しょうの ボス（G.ch2 の ときだけ でる）── */
 NPCS.caveb=[{x:6,y:14,art:'hedoro',c2boss:'hedoro',pk2:'p2',lines:[
   "ゴボ…ゴボボ…",
@@ -3083,6 +3083,7 @@ function drawMap(){
     const nb=Math.sin(anim*.15+n.phase)>0?0:1;
     drawArt(n.art,(n.x-cx)*TS+2,(n.y-cy)*TS+2+nb,1);});
   drawOthers(cx,cy);
+  kpDraw(cx,cy);   // ver 7.3：くろちゃん
   const bob=Math.sin(anim*.15)>0?0:1;
   drawArt(heroArt(),(G.x-cx)*TS+2,(G.y-cy)*TS+2+bob,1);
   if(ONLINE.on&&ONLINE.st>=0&&ONLINE.A.now()-ONLINE.sa<4000)bubble(STAMPS[ONLINE.st],(G.x-cx)*TS,(G.y-cy)*TS);
@@ -3211,6 +3212,7 @@ function drawBattle(){
   const s=(battle.boss||battle.big)?9:8,w=12*s,bx=(256-w)/2,by=150-12*s+10;
   ctx.fillStyle='rgba(0,0,0,.3)';ctx.fillRect(bx+s,150-4,w-s*2,7);
   drawArt(battle.art,bx,by,s);
+  if(kpHelps()){drawArt('kuro',202,112,3);ctx.save();ctx.font='8px sans-serif';ctx.textAlign='center';ctx.fillStyle='#000';ctx.fillText('くろ Lv'+kpLv(),221,157);ctx.fillStyle='#ffd23f';ctx.fillText('くろ Lv'+kpLv(),220,156);ctx.restore();}
 }
 function render(){
   if(mode==='title')return;
@@ -3287,6 +3289,9 @@ function drawWorldMap(){
       ctx.fillStyle='#fff6a0';ctx.fillRect(cx-r,cy-0.5,r*2,1.5);ctx.fillRect(cx-0.5,cy-r,1.5,r*2);ctx.fillStyle='#ffd23f';ctx.fillRect(cx-1,cy-1,2,2);};
     (CHESTS[G.map]||[]).forEach(c=>{if(!got(c))spark(c.x,c.y);});
     SECRETS.filter(q=>q.map===G.map&&!(G.secrets||{})[q.id]).forEach(q=>spark(...q.at[0]));}
+  // くろちゃん（ピンク）
+  {const k=kpWhere();if(k&&k.m===G.map&&Math.sin(anim*0.25)>-0.3){const r=Math.max(5,s+2),cx=ox+k.x*s+s/2,cy=oy+k.y*s+s/2;
+    ctx.fillStyle='#000';ctx.fillRect(cx-r/2-1,cy-r/2-1,r+2,r+2);ctx.fillStyle='#ff6ab0';ctx.fillRect(cx-r/2,cy-r/2,r,r);}}
   // ゆうしゃ（てんめつ）
   if(Math.sin(anim*0.2)>-0.7){const r=Math.max(7,s+3),cx=ox+G.x*s+s/2,cy=oy+G.y*s+s/2;
     ctx.fillStyle='#000';ctx.fillRect(cx-r/2-1,cy-r/2-1,r+2,r+2);
@@ -3389,6 +3394,7 @@ function move(dir){
     if(ONLINE.bump<8||!freeTile(bx,by,true)){onlineSync(true);return;}
     ONLINE.bump=0;nx=bx;ny=by;}
   else ONLINE.bump=0;
+  if(kpAt(nx,ny)&&!kpParty()){kpTalk();return;}   // ver 7.3
   if(blocked(nx,ny)){
     // ひとに ぶつかったら そのまま はなす
     let n=findNpc(nx,ny);
@@ -3410,7 +3416,7 @@ function move(dir){
     G.sealOpen=true;G.x=nx;G.y=ny;save();LOG.ev('ふういん解除','Lv'+G.lv);
     say(["５まいの せいなる かみが ひかりだした！","マンホールの ふうじが とけた！",
       `${HN()}は くらやみへ ながれおちていく…`],()=>doWarp(sw));return;}
-  G.x=nx;G.y=ny;closeFarDoors();onlineSync();
+  kpTrail(G.x,G.y);G.x=nx;G.y=ny;closeFarDoors();onlineSync();
   qPlate(nx,ny);
   const w=(WARPS[G.map]||[]).find(w=>w.x===nx&&w.y===ny&&(!w.cond||w.cond()));
   if(w){doWarp(w);return;}
@@ -3431,7 +3437,7 @@ function markVisited(){G.visited=G.visited||{castle:1};
   Object.keys(G.chests||{}).forEach(k=>{const m=k.split(':')[0];if(JUWA.some(j=>j.to===m))G.visited[m]=1;});}
 function doWarp(w){
   const from=G.map;
-  G.map=w.to;G.x=w.tx;G.y=w.ty;G.steps=0;markVisited();onlineSync(true);
+  G.map=w.to;G.x=w.tx;G.y=w.ty;G.steps=0;KTRAIL=null;markVisited();onlineSync(true);
   applyQuest();applyOpened();evInit();applyDig();if(w.to==='evisle')G.ev.isle=1;if(w.to==='evtw1')G.ev.tower=1;if(w.to==='cave')evApplyDoor();
   if(w.to==='casino')setTimeout(casEnter,600);
   LOG.ev('エリア移動',from+'→'+w.to);
@@ -3489,6 +3495,7 @@ function action(){
   let tx=G.x,ty=G.y;
   if(G.dir==='up')ty--;if(G.dir==='down')ty++;
   if(G.dir==='left')tx--;if(G.dir==='right')tx++;
+  if(kpAt(tx,ty)){kpTalk();return;}   // ver 7.3
   let n=findNpc(tx,ty);
   // カウンターの むこうにいる 店の人とも はなせる
   if(!n&&'KH'.includes(tileAt(tx,ty))){
@@ -3692,6 +3699,89 @@ WEV.forEach(e=>{
   e.spots.forEach(([x,y],i)=>NPCS.world.push({x,y,art:e.itemArt,wevItem:[e.id,i],lines:[],
     gone:()=>{if(wevCur().id!==e.id)return true;const st=evInit();return !st.visit||!!st.got[i];}}));
   NPCS.world.push({x:e.bossAt[0],y:e.bossAt[1],art:e.boss,wevBoss:e.id,lines:e.bossLines,gone:()=>wevCur().id!==e.id||evStage()!==2});});
+/* ══════════════════════════════════════════════
+   ver 7.3　くろちゃんも いちプレーヤー
+   ・いる ばしょは とけいで きまる（30ぷんごとに つぎの ばしょへ。みんなの がめんで おなじ ばしょ）
+   ・0じ〜6じは やどやで ねている
+   ・レベルは 2026/11/2から まいにち そだつ（Lv6 → 50）。そうびも かわる
+   ・ちかく（8マス いない）に いると せんとうで すけだち。「いっしょに いこう」で 15ふん なかまに なる
+   ══════════════════════════════════════════════ */
+const KP_STOPS=[{"m":"castle","name":"ラダうんこ城","kind":"town","lv":1,"p":[[19,20],[20,20],[20,21],[20,22],[21,22],[22,22],[22,23],[23,23],[23,24],[22,24],[21,24],[20,24],[19,24],[18,24],[17,24],[16,24],[15,24],[14,24],[14,23],[15,23],[16,23],[17,23],[17,22],[17,21],[17,20],[18,20],[19,20],[20,20],[21,20],[20,20]]},{"m":"newtown","name":"はじまりの まち","kind":"town","lv":1,"p":[[22,28],[21,28],[21,29],[20,29],[19,29],[18,29],[17,29],[17,28],[17,27],[17,26],[18,26],[18,27],[18,28],[18,29],[18,30],[17,30],[16,30],[15,30],[15,29],[15,28],[15,27],[16,27],[17,27],[18,27],[19,27],[19,26],[19,25],[19,24],[20,24],[21,24],[22,24],[22,25],[22,26],[22,27]]},{"m":"town","name":"うんこの まち","kind":"town","lv":1,"p":[[22,28],[23,28],[23,29],[23,30],[23,31],[23,32],[23,31],[22,31],[22,32],[21,32],[20,32],[19,32],[19,31],[19,30],[19,29],[19,28],[19,27],[19,26],[19,25],[19,24],[19,25],[19,26],[19,27],[19,28],[19,29],[19,30],[19,31],[19,32],[19,33],[20,33],[21,33],[21,32],[22,32],[22,31],[22,30],[22,29]]},{"m":"village","name":"いずみの むら","kind":"town","lv":2,"p":[[21,27],[20,27],[19,27],[18,27],[18,26],[19,26],[20,26],[21,26],[21,27],[21,28],[21,29],[22,29],[23,29],[23,30],[22,30],[21,30],[21,29],[20,29],[19,29],[18,29],[17,29],[17,28],[17,27],[17,26],[18,26],[19,26],[19,25],[20,25],[21,25],[21,26]]},{"m":"potton","name":"ぽっとんの むら","kind":"town","lv":4,"p":[[22,28],[23,28],[24,28],[25,28],[26,28],[26,27],[26,26],[26,25],[26,24],[25,24],[24,24],[23,24],[23,25],[22,25],[21,25],[20,25],[19,25],[18,25],[17,25],[17,26],[16,26],[16,27],[16,28],[16,29],[16,30],[17,30],[18,30],[19,30],[20,30],[19,30],[18,30],[17,30],[17,31],[18,31],[19,31],[20,31],[21,31],[22,31],[22,30],[22,29]]},{"m":"castle2","name":"ウンコール城","kind":"town","lv":6,"p":[[19,20],[18,20],[17,20],[16,20],[15,20],[15,21],[15,22],[15,23],[15,24],[16,24],[17,24],[17,23],[18,23],[19,23],[20,23],[21,23],[21,24],[22,24],[21,24],[20,24],[19,24],[19,23],[18,23],[17,23],[17,22],[17,21],[16,21],[16,20],[16,19],[16,18],[16,17],[17,17],[18,17],[19,17],[20,17],[19,17],[19,18],[19,19]]},{"m":"oasis","name":"オアシスの まち","kind":"town","lv":12,"p":[[22,28],[22,29],[21,29],[20,29],[19,29],[18,29],[17,29],[16,29],[16,28],[17,28],[18,28],[19,28],[20,28],[20,27],[21,27],[22,27],[23,27],[23,26],[23,25],[23,24],[22,24],[21,24],[20,24],[20,23],[20,22],[19,22],[18,22],[17,22],[16,22],[16,23],[16,24],[16,25],[16,26],[17,26],[18,26],[19,26],[19,27],[19,28],[19,29],[19,30],[19,31],[19,32],[19,33],[20,33],[21,33],[21,32],[22,32],[22,31],[22,30],[22,29]]},{"m":"mori","name":"もりの まち","kind":"town","lv":12,"p":[[22,28],[22,27],[22,26],[21,26],[21,27],[20,27],[19,27],[18,27],[18,28],[18,29],[18,30],[18,31],[18,32],[17,32],[16,32],[15,32],[15,31],[15,30],[15,29],[16,29],[17,29],[18,29],[19,29],[19,30],[20,30],[21,30],[22,30],[22,29]]},{"m":"ruins","name":"ほろびた むら","kind":"town","lv":14,"p":[[22,28],[22,29],[21,29],[20,29],[19,29],[18,29],[17,29],[17,30],[18,30],[19,30],[20,30],[21,30],[22,30],[23,30],[24,30],[25,30],[26,30],[27,30],[28,30],[28,29],[27,29],[26,29],[25,29],[24,29],[23,29],[22,29],[21,29],[20,29],[19,29],[19,28],[19,27],[20,27],[21,27],[22,27],[23,27],[23,28],[23,29],[23,30],[23,31],[22,31],[22,30],[22,29],[22,28],[22,27],[22,26],[22,25],[22,24],[22,23],[22,22],[22,21],[22,20],[22,21],[22,22],[22,23],[22,24],[22,25],[22,26],[22,27]]},{"m":"town2","name":"みなとまち","kind":"town","lv":16,"p":[[21,28],[20,28],[20,27],[19,27],[19,28],[18,28],[19,28],[20,28],[20,27],[20,28]]},{"m":"world","name":"ラダうんこ城の まわり","kind":"field","lv":1,"p":[[151,31],[151,30],[151,29],[151,28],[151,27],[151,26],[150,26],[150,27],[150,28],[150,29],[150,30],[150,31],[150,32],[150,33],[150,34],[150,35],[150,36],[149,36],[150,36],[150,35],[150,34],[149,34],[150,34],[151,34],[152,34],[153,34],[153,35],[153,36],[153,37],[152,37],[151,37],[151,36],[151,35],[151,34],[151,33],[151,32]]},{"m":"world","name":"はじまりの まちの そと","kind":"field","lv":1,"p":[[169,56],[169,57],[169,58],[169,59],[169,60],[169,61],[169,62],[169,61],[169,60],[169,59],[169,58],[170,58],[170,57],[171,57],[171,56],[171,55],[171,54],[171,53],[171,52],[171,51],[172,51],[172,52],[172,53],[172,54],[172,55],[172,56],[172,57],[171,57],[170,57],[169,57],[169,58],[169,59],[169,60],[169,61],[169,62],[169,63],[169,62],[169,61],[169,60],[169,59],[169,58],[169,57]]},{"m":"world","name":"うんこの まちの そと","kind":"field","lv":3,"p":[[187,113],[187,112],[186,112],[186,111],[185,111],[184,111],[183,111],[182,111],[181,111],[181,110],[182,110],[182,111],[182,112],[182,113],[182,114],[183,114],[183,115],[182,115],[182,114],[182,113],[182,112],[183,112],[183,111],[184,111],[185,111],[186,111],[186,110],[187,110],[188,110],[188,109],[188,108],[187,108],[186,108],[185,108],[184,108],[183,108],[182,108],[182,109],[182,110],[182,111],[182,112],[182,113],[182,114],[182,115],[183,115],[183,114],[184,114],[185,114],[186,114],[187,114],[187,113],[188,113],[189,113],[189,112],[189,111],[189,112],[189,113],[188,113]]},{"m":"world","name":"ぽっとんの むらの そと","kind":"field","lv":5,"p":[[83,95],[84,95],[85,95],[86,95],[86,96],[85,96],[84,96],[83,96],[82,96],[82,97],[82,98],[82,99],[82,100],[81,100],[82,100],[82,99],[82,98],[81,98],[81,97],[81,96],[81,95],[81,94],[82,94],[83,94],[84,94],[85,94],[86,94],[87,94],[87,95],[87,96],[87,97],[87,98],[87,99],[86,99],[85,99],[84,99],[84,100],[83,100],[83,99],[83,98],[83,97],[83,96]]},{"m":"world","name":"ウンコール城の そと","kind":"field","lv":8,"p":[[67,146],[67,145],[67,144],[67,143],[67,142],[67,143],[67,144],[67,145],[68,145],[69,145],[69,146],[69,147],[70,147],[70,148],[69,148],[69,147],[69,146],[69,145],[70,145],[71,145],[71,144],[71,143],[70,143],[70,144],[70,145],[69,145],[69,146],[69,147],[69,146],[69,145],[70,145],[71,145],[71,144],[71,143],[71,142],[70,142],[69,142],[68,142],[67,142],[67,143],[67,144],[67,145]]},{"m":"world","name":"ほしみの とうの そば","kind":"field","lv":12,"p":[[215,84],[214,84],[213,84],[212,84],[211,84],[210,84],[209,84],[208,84],[209,84],[210,84],[211,84],[212,84],[213,84],[214,84],[215,84],[216,84],[217,84],[218,84],[218,85],[218,86],[219,86],[218,86],[217,86],[216,86],[216,87],[216,88],[217,88],[217,89],[217,90],[217,91],[217,90],[217,89],[216,89],[216,88],[216,87],[215,87],[215,86],[215,85]]},{"m":"world","name":"さばく","kind":"field","lv":15,"p":[[157,176],[158,176],[158,175],[158,174],[158,173],[158,172],[158,171],[159,171],[160,171],[161,171],[162,171],[163,171],[164,171],[165,171],[165,172],[165,173],[165,174],[165,175],[165,176],[164,176],[163,176],[162,176],[161,176],[160,176],[159,176],[159,175],[159,174],[159,173],[159,172],[159,171],[159,170],[159,169],[158,169],[158,170],[157,170],[156,170],[155,170],[155,171],[155,172],[155,173],[155,174],[155,175],[155,176],[155,177],[155,178],[155,179],[155,180],[155,181],[155,182],[154,182],[155,182],[155,181],[156,181],[157,181],[158,181],[159,181],[160,181],[161,181],[162,181],[162,180],[162,179],[162,178],[161,178],[160,178],[159,178],[158,178],[157,178],[157,177]]},{"m":"world","name":"もりの まちの そと","kind":"field","lv":14,"p":[[26,176],[27,176],[28,176],[29,176],[30,176],[30,177],[30,178],[30,179],[30,180],[31,180],[31,179],[30,179],[29,179],[28,179],[27,179],[27,178],[26,178],[26,177],[25,177],[24,177],[24,176],[23,176],[23,175],[24,175],[25,175],[26,175],[27,175],[27,176],[27,177],[27,178],[27,179],[27,180],[28,180],[27,180],[27,179],[27,178],[26,178],[26,177]]},{"m":"world","name":"みなとまちの みさき","kind":"field","lv":18,"p":[[290,206],[289,206],[288,206],[287,206],[286,206],[285,206],[285,205],[285,204],[285,203],[286,203],[287,203],[288,203],[289,203],[290,203],[291,203],[292,203],[293,203],[294,203],[295,203],[295,204],[295,205],[295,206],[295,207],[295,208],[294,208],[293,208],[292,208],[291,208],[290,208],[289,208],[288,208],[288,207],[288,206],[288,205],[288,204],[288,203],[289,203],[290,203],[291,203],[292,203],[292,204],[292,205],[292,206],[292,207],[292,208],[292,209],[291,209],[290,209],[290,208],[290,207]]},{"m":"cave","name":"うんこの どうくつ","kind":"dungeon","lv":6,"p":[[29,35],[30,35],[31,35],[32,35],[32,34],[32,33],[32,32],[32,31],[32,30],[31,30],[30,30],[29,30],[28,30],[28,31],[28,32],[28,33],[27,33],[27,32],[27,31],[28,31],[29,31],[30,31],[31,31],[32,31],[33,31],[34,31],[35,31],[36,31],[36,32],[36,33],[35,33],[34,33],[33,33],[32,33],[31,33],[30,33],[29,33],[28,33],[28,34],[29,34]]},{"m":"caveb","name":"うんこの どうくつ 地下2かい","kind":"dungeon","lv":10,"p":[[36,2],[37,2],[37,3],[36,3],[35,3],[34,3],[34,4],[34,5],[34,6],[35,6],[36,6],[37,6],[38,6],[39,6],[39,7],[39,8],[38,8],[37,8],[36,8],[36,7],[35,7],[36,7],[37,7],[37,8],[37,9],[37,8],[36,8],[36,7],[36,6],[36,5],[36,4],[36,3]]},{"m":"cave2a","name":"ちからの どうくつ","kind":"dungeon","lv":14,"p":[[26,36],[25,36],[25,35],[26,35],[27,35],[28,35],[29,35],[30,35],[31,35],[32,35],[32,34],[31,34],[30,34],[29,34],[29,35],[28,35],[27,35],[26,35],[25,35],[24,35],[24,36],[25,36],[26,36],[27,36],[28,36],[28,35],[29,35],[30,35],[31,35],[32,35],[33,35],[33,34],[32,34],[31,34],[30,34],[29,34],[29,35],[28,35],[27,35],[26,35],[25,35],[24,35],[24,34],[24,33],[24,32],[24,31],[24,30],[25,30],[25,31],[25,32],[25,33],[25,34],[26,34],[26,35]]},{"m":"tower1","name":"うんこの とう","kind":"dungeon","lv":12,"p":[[12,19],[12,18],[12,17],[13,17],[13,16],[13,15],[13,14],[13,13],[12,13],[11,13],[10,13],[11,13],[12,13],[13,13],[13,14],[13,15],[13,16],[13,17],[12,17],[11,17],[11,16],[11,15],[10,15],[9,15],[8,15],[7,15],[7,16],[7,17],[8,17],[9,17],[9,18],[9,19],[10,19],[11,19],[12,19],[12,18],[12,17],[11,17],[12,17],[13,17],[13,16],[13,15],[13,14],[13,13],[13,12],[13,13],[13,14],[13,15],[13,16],[13,17],[12,17],[12,18]]},{"m":"dtunnel","name":"りゅうおうへの ちかみち","kind":"dungeon","lv":24,"p":[[2,12],[3,12],[4,12],[4,11],[4,10],[4,9],[4,8],[4,7],[4,6],[3,6],[3,5],[4,5],[4,6],[4,7],[4,8],[5,8],[6,8],[6,9],[5,9],[4,9],[4,10],[3,10],[3,11],[3,12],[3,13],[3,14],[4,14],[5,14],[5,13],[5,12],[5,11],[4,11],[3,11],[2,11]]},{"m":"dragon","name":"りゅうおうの しろ","kind":"dungeon","lv":28,"p":[[24,37],[23,37],[22,37],[21,37],[21,36],[21,35],[22,35],[23,35],[23,34],[23,33],[23,32],[23,31],[23,30],[23,29],[22,29],[22,30],[22,31],[22,32],[22,33],[22,34],[22,35],[22,36],[22,37],[23,37],[24,37],[25,37],[25,36],[25,35],[25,34],[25,33],[25,32],[25,31],[24,31],[23,31],[22,31],[22,30],[23,30],[24,30],[24,31],[24,32],[24,33],[24,34],[24,35],[24,36]]},{"m":"gesui0","name":"うんこの まちの げすいどう","kind":"dungeon","lv":6,"p":[[12,10],[12,11],[12,12],[13,12],[14,12],[15,12],[15,13],[14,13],[13,13],[13,14],[12,14],[11,14],[11,13],[11,14],[12,14],[11,14],[11,13],[11,12],[11,11],[11,10],[10,10],[9,10],[10,10],[11,10],[12,10],[13,10],[13,9],[12,9]]},{"m":"obs","name":"ほしみの とう","kind":"town","lv":10,"p":[[10,8],[9,8],[9,9],[9,10],[9,11],[10,11],[11,11],[12,11],[12,10],[11,10],[10,10],[9,10],[8,10],[8,9],[8,8],[8,7],[8,6],[9,6],[10,6],[9,6],[8,6],[9,6],[10,6],[10,7]]}];
+const KP_INNS=[{"m":"newtown","name":"はじまりの まち","lv":1,"p":[[11,18]]},{"m":"town","name":"うんこの まち","lv":1,"p":[[15,21]]},{"m":"town2","name":"みなとまち","lv":16,"p":[[15,15]]},{"m":"village","name":"いずみの むら","lv":2,"p":[[11,17]]},{"m":"potton","name":"ぽっとんの むら","lv":4,"p":[[35,4]]},{"m":"oasis","name":"オアシスの まち","lv":12,"p":[[35,4]]},{"m":"mori","name":"もりの まち","lv":12,"p":[[33,5]]}];
+const KP_EPOCH=new Date(2026,10,2),KP_SLOT=30*60000,KP_STEP=900,KP_PARTY_MS=15*60000;
+function kpDayIdx(t){const d=new Date(t);return Math.round((new Date(d.getFullYear(),d.getMonth(),d.getDate())-KP_EPOCH)/86400000);}
+function kpLvDay(day){return Math.max(6,Math.min(50,6+Math.floor(day*1.2)));}
+function kpLv(t){return kpLvDay(kpDayIdx(t||Date.now()));}
+function kpRng(seed){let x=((seed*2654435761)>>>0)||1;return()=>{x^=x<<13;x>>>=0;x^=x>>>17;x^=x<<5;x>>>=0;return x/4294967296;};}
+const KP_PLAN={};
+function kpPlan(day){if(KP_PLAN[day])return KP_PLAN[day];
+  const r=kpRng(day*7919+13),lv=kpLvDay(day),ok=KP_STOPS.filter(s=>s.lv<=lv),inns=KP_INNS.filter(s=>s.lv<=lv);
+  const N=WEV.length,wk=Math.floor(day/7),ev=WEV[((wk%N)+N)%N];
+  const pick=()=>{if(r()<0.18){const e=ok.findIndex(s=>s.m===ev.host);if(e>=0)return KP_STOPS.indexOf(ok[e]);}
+    const u=r(),kind=u<0.42?'town':u<0.78?'field':'dungeon';let c=ok.filter(s=>s.kind===kind);if(!c.length)c=ok;
+    return KP_STOPS.indexOf(c[Math.floor(r()*c.length)]);};
+  const inn=inns.length?inns[Math.floor(r()*inns.length)]:KP_INNS[0],plan=[];
+  for(let i=0;i<48;i++)plan.push(i<12?-1:(plan[i-1]>=0&&r()<0.4)?plan[i-1]:pick());
+  return KP_PLAN[day]={plan,inn,lv,ev};}
+function kpNow(t){t=t||Date.now();const day=kpDayIdx(t),P=kpPlan(day),d=new Date(t);
+  const ms=((d.getHours()*60+d.getMinutes())*60+d.getSeconds())*1000+d.getMilliseconds(),slot=Math.floor(ms/KP_SLOT),si=P.plan[slot];
+  if(si<0)return {m:P.inn.m,x:P.inn.p[0][0],y:P.inn.p[0][1],sleep:true,name:P.inn.name,doing:'やどやで ねている',lv:P.lv};
+  const S=KP_STOPS[si],[x,y]=S.p[Math.floor((ms%KP_SLOT)/KP_STEP)%S.p.length];
+  return {m:S.m,x,y,name:S.name,kind:S.kind,lv:P.lv,
+    doing:S.m===P.ev.host?'イベント「'+P.ev.name+'」に ちょうせんちゅう':{town:'まちを さんぽちゅう',field:'まものと たたかいちゅう',dungeon:'ダンジョンを たんけんちゅう'}[S.kind]};}
+function kpParty(){return !!(G&&G.kp&&G.kp.until>Date.now());}
+let KTRAIL=null;   // ゆうしゃの ひとつ まえの ばしょ（なかまの とき うしろを ついてくる）
+function kpTrail(x,y){KTRAIL={m:G.map,x,y};}
+function kpWhere(){if(!G||!G.kuroMet)return null;const k=kpNow();
+  if(kpParty()){let p=KTRAIL&&KTRAIL.m===G.map&&!(KTRAIL.x===G.x&&KTRAIL.y===G.y)?KTRAIL:null;
+    if(!p){const b={up:[0,1],down:[0,-1],left:[1,0],right:[-1,0]}[G.dir]||[0,1];p={x:G.x+b[0],y:G.y+b[1]};if(BLOCKED.has(tileAt(p.x,p.y)))p={x:G.x,y:G.y};}
+    return Object.assign({},k,{m:G.map,x:p.x,y:p.y,sleep:false,party:true});}
+  return k;}
+function kpAt(x,y){const k=kpWhere();return !!k&&k.m===G.map&&k.x===x&&k.y===y&&!(x===G.x&&y===G.y);}
+function kpGear(lv){const w=lv<6?1:lv<10?2:lv<14?3:lv<20?4:lv<30?5:lv<42?6:8,a=lv<6?1:lv<10?2:lv<15?3:lv<20?4:lv<30?5:lv<42?7:8;return [w,a];}
+function kpStats(lv){lv=lv||kpLv();const [w,a]=kpGear(lv);
+  return {lv,hp:24+lv*11,atk:4+lv*2+WEAPONS[w].atk,def:3+lv*2+ARMORS[a].def,w:WEAPONS[w].name,a:ARMORS[a].name};}
+function kpDiary(){const t=Date.now(),day=kpDayIdx(t),P=kpPlan(day),d=new Date(t),slot=Math.floor((d.getHours()*60+d.getMinutes())/30),seen=[];
+  for(let i=12;i<=slot&&i<48;i++){const si=P.plan[i];if(si>=0&&!seen.includes(KP_STOPS[si].name))seen.push(KP_STOPS[si].name);}
+  return seen.length?'きょうの ぼうけん：'+seen.slice(-4).join(' → '):'きょうの ぼうけんは まだ これから！';}
+const KP_SAY=["やっほー！","ええ てんきやな〜","この へん まものが おおいな…","たからばこ ないかな〜","おなか すいた〜","レベル あげるで！","ゆうしゃも がんばってな！","うんこの においが する…"];
+function kpBubble(k){if(k.sleep)return 'Zzz…';const t=Math.floor(Date.now()/1000);if(t%30>=5)return null;
+  const i=Math.floor(t/30)%(KP_SAY.length+1);return i===KP_SAY.length?(k.doing.startsWith('イベント')?WEV.find(e=>e.host===k.m).item?(WEV.find(e=>e.host===k.m).item+' さがしてるねん'):'メタル さがしてるねん':'Lv'+k.lv+'に なったで！'):KP_SAY[i];}
+function kpDraw(cx,cy){const k=kpWhere();if(!k||k.m!==G.map)return;
+  const px=(k.x-cx)*TS,py=(k.y-cy)*TS;if(px<-16||py<-16||px>256||py>224)return;
+  drawArt('kuro',px+2,py+2+(k.sleep?0:(Math.sin(anim*.15+1)>0?0:1)),1);
+  const b=kpBubble(k);if(b)bubble(b,px,py);
+  else{ctx.save();ctx.font='7px sans-serif';ctx.textAlign='center';ctx.textBaseline='bottom';const t='くろちゃん';
+    ctx.fillStyle='#000';ctx.fillText(t,px+9,py+1);ctx.fillStyle=k.party?'#ffd23f':'#ff9ad0';ctx.fillText(t,px+8,py);ctx.restore();}}
+function kpTalk(){const k=kpWhere(),lv=kpLv();if(!k)return;
+  if(k.sleep){say(["くろちゃん「…Zzz… むにゃ… あと ５ふん…」","（やどやで ぐっすり ねている。 メニューの「くろちゃん」なら はなせるよ）"]);return;}
+  mode='menu';const l=[{id:'chat',label:'はなす'},{id:'party',label:kpParty()?'わかれる':'いっしょに いこう'},{id:'st',label:'つよさを みる'},{id:'x',label:'やめる'}];
+  l.title='くろちゃん　Lv'+lv;
+  menu(null,l,id=>{
+    if(id==='x'){mode='field';return;}
+    if(id==='chat'){closeMenu();openKuro(false);return;}
+    if(id==='party'){if(kpParty()){G.kp.until=0;save();say(["くろちゃん「ほな、わいは じぶんの ぼうけんに もどるで！」","「また いっしょに いこな！」"]);return;}
+      G.kp={until:Date.now()+KP_PARTY_MS};KTRAIL=null;save();LOG.ev('くろちゃん','なかま');
+      say(["くろちゃん「ええで！ いっしょに いこか！」","（くろちゃんが なかまに なった！ 15ふんかん いっしょに たたかって くれる）"]);return;}
+    if(id==='st'){const s=kpStats(lv);say([`くろちゃん　Lv${lv}`,`HP ${s.hp}　こうげき ${s.atk}　しゅび ${s.def}`,`ぶき：${s.w}　よろい：${s.a}`,
+      kpParty()?`いま：${HN()}と いっしょ（のこり ${Math.ceil((G.kp.until-Date.now())/60000)}ふん）`:`いま：${k.name}（${k.doing}）`,kpDiary()]);return;}
+  });}
+function kpWhereMsg(){const k=kpNow(),lv=kpLv();
+  const l=[`くろちゃん　Lv${lv}`];
+  if(kpParty())l.push(`いま ${HN()}と いっしょに ぼうけんちゅう！（のこり ${Math.ceil((G.kp.until-Date.now())/60000)}ふん）`);
+  else l.push(`いま：${k.name}`,`（${k.doing}）`,k.sleep?"あさの 6じに おきるよ。":"30ぷんごとに つぎの ばしょへ うつるよ。 あいに いって みよう！");
+  l.push(kpDiary());say(l);}
+function kpHelps(){if(!G||!G.kuroMet||!battle)return false;if(kpParty())return true;const k=kpNow();
+  return !k.sleep&&k.m===G.map&&Math.abs(k.x-G.x)+Math.abs(k.y-G.y)<=8;}
+const KP_CHEER=["くろちゃん「がんばれ〜！」","くろちゃん「そこや！ いけ〜！」","くろちゃんは ようすを みている…"];
+function kpAssist(l){if(!kpHelps()||battle.hp<=0)return;
+  if(Math.random()<0.2){l.push(KP_CHEER[Math.floor(Math.random()*KP_CHEER.length)]);return;}
+  const s=kpStats(),dmg=Math.max(1,Math.floor((s.atk-battle.def/2)*(0.85+Math.random()*0.3)*0.75));
+  battle.hp-=dmg;hit();l.push("くろちゃんの こうげき！",`${battle.name}に ${dmg}の ダメージ！`);}
+function kpHeal(l){if(!kpHelps()||G.hp<=0)return;const mx=stats().hpMax;
+  if(G.hp<mx*0.35&&Math.random()<0.5){const h=Math.min(mx-G.hp,30+kpLv()*3);G.hp+=h;updStatus();
+    l.push("くろちゃんは プリを となえた！",`${HN()}の HPが ${h} かいふくした！`);}}
+
 /* ══════════════════════════════════════════════
    ver 7.2　ひろがる ちかすいどう
    ・こうじ：2026/11/2の しゅうが だい1き。まいしゅう げつようびに 1きずつ すすみ、だい4きで ぜんぶ ひらく
@@ -4525,8 +4615,9 @@ function fieldMenu(){
   mode='menu';
   menu(null,[{id:'sp',label:'じゅもん'},{id:'it',label:'どうぐ'},
     {id:'eq',label:'そうび'},{id:'st',label:'つよさ'},{id:'map',label:'ちず'},{id:'log',label:'きろく'}].concat(ONLINE.on?[{id:'stamp',label:'スタンプ'}]:[])
-    .concat(G.kuroMet?[{id:'ku',label:'くろちゃん'}]:[]).concat([{id:'x',label:'とじる'}]),id=>{
+    .concat(G.kuroMet?[{id:'ku',label:'くろちゃん'},{id:'kw',label:'くろちゃんは どこ？'}]:[]).concat([{id:'x',label:'とじる'}]),id=>{
     if(id==='ku'){closeMenu();openKuro(false);return;}
+    if(id==='kw'){closeMenu();kpWhereMsg();return;}
     if(id==='log'){mode='field';const l=mqLog();
       say(l.length?[`たのみごと ${mqCount()}／${Object.keys(MQ).length} クリア`].concat(l):["まだ たのみごとを うけていない。","まちの ひとに はなしかけてみよう！"]);return;}
     if(id==='stamp'){stampMenu();return;}
@@ -4544,7 +4635,7 @@ function fieldMenu(){
           :G.ch2?`せいなる かみ ${paperCount()}／5　（カオスには Ｌｖ44は ほしい）`
           :G.lv>=20?"りゅうおうと たたかえる ちからが ある！"
           :`りゅうおうに いどむなら Ｌｖ20は ほしい。`,
-        `うんこクエスト ver 7.2`].concat(G.q&&G.q.start&&!G.q.done?["【すいどう ふっかつ】"].concat(qProgress()):[]));return;}
+        `うんこクエスト ver 7.3`].concat(G.q&&G.q.start&&!G.q.done?["【すいどう ふっかつ】"].concat(qProgress()):[]));return;}
     if(id==='it'){itemMenu(false);return;}
     if(id==='sp'){spellMenu(false);return;}});}
 function itemMenu(inBattle){
@@ -4655,7 +4746,10 @@ function attack(){
   if(crit)l.push("かいしんの いちげき！！");
   l.push(`${battle.name}に ${dmg}の ダメージ！`);
   say(l,()=>battle.hp<=0?win():enemyTurn());}
-function enemyTurn(){
+function enemyTurn(){   // ver 7.3：さきに くろちゃんが すけだち
+  if(battle.hp<=0){win();return;}const kl=[];kpAssist(kl);
+  if(kl.length){say(kl,()=>battle.hp<=0?win():enemyTurn0());return;}enemyTurn0();}
+function enemyTurn0(){
   if(battle.hp<=0){win();return;}
   if(battle.key==='e6'&&Math.random()<0.35){
     say([`${battle.name}は にげだした！`],endBattle);return;}
@@ -4675,6 +4769,7 @@ function enemyTurn(){
   if(battle.rage&&Math.random()<0.3){
     const d2=Math.max(1,Math.floor(battle.atk*0.75));G.hp-=d2;updStatus();
     l.push(battle.rmsg||"ぬしは ちからを かいほうした！",`ゆうしゃうんこは ${d2}の ダメージ！`);}
+  kpHeal(l);
   say(l,()=>G.hp<=0?dead():battleCmd());}
 function run(){
   if(battle.boss||battle.noRun||battle.key==='guard'||battle.key==='nushi'||battle.pk){say(["…にげられない！"],enemyTurn);return;}
@@ -4748,7 +4843,7 @@ function clear(){
     <p>せかいに さわやかな かぜが もどった。<br>
     ${HN()}の なは えいえんに かたりつがれる――</p>
     <p style="color:#ffd23f;font-size:5cqw;">Ｌｖ${G.lv}　クリア！</p>
-    <p id="ver">ver 7.2</p>
+    <p id="ver">ver 7.3</p>
     <div class="tmenu cl"><button class="tm sel" onclick="startCh2()">だい2しょうへ</button>
     <button class="tm" onclick="if(confirm('セーブを けして はじめから あそぶ？')){localStorage.removeItem('unkoq-save');location.reload()}">はじめから</button></div>`;
   t.classList.remove('hide');
@@ -4867,7 +4962,7 @@ function trueEnd(){
     ${HN()}の なは しんの ゆうしゃとして かたりつがれる――</p>
     <p style="color:#ffd23f;font-size:5cqw;">Ｌｖ${G.lv}　しんの クリア！</p>
     <p style="font-size:3cqw;">げんさく・ドットえ：トシ　／　プログラム：くろちゃん<br>そして あそんでくれた あなた</p>
-    <p id="ver">ver 7.2</p>
+    <p id="ver">ver 7.3</p>
     <div class="tmenu cl"><button class="tm sel" onclick="afterTrueEnd()">せかいを さんぽする</button>
     <button class="tm" onclick="if(confirm('セーブを けして はじめから あそぶ？')){localStorage.removeItem('unkoq-save');location.reload()}">はじめから</button></div>`;
   t.classList.remove('hide');
@@ -5148,6 +5243,7 @@ function kuroState(){
     paperLeft:G.ch2?paperHints().map(x=>x.slice(1)):undefined,
     sealOpen:!!G.sealOpen,trueClear:!!G.ch2Clear,
     sewer:digInfo(),
+    kuroMe:(()=>{const k=kpNow();return `くろちゃん（あなた）は Lv${kpLv()}／いま ${k.name}（${k.doing}）／`+(kpParty()?'ゆうしゃと いっしょに ぼうけんちゅう':'ひとりで ぼうけんちゅう');})(),
     weekEvent:wevCur().name+'（'+['あんないにんに まだ はなしていない','あつめている とちゅう','ボスが でている','クリアずみ'][evStage()]+'／のこり '+wevLeft()+'にち／らいしゅうは '+wevCur(1).name+'）',
     story:G.ch2?'だい2しょう：しんの わるもの「カオスのうんこ」が やみの げすいどう（B3）に いる。マンホール（うんこの どうくつの きたの くさむら）は せいなる かみ５まいで ひらく。':undefined,
     quest:G.q&&G.q.start?{name:'すいどう ふっかつ',done:!!G.q.done,todo:qProgress()}:undefined,
@@ -5404,6 +5500,8 @@ function begin(cont){
   if(!ONLINE.A)onlineInit();else onlineSync(true);
   evInit();evApplyDoor();applyQuest();applyOpened();applyDig();
   if(G.map==='gesui0'){G.x=4;G.y=3;}if(G.map==='josui3'){G.x=21;G.y=2;}   // ver 7.2：すいろの みずが かわるので いりぐちから
+  if(G.kuroMet&&G.kpDay!==kpDayIdx(Date.now())){G.kpDay=kpDayIdx(Date.now());const k=kpNow();save();
+    setTimeout(()=>toast('くろちゃんは きょう Lv'+kpLv()+'！\nいま：'+k.name,3200),cont?9000:12000);}
   G.dig=G.dig||{};if(digStage()>(G.dig.seen||0)){const f=!G.dig.seen;G.dig.seen=digStage();save();
     setTimeout(()=>toast(f?'うんこの まちに マンホールが できた！\nちかの げすいどうを こうじちゅう':'ちかの すいどう こうじが すすんだ！\n（だい'+digStage()+'き）',3600),cont?5000:8200);}
   setTimeout(()=>toast('こんしゅうの イベント\n「'+wevCur().name+'」かいさいちゅう！\nくわしくは ラダうんこ城の\nイベントあんないじょへ',3800),cont?800:4000);
