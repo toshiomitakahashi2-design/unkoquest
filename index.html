@@ -321,7 +321,7 @@ html,body{height:100%;background-color:#23252c;color:#fff;
         <button class="tm" id="tmCh2" style="display:none">CHAPTER 2</button>
       </div>
       <p class="tcopy">© 2026 saishonodesign</p>
-      <p id="ver">ver 7.0</p>
+      <p id="ver">ver 7.2</p>
     </div>
     <div id="nameIn"></div>
   </div>
@@ -494,11 +494,24 @@ const CHAR_COLORS={
   mqwolf:['#1e3270','#3a52a0','#101c48'], // ボスウルフ
   astro:['#2a3a7a','#4a5aa8','#141e48'], // てんもんがくしゃ
   evstar:['#f0d040','#fff8a0','#a08010'], // ながれぼし
+  /* ── ver 7.1：しゅうがわり イベント ── */
+  evkinoko:['#d0508a','#f088b8','#8a2a58'], // おおきのこ
+  evpirate:['#2a2a3a','#e04848','#141420'], // かいぞく
+  evghost:['#80d0c8','#c0f0e8','#4a8a84'], // ゆうれいおう
+  evscorp:['#d07820','#f0a850','#8a4a10'], // きんさそり
+  evmetal:['#a8b0c0','#e8f0ff','#6a7080'], // メタルキング
+  hkinoko:['#c8b080','#e8d8a8','#8a7448'], // きのこはかせ
+  hpirate:['#2a4a8a','#4a6aaa','#142a5a'], // せんちょう
+  hghost:['#7a5aa0','#a080c8','#4a3070'], // れいばいし
+  hgold:['#8a6a3a','#b08a5a','#5a4420'], // たんこうふ
+  hmetal:['#7a8090','#a0a8b8','#4a5060'], // メタルけんきゅうか
+  oyakata:['#e0a020','#f8c850','#a07010'], // こうじの おやかた（ver 7.2）
+  namazu:['#5a6a7a','#8a9aaa','#3a4a5a'], // おおなまず（ver 7.2）
   statue:['#8a8a96','#b0b0bc','#5a5a66'], // せきぞう
   miller:['#c8a060','#e8c080','#8a6a30'], // こなや
 };
 /* 目（と くち）の いろを かえる キャラ（からだが くろっぽいと 目が きえるので） */
-const EYE_COLOR={kuro:'#6a6280',chaos:'#e5484d',chaos2:'#ffd23f'};
+const EYE_COLOR={evpirate:'#ffd23f',kuro:'#6a6280',chaos:'#e5484d',chaos2:'#ffd23f'};
 const CHAR_KEYS=Object.keys(CHAR_COLORS);
 function initArt(){
   /* ── キャラ（ぜんいん ゆうしゃと おなじ かたち・いろだけ ちがう） ── */
@@ -676,6 +689,12 @@ function initArt(){
   ART.jwall=mk(16,16,'#2a3a4a');for(let y=0;y<16;y+=4){const o=(y/4)%2?4:0;for(let X=-4;X<16;X+=8)rct(ART.jwall,Math.max(0,X+o),y,Math.min(7,7+X+o),3,'#4a5e72');}
   ART.jfloor=mk(16,16,'#6a7a8a');rct(ART.jfloor,0,0,16,1,'#5a6a7a');rct(ART.jfloor,0,8,16,1,'#5a6a7a');rct(ART.jfloor,0,0,1,16,'#5a6a7a');rct(ART.jfloor,8,0,1,8,'#5a6a7a');rct(ART.jfloor,4,8,1,8,'#5a6a7a');
   ART.jwater=mk(16,16,'#3a7ad0');dots(ART.jwater,[[2,2],[3,2],[4,2],[10,5],[11,5],[12,5],[5,9],[6,9],[7,9],[12,12],[13,12],[1,13]],'#8ac8ff');
+  /* ver 7.2：こうじの バリケード・イベントの とびら・みずを ぬいた すいろ */
+  ART.barricade=mk(16,16,'#4a5a44');rct(ART.barricade,1,3,14,4,'#d0a020');rct(ART.barricade,1,9,14,4,'#d0a020');
+  [[2,3],[6,3],[10,3],[4,9],[8,9],[12,9]].forEach(([x,y])=>rct(ART.barricade,x,y,2,4,'#2a2a2a'));rct(ART.barricade,2,1,2,14,'#7a5a2a');rct(ART.barricade,12,1,2,14,'#7a5a2a');
+  ART.sgate=mk(16,16,'#3a3a46');rct(ART.sgate,1,1,14,15,'#5a5a6a');rct(ART.sgate,2,2,12,13,'#6a6a7a');[4,8,12].forEach(y=>rct(ART.sgate,2,y,12,1,'#4a4a56'));
+  rct(ART.sgate,6,5,4,4,'#ffd23f');rct(ART.sgate,7,6,2,2,'#fff8c0');
+  ART.drain=mk(16,16,'#3a4a34');dots(ART.drain,[[2,3],[3,3],[9,6],[10,6],[11,6],[4,11],[5,11],[12,13]],'#5a7a8a');rct(ART.drain,0,0,16,1,'#2e3a2a');rct(ART.drain,0,15,16,1,'#2e3a2a');
   const plate=c=>{const a=mk(16,16,'#6a7a8a');rct(a,0,0,16,1,'#5a6a7a');rct(a,0,0,1,16,'#5a6a7a');rct(a,3,3,10,10,'#3a3a44');rct(a,4,4,8,8,c);dots(a,[[5,5],[6,5]],'#ffffff');return a;};
   ART.plateR=plate('#e04848');ART.plateB=plate('#4a8ae8');ART.plateG=plate('#58b848');ART.plateY=plate('#f0d030');
   const gb=()=>{const a=mk(16,16,'#3a8c3a');dots(a,[[1,2],[13,1],[2,14],[14,13]],'#2f7a2f');return a;};
@@ -702,6 +721,11 @@ function initArt(){
   rct(ART.telescope,5,6,2,4,'#5a3a1a');rct(ART.telescope,3,10,6,1,'#5a3a1a');
   ART.shard=mk(12,12,null);[[5,0],[6,0],[5,1],[6,1],[4,2],[7,2],[0,4],[1,4],[2,4],[9,4],[10,4],[11,4],[2,5],[9,5],[3,7],[8,7],[2,9],[9,9],[1,10],[10,10]].forEach(([x,y])=>dots(ART.shard,[[x,y]],'#ffe040'));
   rct(ART.shard,3,3,6,5,'#ffe040');rct(ART.shard,4,4,4,3,'#fff8c0');rct(ART.shard,2,8,3,2,'#ffe040');rct(ART.shard,7,8,3,2,'#ffe040');
+  /* ver 7.1：イベントの あつめもの */
+  ART.glowshroom=paint(mk(12,12),["............","....aaaa....","..aabaabaa..",".aaaaaaabaa.",".abaaaaaaaa.","aaaaabaaaaba",".ccc.ss.ccc.",".....ss.....",".....ss.....","....ssss....","...y....y...","............"],{a:'#e05090',b:'#fff0a0',c:'#a03068',s:'#f4ecd8',y:'#fff8a0'});
+  ART.mappiece=paint(mk(12,12),["............","..pppppppp..",".pppppppppp.",".pplllpppp..","..ppppppll..",".pppprpprp..",".ppppprrpp..",".pppprpprpp.","..ppppppppp.",".pppppppp...","..ppp..pp...","............"],{p:'#e8d8a8',l:'#8a7448',r:'#d02828'});
+  ART.soulfire=paint(mk(12,12),["......a.....",".....aa.....","....aba.....","....abba....","...abbba.a..","..abbcbba...","..abcccbba..","..abcwwcba..","..abcwwcba..","...abccba...","....abba....","............"],{a:'#2a6ad8',b:'#5aa0ff',c:'#a0e0ff',w:'#ffffff'});
+  ART.goldsand=paint(mk(12,12),["............",".....rr.....","....rrrr....",".....bb.....","....bbbb....","...bbybbb...","..bbyybbbb..","..bbbbbbyb..","..bbbbbbbb..","...bbbbbb...","..g.g..g.g..","............"],{r:'#8a5a2a',b:'#c89a3a',y:'#fff070',g:'#ffe040'});
   /* ── しかけ（12x12 の こもの）── */
   ART.tablet=mk(12,12,null);rct(ART.tablet,2,1,8,10,'#8a8a96');rct(ART.tablet,3,0,6,1,'#8a8a96');rct(ART.tablet,1,10,10,2,'#5a5a66');
   [[3,3,6],[3,5,5],[3,7,6]].forEach(([x,y,w])=>rct(ART.tablet,x,y,w,1,'#4a4a56'));
@@ -783,7 +807,7 @@ function saveArt(){try{localStorage.setItem('unkoq-art-v5',JSON.stringify(ART));
 })();
 /* ── くろちゃん と だい2しょうの てき（ゆうしゃの かたち × いろ）── */
 (function(){
-  ['kuro','g1','g2','g3','g4','g5','hedoro','umi','ghost','chaos','chaos2','yurei','n1','n2','n3','n4','n5','n6','n7','n8','n9','n10','n11','n12','n13','n14','n15','n16','n17','n18','n19','qgear','qserp','witch','statue','miller','mqimo','mqwolf','astro','evstar'].forEach(k=>{
+  ['kuro','g1','g2','g3','g4','g5','hedoro','umi','ghost','chaos','chaos2','yurei','n1','n2','n3','n4','n5','n6','n7','n8','n9','n10','n11','n12','n13','n14','n15','n16','n17','n18','n19','qgear','qserp','witch','statue','miller','mqimo','mqwolf','astro','evstar','evkinoko','evpirate','evghost','evscorp','evmetal','hkinoko','hpirate','hghost','hgold','hmetal','oyakata','namazu'].forEach(k=>{
     const c=CHAR_COLORS[k],P={'0':c[0],'1':c[1],'2':'#ffffff','3':EYE_COLOR[k]||'#2a1a08'};
     ART[k]=USER_ART.hero.d.map(r=>[...r].map(ch=>ch==='.'?null:P[ch]));});
 })();
@@ -821,7 +845,7 @@ const ART_LABEL={hero:"ゆうしゃ",npc:"むらびと",king:"おうさま",shop
  e6:"きんうんこ",nushi:"ぬまのぬし",d1:"くろうんこ",d2:"やみうんこ",d3:"うんこナイト",boss:"りゅうおう",kuro:"くろちゃん",
  g1:"スケルトン",g2:"ミミック",g3:"ガーゴイル",g4:"ヒドラ",g5:"キメラ",hedoro:"ヘドロスライム",umi:"クラーケン",
  ghost:"ぼうれい",chaos:"カオス",chaos2:"しんカオス",swall:"げすいのかべ",sfloor:"げすいのゆか",sewage:"どぶ",manhole:"マンホール",deadgrass:"あれち",deadtree:"かれき",ruinwall:"くずれた かべ",grave:"おはか",
- oasisIcon:"オアシス",ruinIcon:"ほろびた むら",box:"どうぐばこ",boxOpen:"あいた どうぐばこ",crystal:"すいしょう",hole:"おとしあな",obsIcon:"ほしみの とう",healspring:"いやしの いずみ",telescope:"ぼうえんきょう",shard:"ほしの かけら",astro:"てんもんがくしゃ",evstar:"ながれぼし",n1:"バット",n2:"フロッグ",n3:"コボルト",n4:"キノコ",n5:"スネーク",n6:"オーク",n7:"クラブ",n8:"ハーピー",n9:"トロール",n10:"リザードマン",n11:"グリフォン",n12:"サンドワーム",n13:"スコーピオン",n14:"ミノタウロス",n15:"ゾンビ",n16:"レイス",n17:"スパイダー",n18:"アクアスライム",n19:"サハギン",qgear:"ガーディアン",qserp:"サーペント",witch:"まじょ",statue:"せきぞう",miller:"こなや",mqimo:"どろぼうゴブリン",mqwolf:"ボスウルフ",
+ oasisIcon:"オアシス",ruinIcon:"ほろびた むら",box:"どうぐばこ",boxOpen:"あいた どうぐばこ",crystal:"すいしょう",hole:"おとしあな",obsIcon:"ほしみの とう",glowshroom:"ひかる きのこ",barricade:"こうじの バリケード",sgate:"イベントの とびら",drain:"みずを ぬいた すいろ",oyakata:"こうじの おやかた",namazu:"おおなまず",mappiece:"ちずの きれはし",soulfire:"たましいの ともしび",goldsand:"きんの すなぶくろ",evkinoko:"おおきのこ",evpirate:"かいぞく",evghost:"ゆうれいおう",evscorp:"きんさそり",evmetal:"メタルキング",hkinoko:"きのこはかせ",hpirate:"せんちょう",hghost:"れいばいし",hgold:"たんこうふ",hmetal:"メタルけんきゅうか",healspring:"いやしの いずみ",telescope:"ぼうえんきょう",shard:"ほしの かけら",astro:"てんもんがくしゃ",evstar:"ながれぼし",n1:"バット",n2:"フロッグ",n3:"コボルト",n4:"キノコ",n5:"スネーク",n6:"オーク",n7:"クラブ",n8:"ハーピー",n9:"トロール",n10:"リザードマン",n11:"グリフォン",n12:"サンドワーム",n13:"スコーピオン",n14:"ミノタウロス",n15:"ゾンビ",n16:"レイス",n17:"スパイダー",n18:"アクアスライム",n19:"サハギン",qgear:"ガーディアン",qserp:"サーペント",witch:"まじょ",statue:"せきぞう",miller:"こなや",mqimo:"どろぼうゴブリン",mqwolf:"ボスウルフ",
  jwall:"すいどうの かべ",jfloor:"すいどうの ゆか",jwater:"すいろ",plateR:"あかい いし",plateB:"あおい いし",plateG:"みどりの いし",plateY:"きいろい いし",
  cottage:"いえ",shrineIcon:"ほこら",windmill:"かざぐるま",windmill2:"かざぐるま（まわる）",facIcon:"すいどう しせつ",
  tablet:"いしぶみ",gate:"すいもん",lever:"レバー",leverOn:"レバー（ON）",pump:"ポンプ",grate:"てつごうし",yurei:"ゆうれい",grass:"くさ",bush:"くさむら",tree:"き",water:"みず",
@@ -849,9 +873,9 @@ const TILE={'.':'grass',',':'bush','#':'tree','~':'water','^':'mount','=':'road'
  'z':'deadgrass','y':'deadtree','d':'ruinwall','e':'grave','h':'oasisIcon','i':'ruinIcon',
  '5':'jwall','6':'jfloor','7':'jwater','[':'plateR',']':'plateB','{':'plateG','}':'plateY',
  'N':'cottage','@':'shrineIcon','&':'windmill','|':'facIcon',
- '(':'crystal',':':'hole',')':'obsIcon'};
+ '(':'crystal',':':'hole',')':'obsIcon','9':'barricade','4':'sgate','0':'drain'};
 const BLOCKED=new Set(['#','~','^','B','K','W','X','S','Z','V','Q','J','H',
-  'w','s','r','j','b','u','x','E','D','U','G','m','I','q','l','L','P','k','1','3','y','d','e','5','7','(']);
+  'w','s','r','j','b','u','x','E','D','U','G','m','I','q','l','L','P','k','1','3','y','d','e','5','7','(','9','4']);
 
 const WORLD=[
 "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
@@ -1163,6 +1187,7 @@ const TOWN=[
 ".,....,.......,....,..==,....,.......,....,...",
 "..#..,.#..,.#..,.#..,.==.#..,.#..,.#..,.#..,.."];
 
+TOWN[17]=TOWN[17].slice(0,41)+'M'+TOWN[17].slice(42);   // ver 7.2：うんこの まちの マンホール
 const TOWN2=[
 "#..,.#..,.#..,.#..,....#..,.#..,.#.~~~~~~~~~~~",
 "...#,....,.......,....,...#,....,..~~~~~~~~~~~",
@@ -1926,6 +1951,7 @@ const FAC=[
 "Bx________________uB",
 "B__________________B",
 "BBBBBBBBB__BBBBBBBBB"];
+FAC[12]='B>'+FAC[12].slice(2,18)+'>B';   // ver 7.2：げすいどう（ひだり）・ちょすいち（みぎ）への かいだん
 const JOSUI1=[
 "5555555555555555555555555555555555555555",
 "5666666666666655555556666666666666666665",
@@ -1981,6 +2007,83 @@ const JOSUI2T=[
 "5666666666666666666666666665",
 "5555555555555555555555555555"];
 const JOSUI2=JOSUI2T.map(r=>r.replace(/[!?$]/g,'7'));
+/* ── ver 7.2：うんこの まちの げすいどう（こうじで ひろがる）
+   b c d＝こうじの バリケード（だい2〜4き）／q r s t u v＝イベントの とびら／8＝すいろ（みずを ぬく ひは あるける）── */
+const GESUI0T=[
+"11111111111111111111111111111111111111111111111111111111",
+"11222221111111111111111111111111122221111111111111111111",
+"1122<221111111111111111222222222222<21111111111122>22211",
+"11222221111111111111111222222222222221222222222222222211",
+"112222211111111111111112211v1112222221222222222222222211",
+"11112211111111111111111221222212211111111111122122222211",
+"11112211111111111111111221222212211111111111122111111111",
+"11112211111111111111111221222212211111111111122111111111",
+"11112211111111111111111221111112211111222222222222222211",
+"111122222222222222b2222222222222222211222222222222222211",
+"111122222222222222b2222222222222222211222222222111111111",
+"11112211111221111111111222222222211111222222222222222211",
+"11112211222222221111111222222222212221233332222222222211",
+"111122112222222211111112223333222r2221233332222223333211",
+"11112211222222221111111222333322212221233332222223333211",
+"11112211223333221111111222222222211111222222222222222211",
+"11112211222222221111111222222222211111222222222222222211",
+"11112211222222221111111222222222211111111111122111111111",
+"11112211222222221111111222222222211111222222222222222211",
+"11112211111221111111111111111111111111222222222222222211",
+"111122222222222222c2222222222222222211111111122111118811",
+"111122222222222222c2222222222222222211111111122111222211",
+"11112211111111221112211111122222222211111111122111222211",
+"11112212211111221112211111122222222211111111122111222211",
+"111122q2211111221112211111122223333211111111122111111111",
+"11112212212222221112211111122223333211111111122111111111",
+"11112211112222221112211111122223333211111111122111111111",
+"11112211111111221112211111122222222211111111122111111111",
+"11112211111111221112211111122222222211111111122111111111",
+"111122111111112211122222222222222222d2222222222222222211",
+"111122111111111111122222222222222222d2222222222222222211",
+"111122222222222222111t111112211111u111112211122111111111",
+"11112222222222222211222211122111222211112211122111111111",
+"11112211s11111118811222211122111222211122222122111111111",
+"11111112222111118811222211122111222211122222122111111111",
+"11111112222111222211111111122111111111122222122111111111",
+"11111112222111222212222222222222222211122222122111111111",
+"11111112222111222212222222222222222211122222122111111111",
+"11111111111111111111111111111111111111111111111111111111",
+"11111111111111111111111111111111111111111111111111111111"];
+const GESUI0=GESUI0T.slice();
+/* ── ver 7.2：じょうすいどう ちょすいち（まいしゅう すこしずつ みずを ぬく：l→m→n）── */
+const JOSUI3T=[
+"55555555555555555555555555555555555555555555",
+"555555555555555556666<6666555555555555555555",
+"55555555555555555666666666555555555555555555",
+"55555555555555555666666666555555555555555555",
+"55555555555555555666666666555555555555555555",
+"55555555555555555555666655555555555555555555",
+"55555555555555666666666666666655555555555555",
+"555555555556666666llllllll666666655555555555",
+"55555555566666llllllllllllllll66666555555555",
+"555555566666llllmmmmmmmmmmmmllll666665555555",
+"5555556666lllmmmmmmmmmmmmmmmmmmlll6666555555",
+"555556666lllmmmmmnnnnnnnnnnmmmmmlll666655555",
+"55556666llmmmmmnnnnnnnnnnnnnnmmmmmll66665555",
+"5555666lllmmmnnnnnnnnnnnnnnnnnnmmmlll6665555",
+"555666lllmmmnnnnnnnn6666nnnnnnnnmmmlll666555",
+"555666llmmmmnnnnnn66566566nnnnnnmmmmll666555",
+"555666llmmmmnnnnn6666666666nnnnnmmmmll666555",
+"555666llmmmmnnnnn6666666666nnnnnmmmmll666555",
+"555666llmmmmnnnnnn66666666nnnnnnmmmmll666555",
+"555666lllmmmnnnnnnnn6666nnnnnnnnmmmlll666555",
+"5555666lllmmmnnnnnnnnnnnnnnnnnnmmmlll6665555",
+"55556666llmmmmmnnnnnnnnnnnnnnmmmmmll66665555",
+"555556666lllmmmmmnnnnnnnnnnmmmmmlll666655555",
+"5555556666lllmmmmmmmmmmmmmmmmmmlll6666555555",
+"555555566666llllmmmmmmmmmmmmllll666665555555",
+"55555555566666llllllllllllllll66666555555555",
+"555555555556666666llllllll666666655555555555",
+"55555555555555666666666666666655555555555555",
+"55555555555555555555555555555555555555555555",
+"55555555555555555555555555555555555555555555"];
+const JOSUI3=JOSUI3T.slice();
 /* ── ver 5.1：あたらしい まちと むら ── */
 const POTTON=[
 "#..,.#..,.#..,.#..,....#..,.#..,.#..,.#..,....",
@@ -2283,6 +2386,8 @@ const MAPS={
  swind:{d:SWIND,enc:false,name:"かぜの ほこら"},
  searth:{d:SEARTH,enc:false,name:"つちの ほこら"},
  fac:{d:FAC,enc:false,name:"すいどう かんりしつ"},
+ gesui0:{d:GESUI0,enc:true,get pool(){return digPool('gesui0');},name:"うんこの まちの げすいどう"},
+ josui3:{d:JOSUI3,enc:true,get pool(){return digPool('josui3');},name:"じょうすいどう　ちょすいち"},
  josui1:{d:JOSUI1,enc:true,pool:['n18','n2','n7','n18'],name:"じょうすいどう　地下１かい"},
  josui2:{d:JOSUI2,enc:true,pool:['n18','n19','n7','n19'],name:"じょうすいどう　地下２かい"},
  gesui1:{d:GESUI1,enc:true,pool:['g1','g2','g3'],name:"やみの げすいどう　地下１かい"},
@@ -2290,7 +2395,7 @@ const MAPS={
  gesui3:{d:GESUI3,enc:true,pool:['g3','g4','g5'],name:"やみの げすいどう　地下３かい"},
 };
 /* だい2しょうでは ふるい ばしょにも つよい てきが でる */
-const CH2POOL={cave:['d1','d2','g1'],caveb:['d2','g1','g2'],cave2a:['d2','d3','g1'],cave2b:['d3','g1','g2'],
+const CH2POOL={gesui0:['d2','g1','g2'],josui3:['g1','g2','d3'],cave:['d1','d2','g1'],caveb:['d2','g1','g2'],cave2a:['d2','d3','g1'],cave2b:['d3','g1','g2'],
  tower1:['d2','d3','g1'],tower2:['d3','g1','g2'],tower3:['g1','g2','g2'],
  dragon:['g1','g2','d3'],dragon2:['g1','g2','g3'],dragon3:['g2','g3','g3']};
 const CH2ZONE=[null,['d1','d1','d2','g1'],['d1','d2','d3','g1'],['d2','d3','g1','g2'],['d3','g1','g2','g2'],['g1','g2','g2','g3']];
@@ -2323,7 +2428,7 @@ const WARPS={
  castle:[{x:19,y:29,to:'world',tx:151,ty:26},{x:20,y:29,to:'world',tx:151,ty:26}],
  castle2:[{x:19,y:29,to:'world',tx:67,ty:140},{x:20,y:29,to:'world',tx:67,ty:140}],
  newtown:[{x:22,y:33,to:'world',tx:169,ty:50},{x:23,y:33,to:'world',tx:169,ty:50}],
- town:[{x:22,y:33,to:'world',tx:187,ty:107},{x:23,y:33,to:'world',tx:187,ty:107}],
+ town:[{x:22,y:33,to:'world',tx:187,ty:107},{x:23,y:33,to:'world',tx:187,ty:107},{x:41,y:17,to:'gesui0',tx:4,ty:3}],
  town2:[{x:25,y:22,to:'casino',tx:16,ty:19},{x:22,y:33,to:'world',tx:298,ty:206},{x:23,y:33,to:'world',tx:298,ty:206}],
  village:[{x:22,y:33,to:'world',tx:199,ty:137},{x:23,y:33,to:'world',tx:199,ty:137}],
  cave:[{x:29,y:36,to:'world',tx:253,ty:143},{x:40,y:4,to:'caveb',tx:36,ty:2},{x:49,y:21,to:'caveb',tx:38,ty:14,fall:true}],
@@ -2347,9 +2452,12 @@ const WARPS={
  witch:[{x:9,y:13,to:'world',tx:45,ty:122},{x:10,y:13,to:'world',tx:45,ty:122}],
  swind:[{x:9,y:15,to:'world',tx:125,ty:42},{x:10,y:15,to:'world',tx:125,ty:42}],
  searth:[{x:11,y:19,to:'world',tx:194,ty:161},{x:12,y:19,to:'world',tx:194,ty:161}],
- fac:[{x:9,y:13,to:'world',tx:171,ty:112},{x:10,y:13,to:'world',tx:171,ty:112},{x:18,y:1,to:'josui1',tx:2,ty:26}],
+ fac:[{x:9,y:13,to:'world',tx:171,ty:112},{x:10,y:13,to:'world',tx:171,ty:112},{x:18,y:1,to:'josui1',tx:2,ty:26},
+   {x:1,y:12,to:'gesui0',tx:35,ty:3,cond:()=>digStage()>=2},{x:18,y:12,to:'josui3',tx:21,ty:2,cond:()=>digStage()>=3&&!!(G.q&&G.q.done)}],
  josui1:[{x:1,y:26,to:'fac',tx:18,ty:2},{x:35,y:4,to:'josui2',tx:2,ty:21}],
  josui2:[{x:1,y:21,to:'josui1',tx:34,ty:4}],
+ gesui0:[{x:4,y:2,to:'town',tx:41,ty:18},{x:35,y:2,to:'fac',tx:2,ty:12},{x:50,y:2,to:'gesui1',tx:15,ty:24,cond:()=>!!G.sealOpen}],
+ josui3:[{x:21,y:1,to:'fac',tx:17,ty:12}],
  gesui1:[{x:15,y:25,to:'world',tx:256,ty:101},{x:1,y:1,to:'gesui2',tx:15,ty:23}],
  gesui2:[{x:15,y:24,to:'gesui1',tx:2,ty:1},{x:13,y:23,to:'gesui3',tx:15,ty:23}],
  gesui3:[{x:15,y:24,to:'gesui2',tx:12,ty:23}],
@@ -2590,9 +2698,7 @@ NPCS.castle2.push({x:16,y:22,art:'npc',mqt:'soldier',lines:[]});
 NPCS.potton[4].mqt='farmer';NPCS.castle[6].mqt='librarian';NPCS.ruins[3].mqt='mourner';NPCS.oasis[4].mqt='oldman';
 NPCS.newtown[8].mqhook='bookguy';NPCS.oasis[7].mqhook='oasisguy';
 NPCS.ruins[3].gone=()=>G.mq&&G.mq.mourn>=3;NPCS.ruins[4].gone=()=>G.mq&&G.mq.mourn>=3;
-NPCS.world=(NPCS.world||[]).concat([[130, 26], [80, 70], [228, 118], [38, 160], [170, 190]].map(([x,y],i)=>({x,y,art:'shard',evshard:i,lines:[],
-    gone:()=>!evActive()||!(G.ev2&&G.ev2.visit)||!!(G.ev2&&G.ev2['s'+i])})),[
-  {x:215,y:117,art:'evstar',evstarboss:true,gone:()=>!evActive()||evStage()!==2,lines:["ゴゴゴゴ…","「われは ほしの うんこ… この ちを ほしくずで うめつくして くれよう！」"]}]).concat([
+NPCS.world=(NPCS.world||[]).concat([
   {x:84,y:97,art:'mqimo',gone:()=>!(G.mq&&G.mq.imo===1),mqfight:'mqimo',lines:["ケケッ！ この いもは おれさまの もんだ！"]},
   {x:58,y:128,art:'mqwolf',gone:()=>!(G.mq&&G.mq.wolf===1),mqfight:'mqwolf',lines:["グルルル…","ウォォーーン！！"]}]);
 /* イベントの まえと あとで かわる セリフ（qw＝かざぐるまが まわったあと／qa＝すいどう ふっかつ あと） */
@@ -2668,8 +2774,18 @@ NPCS.mori=[
   {x:7,y:17,art:'npc',lines:["うちの じいちゃんは むかし うんこの とうに のぼったんだって。","てっぺんで すごい おたからを みつけたらしいよ。"]},
   {x:38,y:17,art:'npc',lines:["みなとまちは ひがしの みさきに あるんだ。","ながい はしを わたった さきさ。 まものが おおいから きをつけな。"]},
   {x:26,y:20,art:'npc',move:true,lines:["もりで あそんでると とおぼえが きこえるんだ…","こわいよ〜"]}];
-NPCS.obs=[{x:10,y:3,art:'astro',evastro:true,lines:["ここは ほしみの とう。","ほしを ながめて くらしとる。"]},
+NPCS.obs=[{x:10,y:3,art:'astro',evhost:'star',lines:["ここは ほしみの とう。","ほしを ながめて くらしとる。"]},
   {x:9,y:1,art:'telescope',lines:["おおきな ぼうえんきょうだ。","よぞらの ほしが すぐ そこに みえる…"]}];
+/* ── ver 7.2：ちかすいどうの ひとびと ── */
+NPCS.gesui0=[{x:9,y:13,art:'oyakata',dig:'worker',lines:[]},
+  {x:26,y:7,art:'healspring',heal:true,lines:["ほしあかりが さしこむ いずみだ。","つめたい みずが からだに しみわたる…"]},
+  {x:50,y:2,art:'grate',gone:()=>!!G.sealOpen,dig:'grate',lines:[]}].concat(
+  ['kinoko','pirate','ghost','gold','metal','star'].map(k=>({x:12,y:13,art:{kinoko:'glowshroom',pirate:'hpirate',ghost:'yurei',gold:'goldsand',metal:'e6',star:'shard'}[k],
+    digGift:k,lines:[],gone:()=>wevCur().id!==k})));
+NPCS.town.push({x:42,y:16,art:'tablet',dig:'notice',lines:[]});
+NPCS.fac.push({x:1,y:12,art:'barricade',dig:'facG',gone:()=>digStage()>=2,lines:[]},{x:18,y:12,art:'barricade',dig:'facJ',gone:()=>digStage()>=3&&!!(G.q&&G.q.done),lines:[]});
+NPCS.josui3=[{x:21,y:16,art:'namazu',dig:'namazu',gone:()=>digLevel()<3||!!(G.dig&&G.dig.namazu),
+  lines:["ゴボゴボ…","ちょすいちの そこで なにかが うごいた！","「わしの ねどこの みずを ぬいたのは だれじゃあ！」"]}];
 const CHESTS={
  /* ver 5.3：まちの なかは
     たからばこ（こうかな もの：Ｇ・そうび・たね）と どうぐばこ（box:true＝アイテム）に わけた。
@@ -2730,6 +2846,8 @@ const CHESTS={
 /* ═══════════════════════════════════════════════
    3. てき・そうび・みせ
    ═══════════════════════════════════════════════ */
+CHESTS.gesui0=[{"x": 15, "y": 26, "gold": 200}, {"x": 2, "y": 1, "item": "herb", "n": 3, "box": true}, {"x": 16, "y": 36, "seed": "A"}, {"x": 8, "y": 24, "item": "mega", "n": 3}, {"x": 9, "y": 36, "item": "mp", "n": 2}, {"x": 35, "y": 4, "gold": 500}, {"x": 24, "y": 2, "item": "mp", "n": 1, "box": true}, {"x": 36, "y": 13, "gold": 1000}, {"x": 29, "y": 6, "seed": "D"}, {"x": 19, "y": 22, "eq": "s", "i": 4}, {"x": 35, "y": 37, "gold": 800}, {"x": 22, "y": 33, "gold": 1500}, {"x": 35, "y": 33, "seed": "A"}, {"x": 53, "y": 22, "item": "mega", "n": 3}, {"x": 43, "y": 37, "seed": "D"}, {"x": 39, "y": 33, "gold": 1200}, {"x": 53, "y": 9, "item": "mp", "n": 2, "box": true}];
+CHESTS.josui3=[{"x": 4, "y": 16, "gold": 600}, {"x": 38, "y": 17, "item": "mp", "n": 1, "box": true}, {"x": 21, "y": 9, "item": "mega", "n": 2}, {"x": 22, "y": 17, "eq": "a", "i": 5}];
 const ENEMY={
  e1:{name:"スライムのうんこ",hp:16,atk:8,def:3,exp:5,gold:6,art:'e1'},
  e2:{name:"ゴブリンのうんこ",hp:27,atk:12,def:6,exp:13,gold:16,art:'e2'},
@@ -2766,7 +2884,14 @@ const ENEMY={
  n19:{name:"サハギンのうんこ",hp:95,atk:38,def:22,exp:52,gold:50,art:'n19'},
  qgear:{name:"ガーディアンのうんこ",hp:600,atk:72,def:54,exp:500,gold:400,art:'qgear',rage:true,rmsg:"ガーディアンは はぐるまを ぶんまわした！",noRun:true,big:true},
  qserp:{name:"サーペントのうんこ",hp:880,atk:78,def:60,exp:800,gold:600,art:'qserp',breath:true,bmsg:"サーペントは みずの いきを はいた！",noRun:true,big:true},
- evstar:{name:"ながれぼしのうんこ",hp:640,atk:66,def:54,exp:700,gold:500,art:'evstar',breath:true,bmsg:"ながれぼしは ほしくずを ふらせた！",noRun:true,big:true},
+ evstar:{name:"ながれぼしのうんこ",hp:640,atk:66,def:54,exp:700,gold:500,art:'evstar',wev:true,breath:true,bmsg:"ながれぼしは ほしくずを ふらせた！",noRun:true,big:true},
+ /* ── ver 7.1：しゅうがわり イベントの ボス ── */
+ evkinoko:{name:"おおきのこのうんこ",hp:520,atk:56,def:44,exp:600,gold:600,art:'evkinoko',wev:true,poison:true,pmsg:"おおきのこは ほうしを まきちらした！",noRun:true,big:true},
+ evpirate:{name:"かいぞくのうんこ",hp:600,atk:64,def:50,exp:700,gold:800,art:'evpirate',wev:true,rage:true,rmsg:"かいぞくは いかりを ふりまわした！",noRun:true,big:true},
+ evghost:{name:"ゆうれいおうのうんこ",hp:560,atk:60,def:48,exp:650,gold:600,art:'evghost',wev:true,breath:true,bmsg:"ゆうれいおうは のろいの いきを はいた！",noRun:true,big:true},
+ evscorp:{name:"きんさそりのうんこ",hp:700,atk:72,def:58,exp:900,gold:1600,art:'evscorp',wev:true,poison:true,pmsg:"きんさそりは どくばりで さした！",noRun:true,big:true},
+ evmetal:{name:"メタルキングのうんこ",hp:240,atk:46,def:130,exp:3000,gold:1000,art:'evmetal',wev:true,noRun:true,big:true},
+ namazu:{name:"おおなまずのうんこ",hp:760,atk:70,def:56,exp:1000,gold:1200,art:'namazu',breath:true,bmsg:"おおなまずは どろの いきを はいた！",noRun:true,big:true},
  mqimo:{name:"どろぼうゴブリンのうんこ",hp:70,atk:18,def:10,exp:60,gold:80,art:'mqimo',noRun:true},
  mqwolf:{name:"ボスウルフのうんこ",hp:260,atk:50,def:30,exp:220,gold:300,art:'mqwolf',noRun:true,big:true,rage:true,rmsg:"ボスウルフは とおぼえして とびかかった！"},
  /* ── だい2しょう（ゴールドは せんとうで はんぶんに なる）── */
@@ -2789,22 +2914,26 @@ const ENEMY={
 const WEAPONS=[{name:"すあし",atk:0},{name:"きのぼう",atk:6},{name:"どうのつるぎ",atk:16},
  {name:"てつのおの",atk:23},{name:"はがねのつるぎ",atk:30},{name:"ほのおのつるぎ",atk:48},
  {name:"さいごのつるぎ",atk:70},{name:"ゴールドうんこのつるぎ",atk:62},   // 7：カジノの けいひん
- {name:"ひかりのつるぎ",atk:86},{name:"でんせつのつるぎ",atk:104}];       // 8・9：だい2しょう
+ {name:"ひかりのつるぎ",atk:86},{name:"でんせつのつるぎ",atk:104},       // 8・9：だい2しょう
+ {name:"かいぞくの サーベル",atk:56}];   // 10：イベント「かいぞくの おたから」
 const ARMORS=[{name:"ぬののふく",def:0},{name:"かわのよろい",def:6},{name:"くさりかたびら",def:14},
  {name:"てつのよろい",def:20},{name:"はがねのよろい",def:26},{name:"まほうのよろい",def:42},
  {name:"ゴールドうんこのよろい",def:50},   // カジノの けいひん
  {name:"ひかりのよろい",def:62},{name:"でんせつのよろい",def:74},   // だい2しょう
- {name:"すいじんのよろい",def:48}];   // 9：やりこみクエスト「すいどう ふっかつ」の ほうび
+ {name:"すいじんのよろい",def:48},
+ {name:"ゆうれいの ローブ",def:40}];   // 10：イベント「ゆうれいの ともしび」   // 9：やりこみクエスト「すいどう ふっかつ」の ほうび
 const SHIELDS=[{name:"なし",def:0},{name:"かわのたて",def:3},{name:"てつのたて",def:8},
  {name:"はがねのたて",def:14},{name:"まほうのたて",def:22},
  {name:"うんこのたて",def:30},         // うんこの とうの おたから
- {name:"ひかりのたて",def:38},{name:"でんせつのたて",def:46}];   // だい2しょう
+ {name:"ひかりのたて",def:38},{name:"でんせつのたて",def:46},
+ {name:"すなあらしの たて",def:30}];   // 8：イベント「さばくの ゴールドラッシュ」   // だい2しょう
 const HELMS=[{name:"なし",def:0},{name:"かわのぼうし",def:2},{name:"てつかぶと",def:6},
  {name:"はがねのかぶと",def:11},{name:"まほうのかぶと",def:18},
  {name:"うんこのかぶと",def:25},       // うんこの とうの おたから
  {name:"かぼちゃのかぶと",def:30},     // きかんげんてい イベントの ほうび
  {name:"ひかりのかぶと",def:34},{name:"でんせつのかぶと",def:42},   // だい2しょう
- {name:"ほしの かんむり",def:32}];   // 9：イベント「ほしふる よる」の ほうび
+ {name:"ほしの かんむり",def:32},
+ {name:"きのこの ぼうし",def:24}];   // 10：イベント「きのこ まつり」   // 9：イベント「ほしふる よる」の ほうび
 const EQ={w:{arr:WEAPONS,key:'weapon',have:'haveW',jp:'ぶき',stat:'atk'},
   a:{arr:ARMORS,key:'armor',have:'haveA',jp:'よろい',stat:'def'},
   s:{arr:SHIELDS,key:'shield',have:'haveS',jp:'たて',stat:'def'},
@@ -3137,7 +3266,7 @@ const MAPCOL={'~':'#2452c8','#':'#1c5a22',',':'#3f9a40','.':'#5cb048','g':'#5cb0
   'a':'#e0c890','l':'#2a7a2e','L':'#e87818','A':'#e87818','P':'#3a2448','p':'#5a4060','k':'#2e2820',
   '1':'#1e2c1c','2':'#5e7056','3':'#4a6a24',
   'z':'#8a7a4a','y':'#4a3a24','d':'#6a4a3a','e':'#8a8a96',
-  '5':'#2a3a4a','6':'#6a7a8a','7':'#3a7ad0','(':'#a0e0ff',':':'#000000','[':'#e04848',']':'#4a8ae8','{':'#58b848','}':'#f0d030'};
+  '5':'#2a3a4a','6':'#6a7a8a','7':'#3a7ad0','(':'#a0e0ff','9':'#d0a020','4':'#6a6a7a','0':'#3a4a34',':':'#000000','[':'#e04848',']':'#4a8ae8','{':'#58b848','}':'#f0d030'};
 const MAPPLACE={C:'#ffffff',c:'#ffffff',n:'#ff7060',T:'#ff7060',t:'#ff7060',v:'#ff7060',
   O:'#141018',o:'#141018',R:'#b040e0',Y:'#d8d0c0',M:'#9aa0b0',h:'#40e0f0',i:'#a08870',N:'#c070e0','@':'#e8e8f0','&':'#ffe080','|':'#60a0ff',')':'#f0f080'};
 function drawWorldMap(){
@@ -3303,7 +3432,7 @@ function markVisited(){G.visited=G.visited||{castle:1};
 function doWarp(w){
   const from=G.map;
   G.map=w.to;G.x=w.tx;G.y=w.ty;G.steps=0;markVisited();onlineSync(true);
-  applyQuest();applyOpened();evInit();if(w.to==='evisle')G.ev.isle=1;if(w.to==='evtw1')G.ev.tower=1;if(w.to==='cave')evApplyDoor();
+  applyQuest();applyOpened();evInit();applyDig();if(w.to==='evisle')G.ev.isle=1;if(w.to==='evtw1')G.ev.tower=1;if(w.to==='cave')evApplyDoor();
   if(w.to==='casino')setTimeout(casEnter,600);
   LOG.ev('エリア移動',from+'→'+w.to);
   const nm=MAPS[w.to].name;
@@ -3344,10 +3473,12 @@ function zoneAt(x,y){
 function pickEnemy(t){
   const mp=MAPS[G.map];
   if(G.ch2&&CH2POOL[G.map])return CH2POOL[G.map][Math.floor(Math.random()*CH2POOL[G.map].length)];
+  if((G.map==='gesui0'||G.map==='josui3')&&wevCur().id==='metal'&&Math.random()<0.12)return 'e6';   // ver 7.2
   if(mp.pool)return mp.pool[Math.floor(Math.random()*mp.pool.length)];
   const z=zoneAt(G.x,G.y);let pool=(G.ch2?CH2ZONE:ZONE_POOL)[z];
   if(!G.ch2&&G.map==='world'){const h=habitatAt(G.x,G.y,t),hp=(HABITAT[z]||{})[h]||(HABITAT[z]||{}).grass;
-    if(hp){if(z===5&&Math.random()<0.04)return 'e6';return hp[Math.floor(Math.random()*hp.length)];}}
+    const mr=wevCur().id==='metal'?(z===5?0.1:z>=3?0.05:0):(z===5?0.04:0);   // ver 7.1：メタル だいはっせいの しゅうは でやすい
+    if(hp){if(Math.random()<mr)return 'e6';return hp[Math.floor(Math.random()*hp.length)];}}
   if(t===',')pool=pool.slice(1).concat(pool[pool.length-1]);
   if(z===5&&Math.random()<0.04)return 'e6';   // きんのうんこは りゅうおうの ちだけに でる
   return pool[Math.floor(Math.random()*pool.length)];}
@@ -3382,66 +3513,249 @@ function action(){
     .map(([dx,dy,d])=>[otherAt(G.x+dx,G.y+dy),d]).find(([o])=>o);
   if(nb){G.dir=nb[1];onlineSync(true);talkPlayer(nb[0]);return;}
   say(["なにも みつからなかった。"]);}
-/* ═══════════════════════════════════════════════
-   きかんげんてい イベント「ほしふる よる」（ver 7.0）
-   きかん：2026ねん 10がつ21にち 〜 12がつ31にち（スマホの とけい）
-   ・ひがしの「ほしみの とう」で てんもんがくしゃに はなす
-   ・せかいに おちた「ほしの かけら」5こを あつめる（きらきら ひかっている）
-   ・ほしが おちた くぼちに あらわれる「ながれぼしのうんこ」を たおす
-   ・ほうび：ほしの かんむり（まもり32）＋ カジノコイン 777
-   ・きかんが おわると かけらと ながれぼしは きえる（てにいれた ものは のこる）
-   ═══════════════════════════════════════════════ */
-const EVENT={name:'ほしふる よる',from:new Date(2026,9,21),to:new Date(2027,0,1),label:'10がつ21にち 〜 12がつ31にち'};
-function evActive(){const t=new Date();return t>=EVENT.from&&t<EVENT.to;}
-function evInit(){G.ev=G.ev||{};G.ev2=G.ev2||{};G.ev2.hint=G.ev2.hint||[0,0,0,0];}
+/* ══════════════════════════════════════════════
+   ver 7.1　しゅうがわり イベント
+   まいしゅう げつようびの 0じに つぎの イベントへ じどうで かわる（6しゅうで ひとまわり）。
+   G.wev＝こんしゅうの しんちょく（しゅうが かわると リセット）／G.wevClear＝クリアした かいすう。
+   かんりモードで ?ev=kinoko のように すると その イベントを ためせる。
+   ══════════════════════════════════════════════ */
+const WEV_EPOCH=new Date(2026,10,2);   // 2026/11/2（げつ）＝だい0しゅう
+const WEV_DAY=86400000;
+const WEV=[
+ {id:'kinoko',name:'きのこ まつり',host:'mori',hostAt:[21,28],hostArt:'hkinoko',hostName:'きのこはかせ',where:'もりの まち モリモリ',
+  item:'ひかる きのこ',itemArt:'glowshroom',unit:'こ',goal:5,spots:[[149,30],[23,203],[287,182],[103,135],[216,104]],
+  places:'ラダうんこ城の そば・モリモリの みなみ・ほろびた むらの みなみ・ウンコール城の ひがし・うんこの まちの ひがし',
+  boss:'evkinoko',bossAt:[32,159],bossWhere:'モリモリの きたひがしの もり',lv:16,reward:{t:'h',i:10},
+  teaser:'せかいの はやしに ふしぎな きのこが…！',
+  about:['もりの まちに きのこはかせが やってきた！','せかいの はやしに はえた「ひかる きのこ」を 5こ あつめよう。'],
+  hint0:'もりの まち モリモリ（せかいの ひだりした）の いりぐちの そばに いるよ。',
+  hint1:'はやしの なかで ぼんやり ひかって いる。 しろの そば・ひだりした・みぎした・まんなか・みぎうえ…',
+  intro:['わしは きのこはかせ！ きのこの ことなら なんでも しっとる。','ことしも はやしに『ひかる きのこ』が はえる きせつが きた。','5こ あつめて きてくれんか？ ぼんやり ひかって いるから すぐ わかるはずじゃ。'],
+  mid:'ひかる きのこは はやしの なかで ぼんやり ひかって おる。',
+  find:'ぼんやり ひかる きのこを みつけた！',
+  allGot:'…きのこが いっせいに ふるえだした。 もりの まちの ほうを さしている。',
+  ready:['おお！ ひかる きのこが 5こ そろった！','…む？ きのこが ふるえて おる。 もりの ぬしが めを さましたようじゃ！'],
+  bossLines:['ボフッ！ ボフッ！','「わしの きのこを もっていくのは だれじゃあ！」'],
+  win:['おおきのこのうんこは ほうしを まきちらして しぼんだ…','あとに かさの かたちの ぼうしが のこった！'],
+  thanks:['もりの ぬしを しずめて くれたんじゃな！','ひかる きのこの スープ、また つくって まっとるよ。']},
+ {id:'pirate',name:'かいぞくの おたから',host:'town2',hostAt:[24,28],hostArt:'hpirate',hostName:'せんちょう',where:'みなとまち ウンコット',
+  item:'ちずの きれはし',itemArt:'mappiece',unit:'まい',goal:5,spots:[[203,83],[15,204],[300,212],[107,141],[35,100]],
+  places:'ほしみの とうの にしの みずべ・せかいの ひだりしたの はまべ・みなとまちの みなみ・ウンコール城の ひがしの みずべ・ぽっとんの むらの にしの みずべ',
+  boss:'evpirate',bossAt:[300,202],bossWhere:'みなとまちの すぐ きた',lv:20,reward:{t:'w',i:10},
+  teaser:'はまべに なぞの かみきれが ながれついた…！',
+  about:['みなとまちに ふるい せんちょうが あらわれた！','はまべに ながれついた「ちずの きれはし」を 5まい あつめよう。'],
+  hint0:'みなとまち ウンコット（ひがしの みさき）の いりぐちの そばに いるよ。',
+  hint1:'きれはしは みずべに ながれついて いる。 みぎうえ・ひだりした・みぎした・まんなか・ひだりうえ…',
+  intro:['おう、わかいの！ おれは もと かいぞくの せんちょうだ。','むかし かくした おたからの ちずが やぶれて うみに ながれちまってな。','はまべに ながれついた『ちずの きれはし』を 5まい あつめて くれねえか？'],
+  mid:'きれはしは みずべの すなはまに ながれついてるはずだ。',
+  find:'すなに うもれた かみきれを ひろった！',
+  allGot:'…きれはしを ならべると、みなとまちの すぐ きたに ×じるしが うかんだ！',
+  ready:['おお！ ちずが そろったぜ！','×じるしは みなとまちの すぐ きただ。 …だが きをつけな、おれの むかしの てしたが まもってるはずだ！'],
+  bossLines:['ヨーホー！','「この おたからは わたさねえ！ かかってきな！」'],
+  win:['かいぞくのうんこは うみへ とびこんで にげていった…','あとに ぎらりと ひかる サーベルが のこった！'],
+  thanks:['やるじゃねえか！ おたからは おまえの もんだ。','また うみで あおうぜ！']},
+ {id:'ghost',name:'ゆうれいの ともしび',host:'ruins',hostAt:[21,28],hostArt:'hghost',hostName:'れいばいし',where:'ほろびた むら',
+  item:'たましいの ともしび',itemArt:'soulfire',unit:'つ',goal:5,spots:[[269,159],[299,163],[283,143],[281,170],[288,156]],
+  places:'ほろびた むらの まわりの あれち（にし・ひがし・きた・みなみ・すぐ そば）',
+  boss:'evghost',bossAt:[286,152],bossWhere:'ほろびた むらの すぐ きた',lv:18,reward:{t:'a',i:10},
+  teaser:'ほろびた むらに あおい ひが ゆれる…',
+  about:['ほろびた むらに れいばいしが やってきた！','あれちに ただよう「たましいの ともしび」を 5つ あつめよう。'],
+  hint0:'ほろびた むら（ひがしの はて）の いりぐちの そばに いるよ。',
+  hint1:'ともしびは ほろびた むらの まわりの あれちに ただよって いる。',
+  intro:['…ようこそ。 わたしは れいばいし。','この むらの まわりの あれちに、まよった『たましいの ともしび』が ただよって いるの。','5つ あつめて きて くれる？ あおく ゆれて いるから すぐ わかるわ。'],
+  mid:'ともしびは むらの まわりの あれちに ただよって いるわ。',
+  find:'あおく ゆれる ひを そっと つかまえた！',
+  allGot:'…ともしびが むらの きたへ すいよせられていく！',
+  ready:['ともしびが 5つ そろったわ。 ありがとう。','…でも まって。 むらの すぐ きたに おおきな けはいが…！'],
+  bossLines:['ヒュオォォ…','「たましいを かえせ… ここは わしの くにじゃ…」'],
+  win:['ゆうれいおうのうんこは しずかに きえていった…','あとに うっすら ひかる ローブが のこった！'],
+  thanks:['たましいたちも やっと ねむれるわ。','…あなたに しあわせが ありますように。']},
+ {id:'gold',name:'さばくの ゴールドラッシュ',host:'oasis',hostAt:[21,28],hostArt:'hgold',hostName:'たんこうふ',where:'オアシスの まち サラサラ',
+  item:'きんの すなぶくろ',itemArt:'goldsand',unit:'こ',goal:5,spots:[[198,167],[130,153],[157,185],[158,145],[136,176]],
+  places:'さばくの ひがしの はし・きたにし・みなみ・きた・みなみにし',
+  boss:'evscorp',bossAt:[150,182],bossWhere:'オアシスの みなみにしの さばく',lv:24,reward:{t:'s',i:8},
+  teaser:'さばくに きんが ねむっている…！ Ｇも ざくざく！',
+  about:['さばくで きんの すなが みつかった！','こんしゅうは せんとうで もらえる Ｇが 1.5ばい！','さばくに おちた「きんの すなぶくろ」を 5こ あつめよう。'],
+  hint0:'オアシスの まち サラサラ（さばくの まんなか）の いりぐちの そばに いるよ。',
+  hint1:'すなぶくろは さばくの あちこちに うもれて いる。 ひがし・にし・みなみ・きた…',
+  intro:['よう！ おれは たんこうふ。 さばくで きんの すなが でたんだ！','でも すなあらしで ふくろを 5こ おとしちまって…','さばくの あちこちに ある『きんの すなぶくろ』を ひろって きてくれ！'],
+  mid:'すなぶくろは さばくの あちこちに うもれてる はずだ。',
+  find:'すなの なかから ずっしり おもい ふくろを ほりだした！',
+  allGot:'…すなが ざわざわ うごきだした！ オアシスの みなみにしの ほうへ…',
+  ready:['おお！ 5こ ぜんぶ そろった！','…ん？ すなが うごいてる。 オアシスの みなみにしに きんを ねらう でっかい サソリが！'],
+  bossLines:['ジャキン！ ジャキン！','「きんは ぜんぶ おれさまの もの！」'],
+  win:['きんさそりのうんこは すなに もぐって にげていった…','あとに すなあらしを ふせぐ たてが のこった！'],
+  thanks:['ありがとよ！ これで おれも おおがねもちだ！','…なんてな。 また ほりに くるぜ。']},
+ {id:'metal',name:'メタル だいはっせい',host:'castle2',hostAt:[18,24],hostArt:'hmetal',hostName:'メタルけんきゅうか',where:'ウンコール城',
+  item:null,unit:'ひき',goal:3,spots:[],
+  places:'つよい まものが でる ちいき（Z3より おく）',
+  boss:'evmetal',bossAt:[66,136],bossWhere:'ウンコール城の まえ',lv:20,reward:null,
+  teaser:'メタルスライムのうんこが そこらじゅうに…！？',
+  about:['メタルスライムのうんこが だいはっせい！','こんしゅうは つよい まものが でる ちいきで メタルが でやすい。','3びき たおして メタルけんきゅうかに ほうこくしよう。'],
+  hint0:'ウンコール城の いりぐちの ホールに いるよ。',
+  hint1:'メタルは とおくの つよい まものの ちいきほど よく でる。 すぐ にげるので かいしんの いちげきを ねらおう。',
+  intro:['わたしは メタルけんきゅうか。 こんしゅうは メタルスライムのうんこが だいはっせい ちゅう！','なにかの まえぶれに ちがいない…','3びき たおして きて くれないか？ すぐ にげるから きを つけて！'],
+  mid:'メタルは とおくの つよい まものの ちいきほど よく でるよ。',
+  find:'',
+  allGot:'…どこかで ずしんと おもい おとが した。 ウンコール城の ほうだ！',
+  ready:['3びき たおしたって！？ すごい！','…この ゆれ… メタルの おうさまが ウンコール城の まえに あらわれた！'],
+  bossLines:['キィィン…','「わが けんぞくを よくも…！ かかってこい！」'],
+  win:['メタルキングのうんこは ぎんいろに かがやいて きえた…','あとに たくさんの どうぐが のこった！'],
+  thanks:['メタルキングまで たおすとは！','けんきゅうが はかどるよ。 ありがとう！']},
+ {id:'star',name:'ほしふる よる',host:'obs',hostAt:null,hostName:'てんもんがくしゃ',where:'ほしみの とう',
+  item:'ほしの かけら',itemArt:'shard',unit:'こ',goal:5,spots:[[130,26],[80,70],[228,118],[38,160],[170,190]],
+  places:'きたの もり・にしの みずうみ・ひがしの のはら・みなみにしの もり・さばくの そば',
+  boss:'evstar',bossAt:[215,117],bossWhere:'ほしみの とうの みなみの くぼち',lv:20,reward:{t:'h',i:9},
+  teaser:'よぞらから ほしが ふってくる…！',
+  about:['よぞらから ほしが ふってきた！','せかいに ちらばった「ほしの かけら」を 5こ あつめて','ほしが おちた ばしょの なぞを とこう！'],
+  hint0:'うんこの まちから ひがしへ。 やまの ふもとの「ほしみの とう」で てんもんがくしゃに はなそう。',
+  hint1:'ほしの かけらは きらきら ひかって いる。 きたの もり・にしの みずうみ・ひがしの のはら・みなみにしの もり・さばくの そば。',
+  intro:['おお、たびの おかた！ ここは ほしみの とう。','ゆうべ よぞらに おおきな ながれぼしが ながれてな…','その かけらが せかいじゅうに ちらばって しもうた。','かけらを 5こ あつめて きてくれんか？ きらきら ひかって いるから すぐ わかるはずじゃ。'],
+  mid:'ほしの かけらは きらきら ひかって おる。',
+  find:'きらきら ひかる いしを ひろった！',
+  allGot:'…かけらが ほしみの とうの ほうへ ひかりを はなっている。',
+  ready:['おお！ ほしの かけらが 5こ そろった！','…かけらが ふるえて おる。 ほしの ほんたいが よんでいるんじゃ。'],
+  bossLines:['ゴゴゴゴ…','「われは ほしの うんこ… この ちを ほしくずで うめつくして くれよう！」'],
+  win:['ながれぼしのうんこは きらきらと くだけちった…','あとに ほしの かたちの かんむりが のこった！'],
+  thanks:['ながれぼしを しずめて くれたんじゃな！','よぞらが また おだやかに なった。 ありがとう！']}];
+const WEV_FORCE=(()=>{try{const f=new URLSearchParams(location.search).get('ev');const i=WEV.findIndex(e=>e.id===f);return ADMIN&&i>=0?i:-1;}catch(e){return -1;}})();
+const WEEK_FORCE=(()=>{try{const v=new URLSearchParams(location.search).get('week');return ADMIN&&v!==null&&/^-?\d+$/.test(v)?+v:null;}catch(e){return null;}})();
+function wevWeek(){if(WEEK_FORCE!==null)return WEEK_FORCE;return Math.floor((new Date()-WEV_EPOCH)/(7*WEV_DAY));}
+function wevCur(off){const N=WEV.length,i=(WEV_FORCE>=0?WEV_FORCE:wevWeek())+(off||0);return WEV[((i%N)+N)%N];}
+function wevFrom(off){return new Date(WEV_EPOCH.getTime()+(wevWeek()+(off||0))*7*WEV_DAY);}
+function wevLabel(off){const a=wevFrom(off),b=new Date(a.getTime()+6*WEV_DAY),W=['にち','げつ','か','すい','もく','きん','ど'];
+  const f=d=>`${d.getMonth()+1}/${d.getDate()}（${W[d.getDay()]}）`;return f(a)+' 〜 '+f(b);}
+function wevLeft(){return Math.max(1,Math.ceil((wevFrom(1)-new Date())/WEV_DAY));}
+function evActive(){return true;}   // まいしゅう なにかしらの イベントが ある
+function evInit(){G.ev=G.ev||{};G.wevClear=G.wevClear||{};
+  if(G.ev2&&G.ev2.boss&&!G.wevClear.star)G.wevClear.star=1;   // 7.0の「ほしふる よる」を クリアずみ
+  const wk=wevWeek(),id=wevCur().id;
+  if(!G.wev||G.wev.wk!==wk||G.wev.id!==id)G.wev={wk,id,visit:0,got:{},kills:0,boss:0,hint:[0,0,0,0]};
+  return G.wev;}
 function evDoor(){return false;}function evApplyDoor(){}function evSearchDoor(){return false;}
-const EV_SHARDS=[[130, 26], [80, 70], [228, 118], [38, 160], [170, 190]];
-function evShards(){evInit();return EV_SHARDS.filter((p,i)=>G.ev2['s'+i]).length;}
-function evStage(){evInit();const e=G.ev2;return !e.visit?0:evShards()<5?1:!e.boss?2:3;}
-const EV_HINT=[
-  ["ひがしの やまの ふもとに『ほしみの とう』が あるらしい…","うんこの まちから ひがしへ。 やまの ふもとの とうで てんもんがくしゃに はなそう。"],
-  ["ほしの かけらは きらきら ひかって いる。 せかいの あちこちに 5こ。","きたの もり・にしの みずうみ・ひがしの のはら・みなみにしの もり・さばくの そば。 「ちず」も つかおう。"],
-  ["ほしが おちた くぼちに なにかが いる…","ほしみの とうの みなみ。 ながれぼしのうんこは つよい！ レベル20くらいで いこう。"],
-  ["イベント クリア！ おめでとう！","ほしの かんむりは「そうび」で みにつけられるよ。"]];
-function evChestCount(){return [evShards(),5];}
-function evInfo(){evInit();mode='menu';
-  const now=new Date(),act=evActive(),before=now<EVENT.from;
-  const l=[{id:'about',label:'いまの イベント'},{id:'hint',label:'ヒントを きく',dis:!act},{id:'prog',label:'しんちょく'},
-    {id:'all',label:'ぜんぶ おしえて（ネタバレ）'},{id:'x',label:'やめる'}];
+function wevCount(){const st=evInit(),e=wevCur();return e.item?Object.keys(st.got).length:Math.min(st.kills,e.goal);}
+function evStage(){const st=evInit(),e=wevCur();return !st.visit?0:wevCount()<e.goal?1:!st.boss?2:3;}
+function evChestCount(){return [wevCount(),wevCur().goal];}
+function evInfo(){const e=wevCur(),st=evInit();mode='menu';
+  const l=[{id:'about',label:'こんしゅうの イベント'},{id:'hint',label:'ヒントを きく'},{id:'prog',label:'しんちょく'},
+    {id:'next',label:'らいしゅうの よこく'},{id:'all',label:'ぜんぶ おしえて（ネタバレ）'},{id:'x',label:'やめる'}];
   l.title='イベントあんないじょ';
   menu(null,l,id=>{
     if(id==='x'){mode='field';return;}
-    if(id==='about'){
-      if(before){say(["つぎの イベントは じゅんびちゅう…","おたのしみに！"],evInfo);return;}
-      if(!act){say(["イベント「"+EVENT.name+"」は おわりました。","たくさん あそんでくれて ありがとう！"],evInfo);return;}
-      const left=Math.ceil((EVENT.to-now)/86400000);
-      say(["きかんげんてい イベント「"+EVENT.name+"」","きかん："+EVENT.label+"（のこり "+left+"にち）",
-        "よぞらから ほしが ふってきた！","せかいに ちらばった ほしの かけらを あつめて","ほしが おちた ばしょの なぞを とこう！"],evInfo);return;}
-    if(id==='hint'){const st=evStage(),k=Math.min(G.ev2.hint[st]||0,1);G.ev2.hint[st]=k+1;save();
-      say([k===0?"ヒント：":"もっと くわしい ヒント：",EV_HINT[st][k]].concat(k===0&&st<3?["（もういちど きくと もっと くわしく おしえるよ）"]:[]),evInfo);return;}
-    if(id==='prog'){const e=G.ev2,ok=v=>v?'✓':'－';
-      say(["しんちょく",`${ok(e.visit)} ほしみの とうへ`,`${ok(evShards()>=5)} ほしの かけら ${evShards()} / 5`,`${ok(e.boss)} ながれぼしを たおす`],evInfo);return;}
+    if(id==='about'){say(["こんしゅうの イベント「"+e.name+"」","きかん："+wevLabel()+"（のこり "+wevLeft()+"にち）"].concat(e.about,
+      ["まいしゅう げつようびに あたらしい イベントに かわるよ！"]),evInfo);return;}
+    if(id==='hint'){const s=evStage(),k=Math.min(st.hint[s]||0,1);st.hint[s]=k+1;save();
+      const H=[[`${e.where}に ${e.hostName}が きているらしい…`,e.hint0],
+        [e.mid,e.hint1+(e.item?' 「ちず」も つかおう。':'')],
+        [`${e.bossWhere}に なにかが いる…`,`${e.bossWhere}。 ${ENEMY[e.boss].name}は つよい！ レベル${e.lv}くらいで いこう。`],
+        ["イベント クリア！ おめでとう！","らいしゅうは「"+wevCur(1).name+"」。 おたのしみに！"]];
+      say([k===0?"ヒント：":"もっと くわしい ヒント：",H[s][k]].concat(k===0&&s<3?["（もういちど きくと もっと くわしく おしえるよ）"]:[]),evInfo);return;}
+    if(id==='prog'){const ok=v=>v?'✓':'－',n=wevCount();
+      say(["しんちょく（"+e.name+"）",`${ok(st.visit)} ${e.where}の ${e.hostName}に はなす`,
+        e.item?`${ok(n>=e.goal)} ${e.item} ${n} / ${e.goal}`:`${ok(n>=e.goal)} メタルスライムのうんこ ${n} / ${e.goal}`,
+        `${ok(st.boss)} ${ENEMY[e.boss].name}を たおす`,`（これまでの クリア：${G.wevClear[e.id]||0}かい）`],evInfo);return;}
+    if(id==='next'){const n=wevCur(1);say(["らいしゅうの イベントは…","「"+n.name+"」！",n.teaser,"きかん："+wevLabel(1)],evInfo);return;}
     if(id==='all'){const c=[{id:'y',label:'みる（ネタバレ）'},{id:'n',label:'やめる'}];c.title='ほんとうに みる？ たのしみが へるかも…';
       menu(null,c,a=>{if(a==='n'){evInfo();return;}
-        say(["【"+EVENT.name+"】 "+EVENT.label,
-          "うんこの まちの ひがし、やまの ふもとに「ほしみの とう」。 てんもんがくしゃに はなすと はじまる。",
-          "ほしの かけらは 5こ。 きたの もり・にしの みずうみ・ひがしの のはら・みなみにしの もり・さばくの そば。",
-          "5こ そろえて はなすと、ほしみの とうの みなみの くぼちに「ながれぼしのうんこ」が あらわれる。",
-          "ボスは HP640 くらい。 ほしくずに ちゅうい！",
-          "ほうしゅう：ほしの かんむり（まもり32）＋ カジノコイン777まい",
-          "きかんが おわると かけらと ボスは きえるよ。 てにいれた ものは なくならない。"],evInfo);});return;}
+        const R=e.reward?EQ[e.reward.t].arr[e.reward.i]:null;
+        say(["【"+e.name+"】 "+wevLabel(),`${e.where}の ${e.hostName}に はなすと はじまる。`,
+          e.item?`${e.item}を ${e.goal}${e.unit}：${e.places}。`:`メタルスライムのうんこを ${e.goal}ひき たおす。 ${e.places}で でやすい。`,
+          `そろえて はなすと ${e.bossWhere}に「${ENEMY[e.boss].name}」が あらわれる。 HP${ENEMY[e.boss].hp}。 レベル${e.lv}くらいが めやす。`,
+          R?`ほうしゅう：${R.name}（${R.atk!==undefined?'こうげき'+R.atk:'まもり'+R.def}）＋ カジノコイン777まい`:'ほうしゅう：とくやくそう3こ・まんたんドリンク2こ・2000Ｇ＋ カジノコイン777まい',
+          "2かいめ からは 500Ｇと コイン300まい。","しゅうが かわると とちゅうの しんちょくは きえるよ。 てにいれた ものは なくならない。"],evInfo);});return;}
   });}
-function evAstro(n){evInit();const e=G.ev2;
-  if(!evActive()){say(n.lines.concat(["…いまは ほしが しずかな きせつじゃ。"]));return;}
-  if(e.boss){say(["ながれぼしを しずめて くれたんじゃな！","よぞらが また おだやかに なった。 ありがとう！"]);return;}
-  if(evShards()>=5){say(["おお！ ほしの かけらが 5こ そろった！","…かけらが ふるえて おる。 ほしの ほんたいが よんでいるんじゃ。",
-    "この とうの みなみの くぼちじゃ！ きを つけて いきなされ！"]);return;}
-  if(e.visit){say(["ほしの かけらは きらきら ひかって おる。",`いま ${evShards()} / 5 こじゃ。`,"きたの もり・にしの みずうみ・ひがしの のはら・みなみにしの もり・さばくの そば… じゃったかな。"]);return;}
-  e.visit=1;save();LOG.ev('イベント','ほしみの とう');
-  say(["おお、たびの おかた！ ここは ほしみの とう。","ゆうべ よぞらに おおきな ながれぼしが ながれてな…","その かけらが せかいじゅうに ちらばって しもうた。",
-    "かけらを 5こ あつめて きてくれんか？ きらきら ひかって いるから すぐ わかるはずじゃ。"]);}
-function evShard(n){evInit();const e=G.ev2;e['s'+n.evshard]=1;save();LOG.ev('イベント','かけら'+n.evshard);
-  say(["きらきら ひかる いしを ひろった！","「ほしの かけら」だ！（"+evShards()+" / 5）"].concat(evShards()>=5?["…かけらが ほしみの とうの ほうへ ひかりを はなっている。"]:[]));}
+function wevHost(n){const e=WEV.find(x=>x.id===n.evhost),cur=wevCur();
+  if(!e||cur.id!==e.id){say((n.lines||[]).concat(["…こんしゅうは しずかな しゅうじゃ。 また あおう！"]));return;}
+  const st=evInit(),s=evStage();
+  if(s===3){say(e.thanks);return;}
+  if(s===2){say(e.ready.concat([`${e.bossWhere}じゃ！ きを つけて いきなされ！`]));return;}
+  if(st.visit){say([e.mid,`いま ${wevCount()} / ${e.goal}${e.unit}。`,e.hint1]);return;}
+  st.visit=1;save();LOG.ev('イベント',e.name);say(e.intro);}
+function wevItem(n){const [id,i]=n.wevItem,e=WEV.find(x=>x.id===id),st=evInit();st.got[i]=1;save();LOG.ev('イベント',id+i);
+  const c=wevCount();say([e.find,`「${e.item}」を てにいれた！（${c} / ${e.goal}）`].concat(c>=e.goal?[e.allGot]:[]));}
+function wevMetal(l){const e=wevCur();if(e.id!=='metal')return;const st=evInit();if(st.kills>=e.goal)return;
+  st.kills++;l.push(`メタルスライムのうんこ ${st.kills} / ${e.goal}ひき！`);if(st.kills>=e.goal)l.push(e.allGot);}
+function wevWin(bk){const e=WEV.find(x=>x.boss===bk);if(!e)return false;const st=evInit();st.boss=1;
+  const n=G.wevClear[e.id]||0;G.wevClear[e.id]=n+1;const l=e.win.slice();
+  if(e.reward){const R=EQ[e.reward.t],nm=R.arr[e.reward.i].name,have=G[R.have];
+    if(!have.includes(e.reward.i)){have.push(e.reward.i);G.coins=(G.coins||0)+777;
+      l.push(`「${nm}」を てにいれた！`,"カジノコインを 777まい てにいれた！","「そうび」で みにつけよう。");}
+    else{G.gold+=500;G.coins=(G.coins||0)+300;l.push(`（「${nm}」は もう もっている）`,"500Ｇと カジノコイン 300まいを てにいれた！");}}
+  else if(!n){G.items.mega=(G.items.mega||0)+3;G.items.mp=(G.items.mp||0)+2;G.gold+=2000;G.coins=(G.coins||0)+777;
+    l.push("とくやくそう 3こと まんたんドリンク 2こを てにいれた！","2000Ｇと カジノコイン 777まいを てにいれた！");}
+  else{G.gold+=500;G.coins=(G.coins||0)+300;l.push("500Ｇと カジノコイン 300まいを てにいれた！");}
+  if(!n){applyDig();l.push("（うんこの まちの げすいどうで とびらが ひらく おとが した…）");}
+  updStatus();save();LOG.ev('イベントクリア',e.id+'/Lv'+G.lv);say(l,endBattle);return true;}
+/* イベントの ひと・あつめもの・ボスを マップに おく（その しゅうの イベントの ときだけ みえる） */
+WEV.forEach(e=>{
+  if(e.hostAt)(NPCS[e.host]=NPCS[e.host]||[]).push({x:e.hostAt[0],y:e.hostAt[1],art:e.hostArt,evhost:e.id,lines:[],gone:()=>wevCur().id!==e.id});
+  e.spots.forEach(([x,y],i)=>NPCS.world.push({x,y,art:e.itemArt,wevItem:[e.id,i],lines:[],
+    gone:()=>{if(wevCur().id!==e.id)return true;const st=evInit();return !st.visit||!!st.got[i];}}));
+  NPCS.world.push({x:e.bossAt[0],y:e.bossAt[1],art:e.boss,wevBoss:e.id,lines:e.bossLines,gone:()=>wevCur().id!==e.id||evStage()!==2});});
+/* ══════════════════════════════════════════════
+   ver 7.2　ひろがる ちかすいどう
+   ・こうじ：2026/11/2の しゅうが だい1き。まいしゅう げつようびに 1きずつ すすみ、だい4きで ぜんぶ ひらく
+   ・すいろ：げつ・すい・きんは みずを ぬく ひ（すいろの そこを あるける）。ほかの ひは ほうりゅう
+   ・よる（18じ〜6じ）は ゆうれいが でやすい
+   ・イベントの とびら：しゅうがわり イベントを クリアすると その イベントの へやが ひらく（ずっと）
+   ・ちょすいち：すいどう ふっかつ ＋ だい3き で ひらく。まいしゅう みずが へって そこが みえてくる
+   ・ストーリー：だい2しょうで マンホールの ふういんが とけると おくの てつごうしが ひらき やみの げすいどうへ
+   ══════════════════════════════════════════════ */
+const DIG_IDS=['kinoko','pirate','ghost','gold','metal','star'];
+const DIG_NEXT={2:'きたひがしの みち（かんりしつへ つながる）',3:'みなみの すいろ と ちょすいち',4:'いちばん おくの ふるい げすいどう'};
+function digStage(){return Math.max(1,Math.min(4,wevWeek()+1));}
+function digLevel(){return Math.max(1,Math.min(3,wevWeek()-1));}
+function digDrain(){const d=new Date().getDay();return d===1||d===3||d===5;}
+function digNight(){const h=new Date().getHours();return h>=18||h<6;}
+function digDoors(){const C=(G&&G.wevClear)||{};return DIG_IDS.filter(k=>C[k]).length;}
+function applyDig(){const st=digStage(),C=(G&&G.wevClear)||{},dr=digDrain(),lv=digLevel();
+  for(let y=0;y<GESUI0T.length;y++){let r='';for(const c of GESUI0T[y]){
+    if('bcd'.includes(c))r+=st>='xbcd'.indexOf(c)+1?'2':'9';
+    else if('qrstuv'.includes(c))r+=C[DIG_IDS['qrstuv'.indexOf(c)]]?'2':'4';
+    else if(c==='8')r+=dr?'0':'3';else r+=c;}GESUI0[y]=r;}
+  for(let y=0;y<JOSUI3T.length;y++)JOSUI3[y]=JOSUI3T[y].replace(/[lmn]/g,c=>lv>='xlmn'.indexOf(c)?'6':'7');}
+function digPool(m){const ev=wevCur().id,n=digNight();
+  const p=m==='gesui0'?(n?['n1','n15','n16','n18']:['n1','n2','n3','n18']):(n?['n18','n19','n7','n16']:['n18','n19','n7','n10']);
+  if(ev==='ghost')p.push('n16','n15');if(ev==='kinoko'&&m==='gesui0')p.push('n4','n4');if(ev==='pirate'&&m==='josui3')p.push('n19');
+  return p;}
+function digOpenDay(k){return wevLabel(k-1-wevWeek()).split(' 〜')[0];}
+function digInfo(){return `こうじ だい${digStage()}き／${digDrain()?'すいろの みずを ぬく ひ（そこを あるける）':'ほうりゅうの ひ（すいろに はいれない）'}／${digNight()?'よる：ゆうれいが でやすい':'ひる'}／イベントの とびら ${digDoors()}/6`+
+  (digStage()>=3&&G.q&&G.q.done?`／ちょすいちの みず ${['','すこし','はんぶん','ほとんど'][digLevel()]} ぬけた`:'');}
+function digTalk(){const st=digStage(),l=["おう！ わしは ちかすいどう こうじの おやかただ。",`いま こうじは だい${st}き。`];
+  if(st<4)l.push(`つぎは ${digOpenDay(st+1)}に ${DIG_NEXT[st+1]}が ひらく よていだ！`);
+  else l.push("よていの こうじは ぜんぶ おわった！ イベントの とびらは まだまだ ひらくぞ。");
+  l.push(digDrain()?"きょうは すいろの みずを ぬく ひ。 すいろの そこを あるけるぞ。":"きょうは ほうりゅうの ひ。 すいろには はいれん。（げつ・すい・きんに みずを ぬく）");
+  l.push(`イベントの とびらは ${digDoors()}/6 ひらいた。 しゅうがわり イベントを クリアすると その へやが ひらくんだ。`);
+  if(digNight())l.push("よるは ゆうれいが でやすい。 きを つけな。");
+  const q=G.q||{};
+  if(!q.done)l.push(st>=3?"ちょすいちは できたが、すいどうが とまってて からっぽだ。 かんりしつの じいさんを たすけて やってくれ。":"かんりしつの じいさんが すいどうの ことで こまってたぞ。");
+  else if(st>=3)l.push("ちょすいちは かんりしつから いける。 まいしゅう すこしずつ みずを ぬいてるから、そこが みえてくるぞ。");
+  if(G.ch2Clear)l.push("やみが はれて、げすいどうの くうきも すっかり きれいに なった！");
+  else if(G.sealOpen)l.push(st>=4?"…おくの てつごうしが ひらいて、やみの げすいどうと つながっちまった。 きを つけろ！":"…マンホールの ふういんが とけたって？ おくを ほるのが こわく なってきたぜ。");
+  else if(G.ch2)l.push("さいきん おくの ほうから いやな かぜが ふいてくる…");
+  say(l);}
+const DIG_GIFT={
+ kinoko:{l:["げすいどうの すみに ひかる きのこが はえている！","…これは たべられる きのこだ。"],g:()=>{G.items.herb=(G.items.herb||0)+3;return "やくそうを 3こ てにいれた！";}},
+ pirate:{l:["かいぞくの したっぱ「へへっ、おやぶんには ないしょだぜ」","「おたからの ×じるしは みなとまちの すぐ きた らしいぜ」"],g:()=>{G.gold+=300;return "300Ｇを もらった！";}},
+ ghost:{l:["ちかの ゆうれい「…さむい… ここは くらくて さむい…」","「よるに なると なかまが ふえるの…」"],g:()=>{G.items.mp=(G.items.mp||0)+1;return "まんたんドリンクを 1こ もらった！";}},
+ gold:{l:["すいろの そこに きんいろの どろが たまっている！","すくって みると… きんの つぶだ！"],g:()=>{G.gold+=500;return "500Ｇぶんの きんを てにいれた！";}},
+ metal:{l:["メタルスライムのうんこの こどもが ぷるぷる ふるえている…","こんしゅうは げすいどうにも メタルが でるらしい。"],g:()=>{G.items.mega=(G.items.mega||0)+1;return "とくやくそうを 1こ おとしていった！";}},
+ star:{l:["てんじょうの すきまから ほしあかりが さしこんでいる…"],heal:true,g:()=>{G.items.mp=(G.items.mp||0)+1;return "ほしの しずくで まんたんドリンクを 1こ つくった！";}}};
+function digGift(n){const D=DIG_GIFT[n.digGift],st=evInit(),l=D.l.slice();
+  if(D.heal){resetHpMp();l.push("HPと MPが ぜんかいした！");}
+  if(!st.sg){st.sg=1;l.push(D.g());LOG.ev('ちかの おくりもの',n.digGift);}else l.push("（こんしゅうの おくりものは もう もらった）");
+  updStatus();save();say(l);}
+function digTalkTo(n){const st=digStage();
+  if(n.dig==='worker'){digTalk();return true;}
+  if(n.dig==='notice'){say(["【ちか すいどう こうじの おしらせ】","うんこの まちの したに げすいどうを ほっています。",`いまは だい${st}き。`+(st<4?` つぎは ${digOpenDay(st+1)}。`:' ぜんぶ かんせい！'),"マンホールから おりられます。 まものに ごちゅうい！"]);return true;}
+  if(n.dig==='facG'){say(["「この さき げすいどう こうじちゅう」",`（${digOpenDay(2)}に ひらく よてい）`]);return true;}
+  if(n.dig==='facJ'){if(st<3)say(["「この さき ちょすいち こうじちゅう」",`（${digOpenDay(3)}に ひらく よてい）`]);
+    else say(["ちょすいちへの かいだんだ。","…でも すいどうが とまっていて、ちょすいちは からっぽ らしい。","かんりしつの じいさんの たのみを きいて すいどうを ふっかつ させよう。"]);return true;}
+  if(n.dig==='grate'){say(G.ch2?["さびた てつごうしだ。 むこうから つめたい やみの かぜが ふいてくる…","…マンホールの ふういんと つながっている きが する。"]:["さびた てつごうしだ。 びくとも しない。","むこうから つめたい かぜが ふいてくる…"]);return true;}
+  if(n.dig==='namazu'){say(n.lines,()=>startBattle('namazu'));return true;}
+  if(n.digGift){digGift(n);return true;}
+  return false;}
+
 
 /* ── たからさがし：あやしい ところを しらべると… ── */
 const SECRETS=[
@@ -3539,9 +3853,10 @@ function findNpc(x,y){
 function talkTo(n){
   if(n.kuro){openKuro(true);return;}
   LOG.ev('はなす',G.map+(n.shop?'/'+n.shop:''));
-  if(n.evastro){evAstro(n);return;}
-  if(n.evshard!==undefined){evShard(n);return;}
-  if(n.evstarboss){say(n.lines,()=>startBattle('evstar'));return;}
+  if(n.evhost){wevHost(n);return;}
+  if((n.dig||n.digGift)&&digTalkTo(n))return;
+  if(n.wevItem){wevItem(n);return;}
+  if(n.wevBoss){const e=WEV.find(x=>x.id===n.wevBoss);say(n.lines,()=>startBattle(e.boss));return;}
   if(n.qt&&QT[n.qt]){QT[n.qt](n);return;}
   if(n.mqt&&MQT[n.mqt]&&!G.ch2){MQT[n.mqt](n);return;}
   if(n.mqhook&&MQT[n.mqhook]&&MQT[n.mqhook](n))return;
@@ -4229,7 +4544,7 @@ function fieldMenu(){
           :G.ch2?`せいなる かみ ${paperCount()}／5　（カオスには Ｌｖ44は ほしい）`
           :G.lv>=20?"りゅうおうと たたかえる ちからが ある！"
           :`りゅうおうに いどむなら Ｌｖ20は ほしい。`,
-        `うんこクエスト ver 7.0`].concat(G.q&&G.q.start&&!G.q.done?["【すいどう ふっかつ】"].concat(qProgress()):[]));return;}
+        `うんこクエスト ver 7.2`].concat(G.q&&G.q.start&&!G.q.done?["【すいどう ふっかつ】"].concat(qProgress()):[]));return;}
     if(id==='it'){itemMenu(false);return;}
     if(id==='sp'){spellMenu(false);return;}});}
 function itemMenu(inBattle){
@@ -4318,7 +4633,7 @@ function spellMenu(inBattle){
 function startBattle(key){
   const e=ENEMY[key];
   battle={key,name:e.name,hp:e.hp,hpMax:e.hp,atk:e.atk,def:e.def,
-    exp:e.exp,gold:Math.ceil(e.gold/2),art:e.art,boss:!!e.boss,rage:!!e.rage,poison:!!e.poison,pk:!!e.pk,
+    exp:e.exp,gold:Math.ceil(e.gold/2*(wevCur().id==='gold'?1.5:1)),art:e.art,boss:!!e.boss,rage:!!e.rage,poison:!!e.poison,pk:!!e.pk,
     breath:!!e.breath,bmsg:e.bmsg,pmsg:e.pmsg,rmsg:e.rmsg,noRun:!!e.noRun,big:!!e.big};
   LOG.ev('戦闘開始',e.name);
   mode='bmsg';closeMenu();
@@ -4369,6 +4684,7 @@ function win(){
   const l=[`${battle.name}を たおした！`];
   if(battle.exp)l.push(`${battle.exp}の けいけんちを かくとく！`);
   if(battle.gold)l.push(`${battle.gold}Ｇを てにいれた！`);
+  if(battle.key==='e6')wevMetal(l);   // ver 7.1：メタル だいはっせい
   G.exp+=battle.exp;G.gold+=battle.gold;updStatus();
   LOG.ev('戦闘勝利',battle.name);
   const boss=battle.boss,g2=battle.key==='guard',ns=battle.key==='nushi',pkb=battle.pk,bk=battle.key;
@@ -4377,8 +4693,9 @@ function win(){
     if(boss){G.bossDead=true;save();clear();return;}
     if(bk==='chaos2'){G.ch2Clear=true;save();trueEnd();return;}
     if(C2PAPER[bk]){ch2Paper(bk);return;}
-    if(bk==='evstar'){evInit();G.ev2.boss=1;if(!G.haveH.includes(9))G.haveH.push(9);G.coins=(G.coins||0)+777;updStatus();save();LOG.ev('イベントクリア','Lv'+G.lv);
-      say(["ながれぼしのうんこは きらきらと くだけちった…","あとに ほしの かたちの かんむりが のこった！","「ほしの かんむり」を てにいれた！","カジノコインを 777まい てにいれた！","「そうび」で みにつけよう。"],endBattle);return;}
+    if(bk==='namazu'){G.dig=G.dig||{};G.dig.namazu=1;save();LOG.ev('ちょすいちの ぬし','Lv'+G.lv);
+      say(["おおなまずのうんこは ちょすいちの どろに もぐって いった…","ちょすいちの そこが しずかに なった。"],endBattle);return;}
+    if(ENEMY[bk]&&ENEMY[bk].wev&&wevWin(bk))return;
     if(bk==='mqimo'){mqs().imo=2;save();say(["どろぼうゴブリンは いもを なげだして にげていった！","ぬすまれた いもを とりかえした！"],endBattle);return;}
     if(bk==='mqwolf'){mqs().wolf=2;save();say(["ボスウルフは もりの おくへ きえていった…","もう たびびとを おそう ことは ないだろう。"],endBattle);return;}
     if(bk==='qgear'){qs().gear=1;save();LOG.ev('クエスト','はぐるま');
@@ -4431,7 +4748,7 @@ function clear(){
     <p>せかいに さわやかな かぜが もどった。<br>
     ${HN()}の なは えいえんに かたりつがれる――</p>
     <p style="color:#ffd23f;font-size:5cqw;">Ｌｖ${G.lv}　クリア！</p>
-    <p id="ver">ver 7.0</p>
+    <p id="ver">ver 7.2</p>
     <div class="tmenu cl"><button class="tm sel" onclick="startCh2()">だい2しょうへ</button>
     <button class="tm" onclick="if(confirm('セーブを けして はじめから あそぶ？')){localStorage.removeItem('unkoq-save');location.reload()}">はじめから</button></div>`;
   t.classList.remove('hide');
@@ -4550,7 +4867,7 @@ function trueEnd(){
     ${HN()}の なは しんの ゆうしゃとして かたりつがれる――</p>
     <p style="color:#ffd23f;font-size:5cqw;">Ｌｖ${G.lv}　しんの クリア！</p>
     <p style="font-size:3cqw;">げんさく・ドットえ：トシ　／　プログラム：くろちゃん<br>そして あそんでくれた あなた</p>
-    <p id="ver">ver 7.0</p>
+    <p id="ver">ver 7.2</p>
     <div class="tmenu cl"><button class="tm sel" onclick="afterTrueEnd()">せかいを さんぽする</button>
     <button class="tm" onclick="if(confirm('セーブを けして はじめから あそぶ？')){localStorage.removeItem('unkoq-save');location.reload()}">はじめから</button></div>`;
   t.classList.remove('hide');
@@ -4812,7 +5129,7 @@ const MAP_JP={world:'大地図',castle:'ラダうんこ城',castle2:'ウンコ�
   evtun:'ひみつの ちかみち',evisle:'まぼろしの かぼちゃじま',evtw1:'かぼちゃの とう 1F',evtw2:'かぼちゃの とう さいじょうかい',
   gesui1:'やみの げすいどう B1',gesui2:'やみの げすいどう B2',gesui3:'やみの げすいどう B3',
   potton:'ぽっとんの むら',oasis:'オアシスの まち サラサラ',ruins:'ほろびた むら',
-  mill:'かざぐるまの こや',witch:'まじょの いえ',swind:'かぜの ほこら',searth:'つちの ほこら',fac:'すいどう かんりしつ',
+  mill:'かざぐるまの こや',witch:'まじょの いえ',swind:'かぜの ほこら',searth:'つちの ほこら',fac:'すいどう かんりしつ',gesui0:'うんこの まちの げすいどう',josui3:'じょうすいどう ちょすいち',
   josui1:'じょうすいどう B1',josui2:'じょうすいどう B2',cavec:'うんこの どうくつ B3',cave2c:'ちからの どうくつ B3',
   dtunnel:'りゅうおうへの ちかみち',mori:'もりの まち モリモリ',obs:'ほしみの とう'};
 function kuroState(){
@@ -4830,6 +5147,8 @@ function kuroState(){
     paper:G.ch2?paperCount()+'/5':undefined,
     paperLeft:G.ch2?paperHints().map(x=>x.slice(1)):undefined,
     sealOpen:!!G.sealOpen,trueClear:!!G.ch2Clear,
+    sewer:digInfo(),
+    weekEvent:wevCur().name+'（'+['あんないにんに まだ はなしていない','あつめている とちゅう','ボスが でている','クリアずみ'][evStage()]+'／のこり '+wevLeft()+'にち／らいしゅうは '+wevCur(1).name+'）',
     story:G.ch2?'だい2しょう：しんの わるもの「カオスのうんこ」が やみの げすいどう（B3）に いる。マンホール（うんこの どうくつの きたの くさむら）は せいなる かみ５まいで ひらく。':undefined,
     quest:G.q&&G.q.start?{name:'すいどう ふっかつ',done:!!G.q.done,todo:qProgress()}:undefined,
     tanomigoto:mqLog(),
@@ -5083,8 +5402,11 @@ function begin(cont){
   $('title').classList.add('hide');
   LOG.init();LOG.ev(cont?'つづきから':'はじめから');
   if(!ONLINE.A)onlineInit();else onlineSync(true);
-  evInit();evApplyDoor();applyQuest();applyOpened();
-  if(evActive())setTimeout(()=>toast('きかんげんてい イベント かいさいちゅう！\nくわしくは ラダうんこ城の\nイベントあんないじょへ',3800),cont?800:4000);
+  evInit();evApplyDoor();applyQuest();applyOpened();applyDig();
+  if(G.map==='gesui0'){G.x=4;G.y=3;}if(G.map==='josui3'){G.x=21;G.y=2;}   // ver 7.2：すいろの みずが かわるので いりぐちから
+  G.dig=G.dig||{};if(digStage()>(G.dig.seen||0)){const f=!G.dig.seen;G.dig.seen=digStage();save();
+    setTimeout(()=>toast(f?'うんこの まちに マンホールが できた！\nちかの げすいどうを こうじちゅう':'ちかの すいどう こうじが すすんだ！\n（だい'+digStage()+'き）',3600),cont?5000:8200);}
+  setTimeout(()=>toast('こんしゅうの イベント\n「'+wevCur().name+'」かいさいちゅう！\nくわしくは ラダうんこ城の\nイベントあんないじょへ',3800),cont?800:4000);
   mode='field';updStatus();
   if(cont&&G.bossDead&&!G.ch2){startCh2();return;}
   if(!cont)say(["ゆうしゃうんこは たびだった。","しろの ひとに はなしかけて じょうほうを あつめよう。"]);}
