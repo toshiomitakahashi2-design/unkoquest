@@ -321,7 +321,7 @@ html,body{height:100%;background-color:#23252c;color:#fff;
         <button class="tm" id="tmCh2" style="display:none">CHAPTER 2</button>
       </div>
       <p class="tcopy">© 2026 saishonodesign</p>
-      <p id="ver">ver 7.3</p>
+      <p id="ver">ver 7.3.1</p>
     </div>
     <div id="nameIn"></div>
   </div>
@@ -3412,7 +3412,7 @@ function move(dir){
     if(paperCount()<5){
       say(G.ch2?["マンホールが ある。","ふたには ５まいの おふだが はられ びくとも しない…",
         `（せいなる かみ ${paperCount()}／5）`]
-        :["マンホールが ある。","ふたは かたく とじていて あかない。"]);return;}
+        :["マンホールが ある。","ふたは かたく とじていて あかない。","（うんこの まちの なかにも べつの マンホールが あるらしい…）"]);return;}
     G.sealOpen=true;G.x=nx;G.y=ny;save();LOG.ev('ふういん解除','Lv'+G.lv);
     say(["５まいの せいなる かみが ひかりだした！","マンホールの ふうじが とけた！",
       `${HN()}は くらやみへ ながれおちていく…`],()=>doWarp(sw));return;}
@@ -3660,7 +3660,8 @@ function evInfo(){const e=wevCur(),st=evInit();mode='menu';
     if(id==='prog'){const ok=v=>v?'✓':'－',n=wevCount();
       say(["しんちょく（"+e.name+"）",`${ok(st.visit)} ${e.where}の ${e.hostName}に はなす`,
         e.item?`${ok(n>=e.goal)} ${e.item} ${n} / ${e.goal}`:`${ok(n>=e.goal)} メタルスライムのうんこ ${n} / ${e.goal}`,
-        `${ok(st.boss)} ${ENEMY[e.boss].name}を たおす`,`（これまでの クリア：${G.wevClear[e.id]||0}かい）`],evInfo);return;}
+        `${ok(st.boss)} ${ENEMY[e.boss].name}を たおす`,`（これまでの クリア：${G.wevClear[e.id]||0}かい）`]
+        .concat(G.wevClear[e.id]?['クリアすると うんこの まちの げすいどう（まちの なかの マンホール）で この イベントの とびらが ひらくよ。']:[]),evInfo);return;}
     if(id==='next'){const n=wevCur(1);say(["らいしゅうの イベントは…","「"+n.name+"」！",n.teaser,"きかん："+wevLabel(1)],evInfo);return;}
     if(id==='all'){const c=[{id:'y',label:'みる（ネタバレ）'},{id:'n',label:'やめる'}];c.title='ほんとうに みる？ たのしみが へるかも…';
       menu(null,c,a=>{if(a==='n'){evInfo();return;}
@@ -3691,7 +3692,7 @@ function wevWin(bk){const e=WEV.find(x=>x.boss===bk);if(!e)return false;const st
   else if(!n){G.items.mega=(G.items.mega||0)+3;G.items.mp=(G.items.mp||0)+2;G.gold+=2000;G.coins=(G.coins||0)+777;
     l.push("とくやくそう 3こと まんたんドリンク 2こを てにいれた！","2000Ｇと カジノコイン 777まいを てにいれた！");}
   else{G.gold+=500;G.coins=(G.coins||0)+300;l.push("500Ｇと カジノコイン 300まいを てにいれた！");}
-  if(!n){applyDig();l.push("（うんこの まちの げすいどうで とびらが ひらく おとが した…）");}
+  if(!n){applyDig();l.push("（うんこの まちの げすいどうで とびらが ひらく おとが した…）","（うんこの まちの なかの マンホールから いけるよ）");}
   updStatus();save();LOG.ev('イベントクリア',e.id+'/Lv'+G.lv);say(l,endBattle);return true;}
 /* イベントの ひと・あつめもの・ボスを マップに おく（その しゅうの イベントの ときだけ みえる） */
 WEV.forEach(e=>{
@@ -3812,6 +3813,7 @@ function digOpenDay(k){return wevLabel(k-1-wevWeek()).split(' 〜')[0];}
 function digInfo(){return `こうじ だい${digStage()}き／${digDrain()?'すいろの みずを ぬく ひ（そこを あるける）':'ほうりゅうの ひ（すいろに はいれない）'}／${digNight()?'よる：ゆうれいが でやすい':'ひる'}／イベントの とびら ${digDoors()}/6`+
   (digStage()>=3&&G.q&&G.q.done?`／ちょすいちの みず ${['','すこし','はんぶん','ほとんど'][digLevel()]} ぬけた`:'');}
 function digTalk(){const st=digStage(),l=["おう！ わしは ちかすいどう こうじの おやかただ。",`いま こうじは だい${st}き。`];
+  l.push("マンホールは ふたつ ある。 まちの なかの マンホールが この げすいどう。 のはらの マンホールは やみの げすいどう（だい2しょうで ひらく）だ。");
   if(st<4)l.push(`つぎは ${digOpenDay(st+1)}に ${DIG_NEXT[st+1]}が ひらく よていだ！`);
   else l.push("よていの こうじは ぜんぶ おわった！ イベントの とびらは まだまだ ひらくぞ。");
   l.push(digDrain()?"きょうは すいろの みずを ぬく ひ。 すいろの そこを あるけるぞ。":"きょうは ほうりゅうの ひ。 すいろには はいれん。（げつ・すい・きんに みずを ぬく）");
@@ -3837,7 +3839,7 @@ function digGift(n){const D=DIG_GIFT[n.digGift],st=evInit(),l=D.l.slice();
   updStatus();save();say(l);}
 function digTalkTo(n){const st=digStage();
   if(n.dig==='worker'){digTalk();return true;}
-  if(n.dig==='notice'){say(["【ちか すいどう こうじの おしらせ】","うんこの まちの したに げすいどうを ほっています。",`いまは だい${st}き。`+(st<4?` つぎは ${digOpenDay(st+1)}。`:' ぜんぶ かんせい！'),"マンホールから おりられます。 まものに ごちゅうい！"]);return true;}
+  if(n.dig==='notice'){say(["【ちか すいどう こうじの おしらせ】","うんこの まちの したに げすいどうを ほっています。","※ この マンホールから はいれます（のはらの マンホールとは べつです）",`いまは だい${st}き。`+(st<4?` つぎは ${digOpenDay(st+1)}。`:' ぜんぶ かんせい！'),"マンホールから おりられます。 まものに ごちゅうい！"]);return true;}
   if(n.dig==='facG'){say(["「この さき げすいどう こうじちゅう」",`（${digOpenDay(2)}に ひらく よてい）`]);return true;}
   if(n.dig==='facJ'){if(st<3)say(["「この さき ちょすいち こうじちゅう」",`（${digOpenDay(3)}に ひらく よてい）`]);
     else say(["ちょすいちへの かいだんだ。","…でも すいどうが とまっていて、ちょすいちは からっぽ らしい。","かんりしつの じいさんの たのみを きいて すいどうを ふっかつ させよう。"]);return true;}
@@ -4635,7 +4637,7 @@ function fieldMenu(){
           :G.ch2?`せいなる かみ ${paperCount()}／5　（カオスには Ｌｖ44は ほしい）`
           :G.lv>=20?"りゅうおうと たたかえる ちからが ある！"
           :`りゅうおうに いどむなら Ｌｖ20は ほしい。`,
-        `うんこクエスト ver 7.3`].concat(G.q&&G.q.start&&!G.q.done?["【すいどう ふっかつ】"].concat(qProgress()):[]));return;}
+        `うんこクエスト ver 7.3.1`].concat(G.q&&G.q.start&&!G.q.done?["【すいどう ふっかつ】"].concat(qProgress()):[]));return;}
     if(id==='it'){itemMenu(false);return;}
     if(id==='sp'){spellMenu(false);return;}});}
 function itemMenu(inBattle){
@@ -4843,7 +4845,7 @@ function clear(){
     <p>せかいに さわやかな かぜが もどった。<br>
     ${HN()}の なは えいえんに かたりつがれる――</p>
     <p style="color:#ffd23f;font-size:5cqw;">Ｌｖ${G.lv}　クリア！</p>
-    <p id="ver">ver 7.3</p>
+    <p id="ver">ver 7.3.1</p>
     <div class="tmenu cl"><button class="tm sel" onclick="startCh2()">だい2しょうへ</button>
     <button class="tm" onclick="if(confirm('セーブを けして はじめから あそぶ？')){localStorage.removeItem('unkoq-save');location.reload()}">はじめから</button></div>`;
   t.classList.remove('hide');
@@ -4962,7 +4964,7 @@ function trueEnd(){
     ${HN()}の なは しんの ゆうしゃとして かたりつがれる――</p>
     <p style="color:#ffd23f;font-size:5cqw;">Ｌｖ${G.lv}　しんの クリア！</p>
     <p style="font-size:3cqw;">げんさく・ドットえ：トシ　／　プログラム：くろちゃん<br>そして あそんでくれた あなた</p>
-    <p id="ver">ver 7.3</p>
+    <p id="ver">ver 7.3.1</p>
     <div class="tmenu cl"><button class="tm sel" onclick="afterTrueEnd()">せかいを さんぽする</button>
     <button class="tm" onclick="if(confirm('セーブを けして はじめから あそぶ？')){localStorage.removeItem('unkoq-save');location.reload()}">はじめから</button></div>`;
   t.classList.remove('hide');
@@ -5503,7 +5505,7 @@ function begin(cont){
   if(G.kuroMet&&G.kpDay!==kpDayIdx(Date.now())){G.kpDay=kpDayIdx(Date.now());const k=kpNow();save();
     setTimeout(()=>toast('くろちゃんは きょう Lv'+kpLv()+'！\nいま：'+k.name,3200),cont?9000:12000);}
   G.dig=G.dig||{};if(digStage()>(G.dig.seen||0)){const f=!G.dig.seen;G.dig.seen=digStage();save();
-    setTimeout(()=>toast(f?'うんこの まちに マンホールが できた！\nちかの げすいどうを こうじちゅう':'ちかの すいどう こうじが すすんだ！\n（だい'+digStage()+'き）',3600),cont?5000:8200);}
+    setTimeout(()=>toast(f?'うんこの まちの なかに マンホールが できた！\n（のはらの マンホールとは べつ）':'ちかの すいどう こうじが すすんだ！\n（だい'+digStage()+'き）',3600),cont?5000:8200);}
   setTimeout(()=>toast('こんしゅうの イベント\n「'+wevCur().name+'」かいさいちゅう！\nくわしくは ラダうんこ城の\nイベントあんないじょへ',3800),cont?800:4000);
   mode='field';updStatus();
   if(cont&&G.bossDead&&!G.ch2){startCh2();return;}
