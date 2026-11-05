@@ -321,7 +321,7 @@ html,body{height:100%;background-color:#23252c;color:#fff;
         <button class="tm" id="tmCh2" style="display:none">CHAPTER 2</button>
       </div>
       <p class="tcopy">© 2026 saishonodesign</p>
-      <p id="ver">ver 7.7</p>
+      <p id="ver">ver 7.7.1</p>
     </div>
     <div id="nameIn"></div>
   </div>
@@ -3911,9 +3911,9 @@ function libList(){mode='menu';const l=NAMED.map((N,i)=>{const inf=libInfo(N.id)
   menu(null,l,id=>{if(id==='x'){libCurator(true);return;}libRead(NAMED.find(N=>N.id===id));});}
 function libCurator(again){mode='menu';const l=[{id:'r',label:'しりょうを しらべる'},{id:'m',label:'ネームド メダルとは？'},{id:'x',label:'やめる'}];
   l.title='ネームド しりょうかん';
-  const go=()=>menu(null,l,id=>{if(id==='x'){mode='field';say(["かんちょう「また いつでも おいで。」"]);return;}
+  const go=()=>{mode='menu';menu(null,l,id=>{if(id==='x'){mode='field';say(["かんちょう「また いつでも おいで。」"]);return;}
     if(id==='r'){libList();return;}
-    say(["ネームド メダルは ネームドを たおすと もらえる。","はじめて たおすと 3まい、2かいめ から 1まいじゃ。","いりぐちの よこの こうかんじょで カジノコインや Ｇとも こうかん できるぞ。",`いま もっている メダル：${G.medals||0}まい`],()=>libCurator(true));});
+    say(["ネームド メダルは ネームドを たおすと もらえる。","はじめて たおすと 3まい、2かいめ から 1まいじゃ。","いりぐちの よこの こうかんじょで カジノコインや Ｇとも こうかん できるぞ。",`いま もっている メダル：${G.medals||0}まい`],()=>libCurator(true));});};
   if(again){go();return;}
   say(["かんちょう「ようこそ ネームド しりょうかんへ。」","「せかいの つよい まもの、ネームドの しりょうが そろっておる。」",`「こんしゅうの ちゅうもくは ${libName(libPick())}じゃ。 でんしょの しりょうが ただで よめるぞ。」`],go);}
 function libBoard(){const N=libPick(),inf=libInfo(N.id);
@@ -4880,7 +4880,7 @@ function fieldMenu(){
           :G.ch2?`せいなる かみ ${paperCount()}／5　（カオスには Ｌｖ44は ほしい）`
           :G.lv>=20?"りゅうおうと たたかえる ちからが ある！"
           :`りゅうおうに いどむなら Ｌｖ20は ほしい。`,
-        `うんこクエスト ver 7.7`].concat(G.q&&G.q.start&&!G.q.done?["【すいどう ふっかつ】"].concat(qProgress()):[]));return;}
+        `うんこクエスト ver 7.7.1`].concat(G.q&&G.q.start&&!G.q.done?["【すいどう ふっかつ】"].concat(qProgress()):[]));return;}
     if(id==='it'){itemMenu(false);return;}
     if(id==='sp'){spellMenu(false);return;}});}
 function itemMenu(inBattle){
@@ -5114,7 +5114,7 @@ function clear(){
     <p>せかいに さわやかな かぜが もどった。<br>
     ${HN()}の なは えいえんに かたりつがれる――</p>
     <p style="color:#ffd23f;font-size:5cqw;">Ｌｖ${G.lv}　クリア！</p>
-    <p id="ver">ver 7.7</p>
+    <p id="ver">ver 7.7.1</p>
     <div class="tmenu cl"><button class="tm sel" onclick="startCh2()">だい2しょうへ</button>
     <button class="tm" onclick="if(confirm('セーブを けして はじめから あそぶ？')){localStorage.removeItem('unkoq-save');location.reload()}">はじめから</button></div>`;
   t.classList.remove('hide');
@@ -5233,7 +5233,7 @@ function trueEnd(){
     ${HN()}の なは しんの ゆうしゃとして かたりつがれる――</p>
     <p style="color:#ffd23f;font-size:5cqw;">Ｌｖ${G.lv}　しんの クリア！</p>
     <p style="font-size:3cqw;">げんさく・ドットえ：トシ　／　プログラム：くろちゃん<br>そして あそんでくれた あなた</p>
-    <p id="ver">ver 7.7</p>
+    <p id="ver">ver 7.7.1</p>
     <div class="tmenu cl"><button class="tm sel" onclick="afterTrueEnd()">せかいを さんぽする</button>
     <button class="tm" onclick="if(confirm('セーブを けして はじめから あそぶ？')){localStorage.removeItem('unkoq-save');location.reload()}">はじめから</button></div>`;
   t.classList.remove('hide');
