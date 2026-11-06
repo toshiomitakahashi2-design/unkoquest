@@ -321,7 +321,7 @@ html,body{height:100%;background-color:#23252c;color:#fff;
         <button class="tm" id="tmCh2" style="display:none">CHAPTER 2</button>
       </div>
       <p class="tcopy">© 2026 saishonodesign</p>
-      <p id="ver">ver 7.9</p>
+      <p id="ver">ver 7.9.1</p>
     </div>
     <div id="nameIn"></div>
   </div>
@@ -3394,7 +3394,8 @@ function drawWorldMap(){
     ctx.fillStyle='#000';ctx.fillRect(cx-1,cy-1,2,2);}
   ctx.fillStyle='#fff';ctx.font='bold 10px sans-serif';ctx.textBaseline='top';
   ctx.fillText(MAPS[G.map].name||'せかいちず',6,3);
-  ctx.font='9px sans-serif';ctx.fillStyle='#bbb';ctx.fillText('Ａ／Ｂで とじる',180,213);}
+  ctx.font='9px sans-serif';ctx.fillStyle='#bbb';ctx.fillText('Ａ／Ｂで とじる',180,213);
+  ctx.font='bold 10px sans-serif';ctx.fillStyle='#000';ctx.fillText(`いま（${G.x},${G.y}）`,7,214);ctx.fillStyle='#ffd23f';ctx.fillText(`いま（${G.x},${G.y}）`,6,213);}   // ver 7.9.1：ざひょう
 
 /* ── やどの 一晩（2びょう）：くらく なって つきと ほし → あさ ── */
 let NIGHT=0;
@@ -4920,7 +4921,7 @@ function fieldMenu(){
           :G.ch2?`せいなる かみ ${paperCount()}／5　（カオスには Ｌｖ44は ほしい）`
           :G.lv>=20?"りゅうおうと たたかえる ちからが ある！"
           :`りゅうおうに いどむなら Ｌｖ20は ほしい。`,
-        `うんこクエスト ver 7.9`].concat(G.q&&G.q.start&&!G.q.done?["【すいどう ふっかつ】"].concat(qProgress()):[]));return;}
+        `うんこクエスト ver 7.9.1`].concat(G.q&&G.q.start&&!G.q.done?["【すいどう ふっかつ】"].concat(qProgress()):[]));return;}
     if(id==='it'){itemMenu(false);return;}
     if(id==='sp'){spellMenu(false);return;}});}
 function itemMenu(inBattle){
@@ -5154,7 +5155,7 @@ function clear(){
     <p>せかいに さわやかな かぜが もどった。<br>
     ${HN()}の なは えいえんに かたりつがれる――</p>
     <p style="color:#ffd23f;font-size:5cqw;">Ｌｖ${G.lv}　クリア！</p>
-    <p id="ver">ver 7.9</p>
+    <p id="ver">ver 7.9.1</p>
     <div class="tmenu cl"><button class="tm sel" onclick="startCh2()">だい2しょうへ</button>
     <button class="tm" onclick="if(confirm('セーブを けして はじめから あそぶ？')){localStorage.removeItem('unkoq-save');location.reload()}">はじめから</button></div>`;
   t.classList.remove('hide');
@@ -5273,7 +5274,7 @@ function trueEnd(){
     ${HN()}の なは しんの ゆうしゃとして かたりつがれる――</p>
     <p style="color:#ffd23f;font-size:5cqw;">Ｌｖ${G.lv}　しんの クリア！</p>
     <p style="font-size:3cqw;">げんさく・ドットえ：トシ　／　プログラム：くろちゃん<br>そして あそんでくれた あなた</p>
-    <p id="ver">ver 7.9</p>
+    <p id="ver">ver 7.9.1</p>
     <div class="tmenu cl"><button class="tm sel" onclick="afterTrueEnd()">せかいを さんぽする</button>
     <button class="tm" onclick="if(confirm('セーブを けして はじめから あそぶ？')){localStorage.removeItem('unkoq-save');location.reload()}">はじめから</button></div>`;
   t.classList.remove('hide');
