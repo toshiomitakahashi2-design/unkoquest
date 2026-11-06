@@ -321,7 +321,7 @@ html,body{height:100%;background-color:#23252c;color:#fff;
         <button class="tm" id="tmCh2" style="display:none">CHAPTER 2</button>
       </div>
       <p class="tcopy">© 2026 saishonodesign</p>
-      <p id="ver">ver 7.7.1</p>
+      <p id="ver">ver 7.8</p>
     </div>
     <div id="nameIn"></div>
   </div>
@@ -507,6 +507,12 @@ const CHAR_COLORS={
   hmetal:['#7a8090','#a0a8b8','#4a5060'], // メタルけんきゅうか
   oyakata:['#e0a020','#f8c850','#a07010'], // こうじの おやかた（ver 7.2）
   curator:['#3a6a5a','#6aa08a','#1e3a30'], // しりょうかんの かんちょう（ver 7.7）
+  /* ── ver 7.8：きかんげんてい ネームド ── */
+  lm_snow:['#e8f0ff','#ffffff','#9ab0d0'],
+  lm_lantern:['#e05020','#ffb040','#802010'],
+  lm_golden:['#f0c020','#fff080','#a07000'],
+  lm_ninja:['#3a3a4a','#6a6a80','#18181e'],
+  smith:['#7a4a2a','#a8784a','#3e2412'],   // ぶき こうかんや
   scholar:['#8a7a5a','#b8a888','#4a4030'], // がくしゃ（ver 7.7）
   /* ── ver 7.4：ネームド モンスター ── */
   nm_slime:['#3aa0ff','#9ad8ff','#1a5aa0'],
@@ -524,7 +530,7 @@ const CHAR_COLORS={
   miller:['#c8a060','#e8c080','#8a6a30'], // こなや
 };
 /* 目（と くち）の いろを かえる キャラ（からだが くろっぽいと 目が きえるので） */
-const EYE_COLOR={nm_dragon:'#ff4040',nm_bat:'#ffd23f',evpirate:'#ffd23f',kuro:'#6a6280',chaos:'#e5484d',chaos2:'#ffd23f'};
+const EYE_COLOR={lm_ninja:'#ff4040',lm_snow:'#2a2a2a',nm_dragon:'#ff4040',nm_bat:'#ffd23f',evpirate:'#ffd23f',kuro:'#6a6280',chaos:'#e5484d',chaos2:'#ffd23f'};
 const CHAR_KEYS=Object.keys(CHAR_COLORS);
 function initArt(){
   /* ── キャラ（ぜんいん ゆうしゃと おなじ かたち・いろだけ ちがう） ── */
@@ -821,7 +827,7 @@ function saveArt(){try{localStorage.setItem('unkoq-art-v5',JSON.stringify(ART));
 })();
 /* ── くろちゃん と だい2しょうの てき（ゆうしゃの かたち × いろ）── */
 (function(){
-  ['kuro','g1','g2','g3','g4','g5','hedoro','umi','ghost','chaos','chaos2','yurei','n1','n2','n3','n4','n5','n6','n7','n8','n9','n10','n11','n12','n13','n14','n15','n16','n17','n18','n19','qgear','qserp','witch','statue','miller','mqimo','mqwolf','astro','evstar','evkinoko','evpirate','evghost','evscorp','evmetal','hkinoko','hpirate','hghost','hgold','hmetal','oyakata','namazu','curator','scholar','nm_slime','nm_bat','nm_hedoro','nm_golem','nm_scorp','nm_armor','nm_mino','nm_tako','nm_dragon','nm_metal'].forEach(k=>{
+  ['kuro','g1','g2','g3','g4','g5','hedoro','umi','ghost','chaos','chaos2','yurei','n1','n2','n3','n4','n5','n6','n7','n8','n9','n10','n11','n12','n13','n14','n15','n16','n17','n18','n19','qgear','qserp','witch','statue','miller','mqimo','mqwolf','astro','evstar','evkinoko','evpirate','evghost','evscorp','evmetal','hkinoko','hpirate','hghost','hgold','hmetal','oyakata','namazu','curator','scholar','lm_snow','lm_lantern','lm_golden','lm_ninja','smith','nm_slime','nm_bat','nm_hedoro','nm_golem','nm_scorp','nm_armor','nm_mino','nm_tako','nm_dragon','nm_metal'].forEach(k=>{
     const c=CHAR_COLORS[k],P={'0':c[0],'1':c[1],'2':'#ffffff','3':EYE_COLOR[k]||'#2a1a08'};
     ART[k]=USER_ART.hero.d.map(r=>[...r].map(ch=>ch==='.'?null:P[ch]));});
 })();
@@ -859,7 +865,7 @@ const ART_LABEL={hero:"ゆうしゃ",npc:"むらびと",king:"おうさま",shop
  e6:"きんうんこ",nushi:"ぬまのぬし",d1:"くろうんこ",d2:"やみうんこ",d3:"うんこナイト",boss:"りゅうおう",kuro:"くろちゃん",
  g1:"スケルトン",g2:"ミミック",g3:"ガーゴイル",g4:"ヒドラ",g5:"キメラ",hedoro:"ヘドロスライム",umi:"クラーケン",
  ghost:"ぼうれい",chaos:"カオス",chaos2:"しんカオス",swall:"げすいのかべ",sfloor:"げすいのゆか",sewage:"どぶ",manhole:"マンホール",deadgrass:"あれち",deadtree:"かれき",ruinwall:"くずれた かべ",grave:"おはか",
- oasisIcon:"オアシス",ruinIcon:"ほろびた むら",box:"どうぐばこ",boxOpen:"あいた どうぐばこ",crystal:"すいしょう",hole:"おとしあな",obsIcon:"ほしみの とう",glowshroom:"ひかる きのこ",barricade:"こうじの バリケード",pedestal:"だいざ",curator:"かんちょう",scholar:"がくしゃ",sgate:"イベントの とびら",drain:"みずを ぬいた すいろ",oyakata:"こうじの おやかた",namazu:"おおなまず",mappiece:"ちずの きれはし",soulfire:"たましいの ともしび",goldsand:"きんの すなぶくろ",evkinoko:"おおきのこ",evpirate:"かいぞく",evghost:"ゆうれいおう",evscorp:"きんさそり",evmetal:"メタルキング",hkinoko:"きのこはかせ",hpirate:"せんちょう",hghost:"れいばいし",hgold:"たんこうふ",hmetal:"メタルけんきゅうか",healspring:"いやしの いずみ",telescope:"ぼうえんきょう",shard:"ほしの かけら",astro:"てんもんがくしゃ",evstar:"ながれぼし",n1:"バット",n2:"フロッグ",n3:"コボルト",n4:"キノコ",n5:"スネーク",n6:"オーク",n7:"クラブ",n8:"ハーピー",n9:"トロール",n10:"リザードマン",n11:"グリフォン",n12:"サンドワーム",n13:"スコーピオン",n14:"ミノタウロス",n15:"ゾンビ",n16:"レイス",n17:"スパイダー",n18:"アクアスライム",n19:"サハギン",qgear:"ガーディアン",qserp:"サーペント",witch:"まじょ",statue:"せきぞう",miller:"こなや",mqimo:"どろぼうゴブリン",mqwolf:"ボスウルフ",
+ oasisIcon:"オアシス",ruinIcon:"ほろびた むら",box:"どうぐばこ",boxOpen:"あいた どうぐばこ",crystal:"すいしょう",hole:"おとしあな",obsIcon:"ほしみの とう",glowshroom:"ひかる きのこ",barricade:"こうじの バリケード",pedestal:"だいざ",curator:"かんちょう",smith:"ぶき こうかんや",lm_snow:"ゆきだるま",lm_lantern:"ちょうちんおばけ",lm_golden:"おうごんスライム",lm_ninja:"かげにんじゃ",scholar:"がくしゃ",sgate:"イベントの とびら",drain:"みずを ぬいた すいろ",oyakata:"こうじの おやかた",namazu:"おおなまず",mappiece:"ちずの きれはし",soulfire:"たましいの ともしび",goldsand:"きんの すなぶくろ",evkinoko:"おおきのこ",evpirate:"かいぞく",evghost:"ゆうれいおう",evscorp:"きんさそり",evmetal:"メタルキング",hkinoko:"きのこはかせ",hpirate:"せんちょう",hghost:"れいばいし",hgold:"たんこうふ",hmetal:"メタルけんきゅうか",healspring:"いやしの いずみ",telescope:"ぼうえんきょう",shard:"ほしの かけら",astro:"てんもんがくしゃ",evstar:"ながれぼし",n1:"バット",n2:"フロッグ",n3:"コボルト",n4:"キノコ",n5:"スネーク",n6:"オーク",n7:"クラブ",n8:"ハーピー",n9:"トロール",n10:"リザードマン",n11:"グリフォン",n12:"サンドワーム",n13:"スコーピオン",n14:"ミノタウロス",n15:"ゾンビ",n16:"レイス",n17:"スパイダー",n18:"アクアスライム",n19:"サハギン",qgear:"ガーディアン",qserp:"サーペント",witch:"まじょ",statue:"せきぞう",miller:"こなや",mqimo:"どろぼうゴブリン",mqwolf:"ボスウルフ",
  jwall:"すいどうの かべ",jfloor:"すいどうの ゆか",jwater:"すいろ",plateR:"あかい いし",plateB:"あおい いし",plateG:"みどりの いし",plateY:"きいろい いし",
  cottage:"いえ",shrineIcon:"ほこら",windmill:"かざぐるま",windmill2:"かざぐるま（まわる）",facIcon:"すいどう しせつ",
  tablet:"いしぶみ",gate:"すいもん",lever:"レバー",leverOn:"レバー（ON）",pump:"ポンプ",grate:"てつごうし",yurei:"ゆうれい",grass:"くさ",bush:"くさむら",tree:"き",water:"みず",
@@ -2837,8 +2843,9 @@ NPCS.nmlib=[
   {x:25,y:7,art:'scholar',lines:["ぞくせいは みず・ひ・つち の さんすくみ。","みずは ひに つよく、ひは つちに、つちは みずに つよい。","ネームドは にがての ぞくせいで ないと きずが すぐ ふさがるんじゃ。"]},
   {x:21,y:10,art:'scholar',lines:["ネームドは すがたを みせない。 なわばりを あるいて いると ふいに でてくる。","かなわない と おもったら にげなさい。 ネームドからは かならず にげられる。"]},
   {x:24,y:10,art:'shop',lib:'medal',lines:[]},
+  {x:26,y:12,art:'smith',lib:'smith',lines:[]},
   {x:9,y:19,art:'npc',move:true,lines:["おくの へやには はくせいが かざってあるよ！","ネームドを たおすと ふえるんだって。"]}].concat(
-  [[4, 4], [6, 4], [8, 4], [4, 6], [6, 6], [8, 6], [4, 8], [6, 8], [8, 8], [6, 11]].map(([x,y],i)=>({x,y,libStatue:i,lines:[],get art(){const k=NAMED[i].id;return ((G&&G.named||{})[k]||{}).n?k:'pedestal';}})));
+  [[4,4],[6,4],[8,4],[4,6],[6,6],[8,6],[4,8],[6,8],[8,8],[6,11],[4,10],[4,12],[8,12],[8,10]].map(([x,y],i)=>({x,y,libStatue:i,lines:[],get art(){const k=NAMED[i].id;return ((G&&G.named||{})[k]||{}).n?k:'pedestal';}})));
 const CHESTS={
  /* ver 5.3：まちの なかは
     たからばこ（こうかな もの：Ｇ・そうび・たね）と どうぐばこ（box:true＝アイテム）に わけた。
@@ -2956,6 +2963,11 @@ const ENEMY={
  nm_tako:{name:"うみのぬしダコのうんこ",hp:1000,atk:134,def:96,exp:4500,gold:2200,art:'nm_tako',named:true,big:true,el:'water',breath:true,bmsg:"ぬしダコは すみを はいた！"},
  nm_dragon:{name:"くろドラゴンのうんこ",hp:1050,atk:134,def:96,exp:6000,gold:3000,art:'nm_dragon',named:true,big:true,el:'fire',breath:true,bmsg:"くろドラゴンは やみの ほのおを はいた！"},
  nm_metal:{name:"まよいメタルのうんこ",hp:40,atk:90,def:250,exp:6000,gold:1000,art:'nm_metal',named:true,big:true},
+ /* ── ver 7.8：きかんげんてい ネームド ── */
+ lm_snow:{name:"ゆきだるまのうんこ",hp:1000,atk:130,def:95,exp:4000,gold:2000,art:'lm_snow',named:true,big:true,el:'water',breath:true,bmsg:"ゆきだるまは ふぶきを はいた！"},
+ lm_lantern:{name:"ちょうちんおばけのうんこ",hp:1000,atk:132,def:96,exp:4000,gold:2000,art:'lm_lantern',named:true,big:true,el:'fire',breath:true,bmsg:"ちょうちんおばけは ひのこを まきちらした！"},
+ lm_golden:{name:"おうごんスライムのうんこ",hp:60,atk:80,def:230,exp:2000,gold:12000,art:'lm_golden',named:true,big:true},
+ lm_ninja:{name:"かげにんじゃのうんこ",hp:1050,atk:136,def:98,exp:4500,gold:2200,art:'lm_ninja',named:true,big:true,el:'earth',rage:true,rmsg:"かげにんじゃは しゅりけんを なげた！"},
  mqimo:{name:"どろぼうゴブリンのうんこ",hp:70,atk:18,def:10,exp:60,gold:80,art:'mqimo',noRun:true},
  mqwolf:{name:"ボスウルフのうんこ",hp:260,atk:50,def:30,exp:220,gold:300,art:'mqwolf',noRun:true,big:true,rage:true,rmsg:"ボスウルフは とおぼえして とびかかった！"},
  /* ── だい2しょう（ゴールドは せんとうで はんぶんに なる）── */
@@ -2983,20 +2995,23 @@ const WEAPONS=[{name:"すあし",atk:0},{name:"きのぼう",atk:6},{name:"ど�
  {name:"うずしおの サーベル",atk:56,el:'water'},   // 10：イベント「かいぞくの おたから」
  {name:"だいちの むち",atk:74,el:'earth'},{name:"マグマの おおおの",atk:76,el:'fire'},{name:"つなみの つるぎ",atk:76,el:'water'},   // 11〜13：ネームドの レア
  {name:"かえんの つるぎ",atk:60,el:'fire'},   // 14：イベント「メタル だいはっせい」
- {name:"いわくだきの ハンマー",atk:60,el:'earth'}];   // 15：イベント「さばくの ゴールドラッシュ」   // 10：イベント「かいぞくの おたから」
+ {name:"いわくだきの ハンマー",atk:60,el:'earth'},
+ {name:"だいちの くない",atk:70,el:'earth'}];   // 16：きかんげんてい ネームド かげにんじゃの レア   // 15：イベント「さばくの ゴールドラッシュ」   // 10：イベント「かいぞくの おたから」
 const ARMORS=[{name:"ぬののふく",def:0},{name:"かわのよろい",def:6},{name:"くさりかたびら",def:14},
  {name:"てつのよろい",def:20},{name:"はがねのよろい",def:26},{name:"まほうのよろい",def:42},
  {name:"ゴールドうんこのよろい",def:50},   // カジノの けいひん
  {name:"ひかりのよろい",def:62},{name:"でんせつのよろい",def:74},   // だい2しょう
  {name:"すいじんのよろい",def:48},
  {name:"ゆうれいの ローブ",def:40},
- {name:"スライムの きぐるみ",def:14}];   // 11：ネームドの ドロップ   // 10：イベント「ゆうれいの ともしび」   // 9：やりこみクエスト「すいどう ふっかつ」の ほうび
+ {name:"スライムの きぐるみ",def:14},
+ {name:"きんいろの マント",def:36}];   // 12：きかんげんてい ネームド おうごんスライムの レア   // 11：ネームドの ドロップ   // 10：イベント「ゆうれいの ともしび」   // 9：やりこみクエスト「すいどう ふっかつ」の ほうび
 const SHIELDS=[{name:"なし",def:0},{name:"かわのたて",def:3},{name:"てつのたて",def:8},
  {name:"はがねのたて",def:14},{name:"まほうのたて",def:22},
  {name:"うんこのたて",def:30},         // うんこの とうの おたから
  {name:"ひかりのたて",def:38},{name:"でんせつのたて",def:46},
  {name:"すなあらしの たて",def:30},
- {name:"いしの たて",def:26},{name:"メタルの たて",def:34}];   // 9・10：ネームドの ドロップ   // 8：イベント「さばくの ゴールドラッシュ」   // だい2しょう
+ {name:"いしの たて",def:26},{name:"メタルの たて",def:34},
+ {name:"ちょうちんの たて",def:28}];   // 11：きかんげんてい ネームド ちょうちんおばけの レア   // 9・10：ネームドの ドロップ   // 8：イベント「さばくの ゴールドラッシュ」   // だい2しょう
 const HELMS=[{name:"なし",def:0},{name:"かわのぼうし",def:2},{name:"てつかぶと",def:6},
  {name:"はがねのかぶと",def:11},{name:"まほうのかぶと",def:18},
  {name:"うんこのかぶと",def:25},       // うんこの とうの おたから
@@ -3004,7 +3019,8 @@ const HELMS=[{name:"なし",def:0},{name:"かわのぼうし",def:2},{name:"て�
  {name:"ひかりのかぶと",def:34},{name:"でんせつのかぶと",def:42},   // だい2しょう
  {name:"ほしの かんむり",def:32},
  {name:"きのこの ぼうし",def:24},
- {name:"コウモリの ずきん",def:12},{name:"さまよう かぶと",def:22},{name:"タコつぼ ヘルメット",def:26}];   // 11〜13：ネームドの ドロップ   // 10：イベント「きのこ まつり」   // 9：イベント「ほしふる よる」の ほうび
+ {name:"コウモリの ずきん",def:12},{name:"さまよう かぶと",def:22},{name:"タコつぼ ヘルメット",def:26},
+ {name:"ゆきだるまの ぼうし",def:24}];   // 14：きかんげんてい ネームド ゆきだるまの レア   // 11〜13：ネームドの ドロップ   // 10：イベント「きのこ まつり」   // 9：イベント「ほしふる よる」の ほうび
 const EQ={w:{arr:WEAPONS,key:'weapon',have:'haveW',jp:'ぶき',stat:'atk'},
   a:{arr:ARMORS,key:'armor',have:'haveA',jp:'よろい',stat:'def'},
   s:{arr:SHIELDS,key:'shield',have:'haveS',jp:'たて',stat:'def'},
@@ -3796,7 +3812,7 @@ const KP_INNS=[{"m":"newtown","name":"はじまりの まち","lv":1,"p":[[11,18
    ・ひるだけ／よるだけ／ほうりゅうの ひだけ／どようと にちようだけ の ネームドも いる
    ・ドロップ：はじめて たおすと ふつうの ドロップは かならず。たまに ★レア そうび
    ══════════════════════════════════════════════ */
-const NM_PATH={"nm_slime":{"m":"world","p":[[160,38],[161,38],[162,38],[161,38],[160,38],[159,38],[159,37],[160,37],[161,37],[161,38],[161,39],[161,40],[161,39],[160,39]]},"nm_bat":{"m":"cave","p":[[39,29],[39,28],[40,28],[39,28],[38,28],[37,28],[37,27],[37,28],[36,28],[36,29],[36,30],[35,30],[35,29],[35,28],[36,28],[37,28],[38,28],[39,28]]},"nm_hedoro":{"m":"gesui0","p":[[10,31],[9,31],[8,31],[7,31],[6,31],[6,32],[6,31],[7,31],[8,31],[9,31]]},"nm_golem":{"m":"tower1","p":[[7,12],[7,11],[7,10],[7,9],[6,9],[7,9],[7,8],[7,7],[7,8],[7,9],[6,9],[5,9],[6,9],[7,9],[7,8],[7,7],[7,8],[7,9],[7,10],[7,11]]},"nm_scorp":{"m":"world","p":[[165,178],[164,178],[163,178],[162,178],[162,179],[161,179],[161,178],[161,177],[162,177],[162,178],[162,179],[162,180],[163,180],[164,180],[164,181],[164,182],[164,183],[165,183],[165,182],[165,181],[165,180],[165,179]]},"nm_armor":{"m":"world","p":[[282,163],[282,162],[282,161],[282,160],[282,161],[282,162],[282,163],[282,164],[281,164],[282,164],[283,164],[283,165],[283,166],[283,167],[283,166],[283,165],[283,164],[282,164]]},"nm_mino":{"m":"cave2b","p":[[16,9],[17,9],[17,10],[17,11],[16,11],[15,11],[14,11],[13,11],[12,11],[12,10],[11,10],[11,9],[12,9],[13,9],[13,10],[13,11],[14,11],[15,11],[16,11],[16,10]]},"nm_tako":{"m":"world","p":[[291,198],[292,198],[293,198],[292,198],[292,199],[292,200],[292,201],[293,201],[293,200],[293,199],[293,198],[292,198]]},"nm_dragon":{"m":"dtunnel","p":[[24,10],[23,10],[23,9],[23,8],[23,7],[23,6],[24,6],[24,7],[25,7],[25,8],[25,9],[25,10],[25,11],[25,12],[24,12],[24,11]]},"nm_metal":{"m":"josui3","p":[[6,16],[5,16],[5,15],[5,14],[5,15],[5,16],[5,17],[5,18],[5,17],[6,17]]}};
+const NM_PATH={"nm_slime":{"m":"world","p":[[160,38],[161,38],[162,38],[161,38],[160,38],[159,38],[159,37],[160,37],[161,37],[161,38],[161,39],[161,40],[161,39],[160,39]]},"nm_bat":{"m":"cave","p":[[39,29],[39,28],[40,28],[39,28],[38,28],[37,28],[37,27],[37,28],[36,28],[36,29],[36,30],[35,30],[35,29],[35,28],[36,28],[37,28],[38,28],[39,28]]},"nm_hedoro":{"m":"gesui0","p":[[10,31],[9,31],[8,31],[7,31],[6,31],[6,32],[6,31],[7,31],[8,31],[9,31]]},"nm_golem":{"m":"tower1","p":[[7,12],[7,11],[7,10],[7,9],[6,9],[7,9],[7,8],[7,7],[7,8],[7,9],[6,9],[5,9],[6,9],[7,9],[7,8],[7,7],[7,8],[7,9],[7,10],[7,11]]},"nm_scorp":{"m":"world","p":[[165,178],[164,178],[163,178],[162,178],[162,179],[161,179],[161,178],[161,177],[162,177],[162,178],[162,179],[162,180],[163,180],[164,180],[164,181],[164,182],[164,183],[165,183],[165,182],[165,181],[165,180],[165,179]]},"nm_armor":{"m":"world","p":[[282,163],[282,162],[282,161],[282,160],[282,161],[282,162],[282,163],[282,164],[281,164],[282,164],[283,164],[283,165],[283,166],[283,167],[283,166],[283,165],[283,164],[282,164]]},"nm_mino":{"m":"cave2b","p":[[16,9],[17,9],[17,10],[17,11],[16,11],[15,11],[14,11],[13,11],[12,11],[12,10],[11,10],[11,9],[12,9],[13,9],[13,10],[13,11],[14,11],[15,11],[16,11],[16,10]]},"nm_tako":{"m":"world","p":[[291,198],[292,198],[293,198],[292,198],[292,199],[292,200],[292,201],[293,201],[293,200],[293,199],[293,198],[292,198]]},"nm_dragon":{"m":"dtunnel","p":[[24,10],[23,10],[23,9],[23,8],[23,7],[23,6],[24,6],[24,7],[25,7],[25,8],[25,9],[25,10],[25,11],[25,12],[24,12],[24,11]]},"nm_metal":{"m":"josui1","p":[[8,26],[9,26],[10,26],[9,26],[8,26],[7,26],[6,26],[7,26],[8,26],[9,26],[9,25],[10,25],[11,25],[11,26],[10,26],[9,26]]},"lm_snow":{"m":"world","p":[[128,40],[129,40],[130,40],[130,41],[130,42],[130,43],[131,43],[132,43],[132,42],[132,41],[131,41],[131,42],[131,43],[132,43],[132,42],[132,41],[132,40],[131,40],[130,40],[129,40]]},"lm_lantern":{"m":"world","p":[[176,64],[176,65],[176,66],[176,67],[176,68],[176,69],[176,70],[175,70],[175,69],[175,68],[176,68],[176,67],[176,66],[176,65]]},"lm_golden":{"m":"world","p":[[200,119],[201,119],[201,118],[201,117],[201,116],[201,115],[202,115],[203,115],[204,115],[204,116],[204,117],[204,118],[203,118],[202,118],[201,118],[200,118]]},"lm_ninja":{"m":"cave2a","p":[[48,34],[47,34],[47,35],[47,36],[46,36],[46,35],[46,34],[46,33],[46,32],[47,32],[47,31],[47,30],[48,30],[48,31],[48,32],[48,33]]}};
 
 /* ══ ver 7.5　ぞくせい：ひ・みず・つち の さんすくみ（みずは ひに つよい・ひは つちに つよい・つちは みずに つよい）══
    ネームドは ぞくせいの まもりが ある：あう ぶき ×1.6／あわない ×0.35（ぞくせい なしも）／まける ×0.2。さらに まいターン きずが ふさがる */
@@ -3818,7 +3834,17 @@ const NAMED=[
  {id:'nm_mino',h:8,R:10,pre:['nm_scorp','nm_golem'],hint:'ちからの どうくつ 地下2かいの おく',drop:{it:'mdrop'},p:0.3,rare:{eq:'w',i:12},rp:0.12},
  {id:'nm_tako',h:8,R:8,when:'evening',key:'takopot',hint:'みなとまちの まわりの みずべ',drop:{it:'fushigi'},p:0.4,rare:{eq:'h',i:13},rp:0.15},
  {id:'nm_dragon',h:12,R:10,when:'night',pre:['nm_mino','nm_tako','nm_armor'],hint:'りゅうおうへの ちかみちの おく',drop:{it:'scale'},p:0.5,rare:{eq:'w',i:13},rp:0.1},
- {id:'nm_metal',h:24,R:8,when:'weekend',key:'silverbell',hint:'じょうすいどう ちょすいちの ひだりはし',drop:{it:'mdrop'},p:0.8,rare:{eq:'s',i:10},rp:0.1}];
+ {id:'nm_metal',h:24,R:6,when:'weekend',key:'silverbell',hint:'じょうすいどう 1かいの いりぐちの そば',drop:{it:'mdrop'},p:0.8,rare:{eq:'s',i:10},rp:0.1},
+ /* ver 7.8：きかんげんてい（lim＝なんばんめの しゅうに でるか。4しゅうで ひとまわり）*/
+ {id:'lm_snow',lim:0,h:3,R:7,hint:'ラダうんこ城の ひだりの のはら',drop:{it:'lifenut'},p:0.4,rare:{eq:'h',i:14},rp:0.15},
+ {id:'lm_lantern',lim:1,h:3,R:7,when:'night',hint:'はじまりの まちの みなみの のはら',drop:{it:'lantern'},p:0.6,rare:{eq:'s',i:11},rp:0.15},
+ {id:'lm_golden',lim:2,h:3,R:7,hint:'うんこの まちの ひがしの のはら',drop:{it:'goldpoo'},p:0.7,rare:{eq:'a',i:12},rp:0.12},
+ {id:'lm_ninja',lim:3,h:3,R:6,hint:'ちからの どうくつ 地下1かいの おく',drop:{it:'sandglass'},p:0.5,rare:{eq:'w',i:16},rp:0.12}];
+const LIM_N=4;
+function limNow(){return ((wevWeek()%LIM_N)+LIM_N)%LIM_N;}
+function limOK(N){return N.lim===undefined||N.lim===limNow();}
+function limCur(){return NAMED.find(N=>N.lim===limNow());}
+function limNext(N){let k=((N.lim-limNow())%LIM_N+LIM_N)%LIM_N;return wevLabel(k);}
 const NM_RATE=0.15;   // なわばりで せんとうに なった とき ネームドが でる かくりつ
 const KEY_ITEMS={slimefood:{jp:'スライムの えさ',where:'はじまりの まち などの どうぐや（30Ｇ）',desc:'もっていると… ひるま おおきな スライムが においを かぎつけて くるらしい。'},
  noseclip:{jp:'はなつまみ クリップ',where:'げすいどうの こうじの おやかたが くれる',desc:'これが あれば くさい げすいどうの おくまで さがせる。'},
@@ -3835,7 +3861,7 @@ function nmTimeOK(N){const d=new Date(),h=d.getHours();
 function nmLeft(N){const s=G.named&&G.named[N.id];return s&&s.t?Math.max(0,s.t+N.h*3600000-Date.now()):0;}
 function nmPreOK(N){return (N.pre||[]).every(k=>((G.named||{})[k]||{}).n>0);}
 function nmKeyOK(N){return !N.key||(G.items&&G.items[N.key]>0);}
-function nmAlive(N){return nmLeft(N)<=0&&nmTimeOK(N)&&nmPreOK(N)&&nmKeyOK(N);}
+function nmAlive(N){return limOK(N)&&nmLeft(N)<=0&&nmTimeOK(N)&&nmPreOK(N)&&nmKeyOK(N);}
 function nmInArea(N){const P=NM_PATH[N.id];if(P.m!==G.map)return false;const [cx,cy]=P.p[0];return Math.max(Math.abs(G.x-cx),Math.abs(G.y-cy))<=N.R;}
 function nmEncounter(){if(!G)return null;for(const N of NAMED)if(nmInArea(N)&&nmAlive(N)&&Math.random()<NM_RATE)return N.id;return null;}
 function nmPos(N){const P=NM_PATH[N.id].p;return P[Math.floor(Date.now()/1300)%P.length];}
@@ -3872,11 +3898,11 @@ function nmDrop(k,l){const N=NAMED.find(n=>n.id===k);if(!N)return;G.named=G.name
    ・ネームド メダル：ネームドを たおすと もらえる（はじめて 3まい・2かいめ から 1まい）。カジノコインや Ｇでも こうかんできる
    ・まいしゅう「ちゅうもくの ネームド」は でんしょの しりょうが ただ
    ══════════════════════════════════════════════ */
-const LIB_G=[200,300,400,600,800,800,1200,1200,2000,1000],LIB_M=[1,1,1,2,2,2,3,3,4,2];
+const LIB_G=[200,300,400,600,800,800,1200,1200,2000,1000,800,800,800,800],LIB_M=[1,1,1,2,2,2,3,3,4,2,2,2,2,2];
 function libInfo(id){G.nmInfo=G.nmInfo||{};return G.nmInfo[id]||(G.nmInfo[id]={});}
-function libPick(){const N=NAMED.length;return NAMED[((wevWeek()%N)+N)%N];}
+function libPick(){const R=NAMED.filter(N=>N.lim===undefined),N=R.length;return R[((wevWeek()%N)+N)%N];}
 function libName(N){const s=(G.named||{})[N.id]||{};return s.seen||s.n?ENEMY[N.id].name:'？？？？の うんこ';}
-function libEasy(N){return ["【かんたんな しりょう】","うわさ："+N.hint+" で みた ひとが いる。","でる じかん："+(N.when?NM_WHEN[N.when]:'いつでも'),"レベル40の ゆうしゃでも かんたんには かてない らしい。"];}
+function libEasy(N){return ["【かんたんな しりょう】","うわさ："+N.hint+" で みた ひとが いる。"].concat(N.lim!==undefined?[limOK(N)?'きかんげんてい：こんしゅう（'+wevLabel()+'）だけ！':'きかんげんてい：つぎは '+limNext(N)]:[]).concat(["でる じかん："+(N.when?NM_WHEN[N.when]:'いつでも'),"レベル40の ゆうしゃでも かんたんには かてない らしい。"]);}
 function libDeep(N){const e=ENEMY[N.id],l=["【でんしょの しりょう】"];
   l.push(e.el?`ぞくせい：${ELEM_JP[e.el]}　にがて：${ELEM_JP[ELEM_WEAK[e.el]]}の ぶき`:'ぞくせい：なし。 すぐに にげだす。');
   (N.pre||[]).forEach(k=>l.push('さきに たおす：'+ENEMY[k].name));
@@ -3889,7 +3915,7 @@ function libSecret(N){const e=ENEMY[N.id],P=NM_PATH[N.id],[cx,cy]=P.p[0],d=N.dro
     `ドロップ：${nm(d)}（${Math.round(N.p*100)}%・はじめては かならず）`,`★レア：${nm(r)}（${Math.round(N.rp*100)}%）`,
     `たおすと ${N.h}じかん でてこない`,`なわばり：${MAP_JP[P.m]||MAPS[P.m].name} の（${cx},${cy}）の まわり ${N.R}マス`,
     e.el?'まいターン きずが 4% ふさがる。 ぞくせいが あわないと たおせない。':'しゅびが とても かたい。 じゅもんは よく きく らしい…'];}
-function libRead(N){const i=NAMED.indexOf(N),inf=libInfo(N.id),free=libPick()===N;mode='menu';
+function libRead(N){const i=NAMED.indexOf(N),inf=libInfo(N.id),free=libPick()===N||(N.lim!==undefined&&limOK(N));mode='menu';
   const l=[{id:'e',label:'かんたんな しりょう（むりょう）'},
     {id:'d',label:inf.a?'でんしょの しりょう（よんだ）':free?'でんしょの しりょう（こんしゅうは ただ！）':`でんしょの しりょう（${LIB_G[i]}Ｇ）`},
     {id:'s',label:inf.b?'ひみつの しりょう（よんだ）':`ひみつの しりょう（メダル ${LIB_M[i]}まい）`},{id:'x',label:'もどる'}];
@@ -3906,7 +3932,7 @@ function libRead(N){const i=NAMED.indexOf(N),inf=libInfo(N.id),free=libPick()===
       say(libSecret(N),()=>libRead(N));return;}
   });}
 function libList(){mode='menu';const l=NAMED.map((N,i)=>{const inf=libInfo(N.id);
-    return {id:N.id,label:`${i+1}. `+libName(N)+(inf.b?' ◎':inf.a?' ○':'')+(libPick()===N?' ★':'')};});
+    return {id:N.id,label:`${i+1}. `+(N.lim!==undefined?'【げんてい】':'')+libName(N)+(inf.b?' ◎':inf.a?' ○':'')+(libPick()===N||limOK(N)&&N.lim!==undefined?' ★':'')};});
   l.push({id:'x',label:'もどる'});l.title=`しりょう（メダル ${G.medals||0}まい／◎ぜんぶ ○でんしょ ★ちゅうもく）`;
   menu(null,l,id=>{if(id==='x'){libCurator(true);return;}libRead(NAMED.find(N=>N.id===id));});}
 function libCurator(again){mode='menu';const l=[{id:'r',label:'しりょうを しらべる'},{id:'m',label:'ネームド メダルとは？'},{id:'x',label:'やめる'}];
@@ -3916,14 +3942,24 @@ function libCurator(again){mode='menu';const l=[{id:'r',label:'しりょうを �
     say(["ネームド メダルは ネームドを たおすと もらえる。","はじめて たおすと 3まい、2かいめ から 1まいじゃ。","いりぐちの よこの こうかんじょで カジノコインや Ｇとも こうかん できるぞ。",`いま もっている メダル：${G.medals||0}まい`],()=>libCurator(true));});};
   if(again){go();return;}
   say(["かんちょう「ようこそ ネームド しりょうかんへ。」","「せかいの つよい まもの、ネームドの しりょうが そろっておる。」",`「こんしゅうの ちゅうもくは ${libName(libPick())}じゃ。 でんしょの しりょうが ただで よめるぞ。」`],go);}
-function libBoard(){const N=libPick(),inf=libInfo(N.id);
-  say(["【こんしゅうの ちゅうもく ネームド】",libName(N)].concat(libEasy(N).slice(1),["でんしょの しりょうは こんしゅう ただ！ うけつけへ どうぞ。"]));}
+function libBoard(){const N=libPick(),L=limCur();
+  say(["【こんしゅうの ちゅうもく ネームド】",libName(N)].concat(libEasy(N).slice(1),["でんしょの しりょうは こんしゅう ただ！ うけつけへ どうぞ。",
+    "【こんしゅうの きかんげんてい ネームド】",libName(L),"ばしょ："+L.hint+(L.when?'（'+NM_WHEN[L.when]+'）':''),"きかん："+wevLabel()+"　こんしゅうだけ あらわれる！"]));}
 function libMedal(){mode='menu';const l=[{id:'c',label:'カジノコイン 500まい → メダル 1まい'},{id:'g',label:'6000Ｇ → メダル 1まい'},{id:'x',label:'やめる'}];
   l.title=`メダル こうかんじょ（メダル ${G.medals||0}まい・コイン ${G.coins||0}まい）`;
   menu(null,l,id=>{if(id==='x'){mode='field';return;}
     if(id==='c'){if((G.coins||0)<500){say(["カジノコインが たりないよ。"],libMedal);return;}G.coins-=500;}
     else{if(G.gold<6000){say(["おかねが たりないよ。"],libMedal);return;}G.gold-=6000;}
     G.medals=(G.medals||0)+1;updStatus();save();LOG.ev('メダルこうかん',id);say(["ネームド メダルを 1まい てにいれた！"],libMedal);});}
+const LIB_SMITH=[{i:10,m:3},{i:14,m:3},{i:15,m:3}];   // うずしおの サーベル・かえんの つるぎ・いわくだきの ハンマー
+function libSmith(){mode='menu';const l=LIB_SMITH.map(x=>{const w=WEAPONS[x.i];return {id:'w'+x.i,label:(G.haveW.includes(x.i)?'（もっている）':'')+`${w.name}【${ELEM_JP[w.el]}】 メダル${x.m}まい`};});
+  l.push({id:'x',label:'やめる'});l.title=`ぞくせい ぶき こうかん（メダル ${G.medals||0}まい）`;
+  menu(null,l,id=>{if(id==='x'){mode='field';say(["ぶき こうかんや「ネームドに いどむなら ぞくせいを あわせるんだぞ！」"]);return;}
+    const x=LIB_SMITH.find(x=>'w'+x.i===id),w=WEAPONS[x.i];
+    if(G.haveW.includes(x.i)){say(["それは もう もっているね。"],libSmith);return;}
+    if((G.medals||0)<x.m){say([`ネームド メダルが ${x.m}まい いるよ。`,"メダルは となりの こうかんじょで コインや Ｇとも かえられる。"],libSmith);return;}
+    G.medals-=x.m;G.haveW.push(x.i);save();LOG.ev('ぶきこうかん',w.name);
+    say([`「${w.name}」を てにいれた！（${ELEM_JP[w.el]}の ぞくせい）`,"「そうび」で みにつけよう。"],libSmith);});}
 function libStatue(n){const N=NAMED[n.libStatue],s=(G.named||{})[N.id]||{},e=ENEMY[N.id];
   if(s.n)say([`${e.name}の はくせいだ。`,`たおした かず：${s.n}`+(e.el?`　ぞくせい：${ELEM_JP[e.el]}`:'')]);
   else say(["からっぽの だいざだ。",`「${libName(N)}」と かいてある…`]);}
@@ -3939,6 +3975,7 @@ function nmBook(){mode='menu';G.named=G.named||{};
       `たおした かず：${s.n||0}`,got.length?"てにいれた もの："+got.join('・'):"ドロップ：まだ なにも",
       left>0?`つぎに あらわれるまで あと ${Math.ceil(left/3600000)}じかん`:(nmAlive(N)?"いまなら なわばりで であえる かも！":"いまは であえない。")]).concat(more),nmBook);});}
 function nmCond(N){const ok=v=>v?'✓':'－',l=["【であう じょうけん】"];
+  if(N.lim!==undefined)l.push(`${ok(limOK(N))} きかんげんてい：`+(limOK(N)?wevLabel()+'（いま！）':'つぎは '+limNext(N)));
   l.push(`${ok(nmTimeOK(N))} じかん：`+(N.when?NM_WHEN[N.when]:'いつでも'));
   (N.pre||[]).forEach(k=>{const t=(G.named||{})[k]||{};l.push(`${ok(t.n>0)} さきに：`+(t.seen||t.n?ENEMY[k].name:'まだ しらない ネームド')+'を たおす');});
   if(N.key)l.push(`${ok(nmKeyOK(N))} もちもの：${KEY_ITEMS[N.key].jp}（${KEY_ITEMS[N.key].where}）`);
@@ -4183,6 +4220,7 @@ function talkTo(n){
   if(n.kuro){openKuro(true);return;}
   LOG.ev('はなす',G.map+(n.shop?'/'+n.shop:''));
   if(n.evhost){wevHost(n);return;}
+  if(n.lib==='smith'){libSmith();return;}
   if(n.lib==='curator'){libCurator();return;}if(n.lib==='board'){libBoard();return;}if(n.lib==='medal'){libMedal();return;}
   if(n.libStatue!==undefined){libStatue(n);return;}   // ver 7.7
   if((n.dig||n.digGift)&&digTalkTo(n))return;
@@ -4880,7 +4918,7 @@ function fieldMenu(){
           :G.ch2?`せいなる かみ ${paperCount()}／5　（カオスには Ｌｖ44は ほしい）`
           :G.lv>=20?"りゅうおうと たたかえる ちからが ある！"
           :`りゅうおうに いどむなら Ｌｖ20は ほしい。`,
-        `うんこクエスト ver 7.7.1`].concat(G.q&&G.q.start&&!G.q.done?["【すいどう ふっかつ】"].concat(qProgress()):[]));return;}
+        `うんこクエスト ver 7.8`].concat(G.q&&G.q.start&&!G.q.done?["【すいどう ふっかつ】"].concat(qProgress()):[]));return;}
     if(id==='it'){itemMenu(false);return;}
     if(id==='sp'){spellMenu(false);return;}});}
 function itemMenu(inBattle){
@@ -5019,7 +5057,7 @@ function enemyTurn(){   // ver 7.3：さきに くろちゃんが すけだち
 function enemyTurn0(){
   if(battle.hp<=0){win();return;}
   if(battle.stun>0){battle.stun--;say([`${battle.name}は ときが とまって うごけない！`],battleCmd);return;}   // ver 7.4：すなどけい
-  if((battle.key==='e6'&&Math.random()<0.35)||(battle.key==='nm_metal'&&Math.random()<0.4)){
+  if((battle.key==='e6'&&Math.random()<0.35)||((battle.key==='nm_metal'||battle.key==='lm_golden')&&Math.random()<0.4)){
     say([`${battle.name}は にげだした！`],endBattle);return;}
   const s=stats();
   const dmg=Math.max(1,Math.floor((battle.atk-s.def/3.5)*(0.85+Math.random()*0.3)));
@@ -5114,7 +5152,7 @@ function clear(){
     <p>せかいに さわやかな かぜが もどった。<br>
     ${HN()}の なは えいえんに かたりつがれる――</p>
     <p style="color:#ffd23f;font-size:5cqw;">Ｌｖ${G.lv}　クリア！</p>
-    <p id="ver">ver 7.7.1</p>
+    <p id="ver">ver 7.8</p>
     <div class="tmenu cl"><button class="tm sel" onclick="startCh2()">だい2しょうへ</button>
     <button class="tm" onclick="if(confirm('セーブを けして はじめから あそぶ？')){localStorage.removeItem('unkoq-save');location.reload()}">はじめから</button></div>`;
   t.classList.remove('hide');
@@ -5233,7 +5271,7 @@ function trueEnd(){
     ${HN()}の なは しんの ゆうしゃとして かたりつがれる――</p>
     <p style="color:#ffd23f;font-size:5cqw;">Ｌｖ${G.lv}　しんの クリア！</p>
     <p style="font-size:3cqw;">げんさく・ドットえ：トシ　／　プログラム：くろちゃん<br>そして あそんでくれた あなた</p>
-    <p id="ver">ver 7.7.1</p>
+    <p id="ver">ver 7.8</p>
     <div class="tmenu cl"><button class="tm sel" onclick="afterTrueEnd()">せかいを さんぽする</button>
     <button class="tm" onclick="if(confirm('セーブを けして はじめから あそぶ？')){localStorage.removeItem('unkoq-save');location.reload()}">はじめから</button></div>`;
   t.classList.remove('hide');
@@ -5773,6 +5811,8 @@ function begin(cont){
   if(!ONLINE.A)onlineInit();else onlineSync(true);
   evInit();evApplyDoor();applyQuest();applyOpened();applyDig();
   if(G.map==='gesui0'){G.x=4;G.y=3;}if(G.map==='josui3'){G.x=21;G.y=2;}   // ver 7.2：すいろの みずが かわるので いりぐちから
+  if(G.limWk!==wevWeek()){G.limWk=wevWeek();const L=limCur();save();
+    setTimeout(()=>toast('きかんげんてい ネームド\n「'+L.hint+'」に\nなにかが あらわれた！（'+wevLabel().split(' 〜 ')[1]+'まで）',3600),cont?14000:16000);}
   if(G.kuroMet&&G.kpDay!==kpDayIdx(Date.now())){G.kpDay=kpDayIdx(Date.now());const k=kpNow();save();
     setTimeout(()=>toast('くろちゃんは きょう Lv'+kpLv()+'！\nいま：'+k.name,3200),cont?9000:12000);}
   G.dig=G.dig||{};if(digStage()>(G.dig.seen||0)){const f=!G.dig.seen;G.dig.seen=digStage();save();
