@@ -337,7 +337,7 @@ html,body{height:100%;background-color:#23252c;color:#fff;
       </div>
       <div class="tmenu" id="tSlot" style="display:none"></div>
       <p class="tcopy">© 2026 saishonodesign</p>
-      <p id="ver">ver 8.2</p>
+      <p id="ver">ver 8.3</p>
     </div>
     <div id="nameIn"></div>
   </div>
@@ -702,6 +702,11 @@ function initArt(){
   // カジノの テーブル（みどりの ぬの）
   ART.table=mk(16,16,'#8a5a2a');rct(ART.table,0,2,16,12,'#1f7a3a');rct(ART.table,0,2,16,1,'#2f9a4a');
   rct(ART.table,0,14,16,2,'#5a3a1a');dots(ART.table,[[3,6],[12,9],[7,11]],'#2f9a4a');
+  // ver 8.3：ルーレットの だい
+  ART.rwheel=mk(16,16,'#8a5a2a');rct(ART.rwheel,0,2,16,12,'#1f7a3a');rct(ART.rwheel,0,2,16,1,'#2f9a4a');rct(ART.rwheel,0,14,16,2,'#5a3a1a');
+  for(let j=0;j<16;j++)for(let i=0;i<16;i++){const dx=i-7.5,dy=j-7.5,d=Math.hypot(dx,dy);
+    if(d<=6.6){const k=Math.floor((Math.atan2(dy,dx)+Math.PI)/(Math.PI/6))%12;ART.rwheel[j][i]=d<2.4?'#d8a03c':d>5.6?'#6a3a1a':k%2?'#c02828':'#1a1a1a';}}
+  ART.rwheel[4][11]='#ffffff';
   // スロットマシン（NPCの かわりに おく 12×12）
   ART.slotm=mk(12,12,null);rct(ART.slotm,1,0,9,12,'#c02828');rct(ART.slotm,1,0,9,2,'#ffd23f');
   rct(ART.slotm,2,3,7,4,'#f4f0e8');dots(ART.slotm,[[3,5],[5,5],[7,5]],'#c02828');
@@ -925,14 +930,14 @@ const TILE={'.':'grass',',':'bush','#':'tree','~':'water','^':'mount','=':'road'
  'W':'dwall','F':'dfloor','X':'cwall','f':'cfloor','g':'grass','Y':'tower',
  'w':'wood','s':'stone','r':'brick','j':'cwallC','b':'bed','u':'barrel','x':'crate','E':'rack','D':'anvil',
  'U':'barrelO','G':'crateO','m':'dummy','*':'flower','I':'well','q':'oddrock',
- 'Z':'signItem','V':'signWeapon','Q':'signInn','J':'signCasino','H':'table',
+ 'Z':'signItem','V':'signWeapon','Q':'signInn','J':'signCasino','H':'table','$':'rwheel',
  'a':'sand','l':'palm','L':'lantern','A':'ptower','P':'pwall','p':'pfloor','k':'crack',
  '1':'swall','2':'sfloor','3':'sewage','M':'manhole',
  'z':'deadgrass','y':'deadtree','d':'ruinwall','e':'grave','h':'oasisIcon','i':'ruinIcon',
  '5':'jwall','6':'jfloor','7':'jwater','[':'plateR',']':'plateB','{':'plateG','}':'plateY',
  'N':'cottage','@':'shrineIcon','&':'windmill','|':'facIcon',
  '(':'crystal',':':'hole',')':'obsIcon','9':'barricade','4':'sgate','0':'drain'};
-const BLOCKED=new Set(['#','~','^','B','K','W','X','S','Z','V','Q','J','H',
+const BLOCKED=new Set(['#','~','^','B','K','W','X','S','Z','V','Q','J','H','$',
   'w','s','r','j','b','u','x','E','D','U','G','m','I','q','l','L','P','k','1','3','y','d','e','5','7','(','9','4']);
 
 const WORLD=[
@@ -1645,7 +1650,7 @@ const CASINO=[
 "B%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%B",
 "B%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%B",
 "B%%%%%%%%%%%B%%%%%%%B%%%%%%%%%%B",
-"B%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%B",
+"B%%HH$HH%%%%%%%%%%%%%%%%%%%%%%%B",
 "B%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%B",
 "B%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%B",
 "B______________%%%_____________B",
@@ -2646,7 +2651,7 @@ const NPCS={
   {x:37,y:21,art:'npc',move:true,lines:["ざぶ〜ん。","なみの おとが きもちいいねえ。"]},
   {x:32,y:12,art:'npc',lines:["そうこには なにも ないよ。","…たぶんね。"]},
   {x:11,y:12,art:'npc',move:true,lines:["ベチョは つよい じゅもんだけど","ボスには きかないって うわさだ。"]},
-  {x:23,y:22,art:'shop',lines:["ようこそ うんこカジノへ！","かいだんを おりると ちかの カジノだよ。"]},
+  {x:23,y:22,art:'shop',lines:["ようこそ うんこカジノへ！","かいだんを おりると ちかの カジノだよ。","あたらしく ルーレットが できたんだ！"]},
   {x:26,y:31,art:'npc',move:true,lines:["ウンコール城の おうさまも","むかしは ゆうしゃ だったらしいよ。"]},
  ],
  village:[
@@ -2687,6 +2692,9 @@ const NPCS={
   {x:8,y:1,art:'slotm',casino:'slot',lines:["うんこスロットだ。"]},
   {x:10,y:1,art:'slotm',casino:'slot',lines:["うんこスロットだ。"]},
   // ブラックジャック・うんこレース
+  // ver 8.3：ルーレット
+  {x:5,y:7,art:'shop',casino:'rl',lines:["ルーレットへ ようこそ！","ボールが とまる いろや すうじを あててね。","0（みどり）は どれにも はいらないから きをつけて。"]},
+  {x:8,y:8,art:'e5',lines:["ルーレットは あかか くろに かけるのが きほん。","すうじ 1つが あたれば 36ばいだって…！"]},
   {x:16,y:2,art:'shop',casino:'bj',lines:["ブラックジャックの テーブルへ ようこそ。","21に ちかいほうが かち。21を こえたら まけだよ。"]},
   {x:23,y:17,art:'shop',casino:'mb',lines:["モンスターバトルの うけつけだよ！","かつと おもう モンスターに かけてね。"]},
   {x:26,y:3,art:'shop',casino:'race',lines:["うんこレースの うけつけだよ！","1ちゃくを あてたら ばいりつぶん コインが もらえるよ。"]},
@@ -3354,10 +3362,11 @@ function render(){
   else if((mode==='slot'&&SLOTA)||(SLOTIDLE&&G.map==='casino'&&(mode==='shop'||mode==='msg'))){drawMap();inFrame(drawSlot,true);}
   else if((mode==='race'&&RACE)||(RACEIDLE&&G.map==='casino'&&(mode==='shop'||mode==='msg'))){drawMap();inFrame(drawRace,true);}
   else if(BJ&&G.map==='casino'&&(mode==='shop'||mode==='msg')){drawMap();inFrame(drawBJ,true);}
+  else if((mode==='roulette'&&RL)||(RLIDLE&&G.map==='casino'&&(mode==='shop'||mode==='msg'))){drawMap();inFrame(drawRoulette,true);}
   else if((mode==='mbattle'&&MB)||((MBIDLE||MB)&&G.map==='casino'&&(mode==='shop'||mode==='msg'))){drawMap();inFrame(drawMB,true);}
   else drawMap();
   // ちず・カジノの ゲームの あいだは ステータスを かくす
-  const game=mode==='slot'||mode==='race'||mode==='mbattle'||((BJ||SLOTIDLE||RACEIDLE||MBIDLE||MB)&&G.map==='casino'&&(mode==='shop'||mode==='msg'));
+  const game=mode==='slot'||mode==='race'||mode==='mbattle'||mode==='roulette'||((BJ||SLOTIDLE||RACEIDLE||MBIDLE||MB||RLIDLE)&&G.map==='casino'&&(mode==='shop'||mode==='msg'));
   wStatus.style.visibility=(mode==='map'||game)?'hidden':'';
   drawNight();
   // ＨＰが あぶないときは ふちが あかく ひかる
@@ -3395,7 +3404,7 @@ function heroArt(){
 const MAPCOL={'~':'#2452c8','#':'#1c5a22',',':'#3f9a40','.':'#5cb048','g':'#5cb048','^':'#8a8272',
   '-':'#c08a4a','=':'#d0b078','B':'#3a3e4c','W':'#241c30','X':'#2e2820','_':'#b0a08a','F':'#6a5a7a',
   'f':'#8a7a5e','%':'#c04040','+':'#8a6030','K':'#8a5a2a','S':'#4a4230','<':'#f4f4f4','>':'#f4f4f4',
-  'Z':'#b07a3a','V':'#b07a3a','Q':'#b07a3a','J':'#b07a3a','H':'#1f7a3a',
+  'Z':'#b07a3a','V':'#b07a3a','Q':'#b07a3a','J':'#b07a3a','H':'#1f7a3a','$':'#1f7a3a',
   'w':'#8a5a2a','s':'#7a7e8c','r':'#b0503a','j':'#5a2a78','b':'#e8e8f0','u':'#8a5a2a','x':'#b07a3a','E':'#6a4a1a','D':'#50505a',
   'U':'#8a5a2a','G':'#b07a3a','m':'#d8c070','*':'#e070c0','I':'#7a7e8c','q':'#a8a0b0',
   'a':'#e0c890','l':'#2a7a2e','L':'#e87818','A':'#e87818','P':'#3a2448','p':'#5a4060','k':'#2e2820',
@@ -3632,7 +3641,7 @@ function action(){
   if(kpAt(tx,ty)){kpTalk();return;}   // ver 7.3
   let n=findNpc(tx,ty);
   // カウンターの むこうにいる 店の人とも はなせる
-  if(!n&&'KH'.includes(tileAt(tx,ty))){
+  if(!n&&'KH$'.includes(tileAt(tx,ty))){
     const ex=tx+(G.dir==='left'?-1:G.dir==='right'?1:0);
     const ey=ty+(G.dir==='up'?-1:G.dir==='down'?1:0);
     n=findNpc(ex,ey);}
@@ -4307,7 +4316,12 @@ function talkTo(n){
 const COIN_PRICE=20,GOLD_ARMOR=6;
 const SLOT=[{k:'7',name:'７',w:1,pay:500},{k:'e6',name:'きんのうんこ',w:1.1,pay:200},
   {k:'boss',name:'りゅうおう',w:1.1,pay:100},{k:'e5',name:'ゴーレム',w:1.2,pay:50},
-  {k:'e4',name:'ウルフ',w:1.5,pay:30},{k:'e3',name:'ゴースト',w:2.4,pay:15},{k:'e1',name:'スライム',w:4.4,pay:8}];
+  {k:'e4',name:'ウルフ',w:1.5,pay:30},{k:'e3',name:'ゴースト',w:2.4,pay:15},{k:'e1',name:'スライム',w:4.4,pay:8},
+  {k:'fly',name:'ハエ',w:0.5,pay:0}];
+const SLOT_PAIR=2;   // ver 8.3：ひだりから スライムが 2つ そろえば ×2（あたりの かいすうが やく 2ばい）
+// あたりの ばいりつ（0＝はずれ）
+function slotMul(r){if(r[0]===r[1]&&r[1]===r[2])return r[0].pay;
+  return r[0].k==='e1'&&r[1].k==='e1'?SLOT_PAIR:0;}
 const SLOT_W=SLOT.reduce((a,t)=>a+t.w,0);
 const GOLD_SWORD=7;
 const addItem=(k,n)=>{G.items[k]=(G.items[k]||0)+n;};
@@ -4333,7 +4347,8 @@ function betMenu(title,onBet,back){
   l.push({id:'x',label:'やめる'});l.title='かける コイン';
   menu(null,l,id=>{if(id==='x'){(back||(()=>{mode='field';}))();return;}onBet(id);});}
 function casinoGame(kind){
-  BJ=null;SLOTIDLE=false;RACEIDLE=false;MBIDLE=false;
+  BJ=null;SLOTIDLE=false;RACEIDLE=false;MBIDLE=false;RLIDLE=false;
+  if(kind==='rl'){casinoRoulette();return;}
   if(kind==='mb'){mbMenu();return;}
   if(kind==='buy')casinoBuy();else if(kind==='prize')casinoPrize();
   else if(kind==='slot')casinoSlot();else if(kind==='bj')bjBet();else if(kind==='race')raceMenu();}
@@ -4376,14 +4391,16 @@ let SLOTA=null,SLOTIDLE=false;
 const SLOTR=[0,1,2].map(()=>{const a=SLOT.map((_,i)=>i);for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return {strip:a,pos:0};});
 /* カジノの「せってい」：あたりやすさは ランダム。カジノに はいるたび と 30かい あそぶたびに かわる
    スロットは 1だいずつ べつの せってい（1〜6）、レースと モンスターバトルは カジノ ぜんたいの ながれ（1〜6） */
-const SLOT_SET=[null,                               // ７ きん りゅう ゴレ ウル ゴス スラ  （もどり の めやす）
-  [0.8,1.0,1.1,1.25,1.6,2.4,3.6],                   // 1：つめたい   やく86%
-  [0.9,1.05,1.1,1.2,1.55,2.4,4.0],                  // 2            やく91%
-  [1,1.1,1.1,1.2,1.5,2.4,4.4],                      // 3：ふつう     やく96%
-  [1.05,1.15,1.1,1.2,1.5,2.6,4.9],                  // 4            やく98%
-  [1.15,1.2,1.1,1.2,1.5,2.8,5.4],                   // 5            やく102%
-  [1.3,1.3,1.1,1.2,1.5,3.0,6.0],                    // 6：あつい     やく112%
-  [1.4,1.4,1.1,1.2,1.5,3.3,6.8]];                   // 7：つきが まわってきた（ほぼ れんぱいの ごほうび）
+/* ver 8.3：あたりの かいすうを やく 2ばいに。ふえた ぶんは ほとんど「スライム2つ ×2」（いちばん やすい あたり）
+   7〜ゴーストの そろう かくりつは 8.2 と おなじ。（1かいあたり％）                    あたり   もどり */
+const SLOT_SET=[null,                               // ７  きん  りゅう ゴレ  ウル  ゴス  スラ  ハエ
+  [6.8,8.5,9.4,10.6,13.6,20.4,26.7,3.9],            // 1：つめたい   8.6%  やく88%
+  [7.4,8.6,9.0,9.8,12.7,19.7,28.8,4.0],             // 2            9.5%  やく93%
+  [7.9,8.7,8.7,9.4,11.8,18.9,30.7,4.0],             // 3：ふつう    10.5%  やく99%
+  [7.8,8.5,8.1,8.9,11.1,19.3,32.6,3.7],             // 4           11.7%  やく102%
+  [8.0,8.4,7.7,8.4,10.5,19.5,34.2,3.4],             // 5           12.8%  やく107%
+  [8.4,8.4,7.1,7.8,9.7,19.5,35.9,3.1],              // 6：あつい    13.9%  やく115%
+  [8.4,8.4,6.6,7.2,9.0,19.8,38.1,2.6]];             // 7：つきが まわってきた 15.6%  やく122%
 const RACE_BOOST=[0,0.9,1.0,1.08,1.16,1.26,1.4,1.6];    // えらんだ うんこの かちやすさ
 const MB_EDGE=[0,0.86,0.9,0.94,0.97,1.0,1.04,1.1];      // モンスターバトルの オッズの つけかた
 const BJ_Q=[0,-0.2,-0.1,0,0.06,0.12,0.2,0.35];        // ブラックジャックの つき（＋：じぶんに いい カード／－：ディーラーに）
@@ -4426,10 +4443,12 @@ function casinoSlot(){
   betMenu('スロット',bet=>{
     const set=casLevel('slot');
     G.coins-=bet;const r=[spinReel(set),spinReel(set),spinReel(set)];casPlayed();
-    const win=r[0]===r[1]&&r[1]===r[2]?bet*r[0].pay:0;G.coins+=win;casResult('slot',win>0);save();
-    SLOTA={r,bet,win,t0:anim,stop:[45,70,95]};mode='slot';},()=>{SLOTIDLE=false;mode='field';});}
+    const mul=slotMul(r),win=bet*mul;G.coins+=win;casResult('slot',win>0);save();
+    SLOTA={r,bet,win,mul,t0:anim,stop:[45,70,95]};mode='slot';},()=>{SLOTIDLE=false;mode='field';});}
 const SEVEN=["...........",".#########.",".#########.","........##.",".......##..","......##...",".....##....","....##.....","....##.....","...##......","...##......"];
+const FLY=["....##..##..","...#..##..#.","...#..##..#.","....#.##.#..",".....####...","....######..","....##..##..",".....####...","......##....","............"];
 function drawSym(t,x,y,sc){sc=sc||1;
+  if(t.k==='fly'){FLY.forEach((row,j)=>[...row].forEach((c,i)=>{if(c==='#'){ctx.fillStyle=j<4?'#9ab0c0':'#3a3a48';ctx.fillRect(x+i*sc,y+1+j*sc,sc,sc);}}));return;}
   if(t.k==='7'){SEVEN.forEach((row,j)=>[...row].forEach((c,i)=>{if(c==='#'){ctx.fillStyle='#e02828';ctx.fillRect(x+i*sc,y+j*sc,sc,sc);}}));return;}
   drawArt(t.k,x,y,sc);}
 function rr(x,y,w,h,r,fill,stroke){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);
@@ -4442,7 +4461,8 @@ function drawSlot(){
   // うえ：はいとうひょう
   const row=(x,y,t)=>{for(let k=0;k<3;k++)drawSym(t,x+k*13,y-6);ctx.fillStyle='#fff';ctx.font='10px sans-serif';ctx.textAlign='left';ctx.fillText('×'+t.pay,x+41,y+1);};
   rr(4,4,74,52,6,'#241438','#fff');[1,2,3].forEach((n,k)=>row(8,16+k*16,SLOT[n]));
-  rr(154,4,74,52,6,'#241438','#fff');[4,5,6].forEach((n,k)=>row(158,16+k*16,SLOT[n]));
+  rr(154,4,74,52,6,'#241438','#fff');[4,5,6].forEach((n,k)=>row(158,12+k*12,SLOT[n]));
+  for(let k=0;k<2;k++)drawSym(SLOT[6],158+k*13,42);ctx.fillStyle='#ffd23f';ctx.font='10px sans-serif';ctx.textAlign='left';ctx.fillText('ー ×2',184,49);
   rr(82,4,68,52,6,'#3a1a10',Math.floor(anim/10)%2?'#ffd23f':'#fff');
   for(let k=0;k<3;k++)drawSym(SLOT[0],90+k*18,9,1.5);
   ctx.fillStyle='#ffd23f';ctx.font='bold 11px sans-serif';ctx.textAlign='center';ctx.fillText('×500',116,46);
@@ -4470,14 +4490,113 @@ function drawSlot(){
   rr(40,160,152,20,6,'#241438','#fff');ctx.font='10px sans-serif';
   let msg='かけて スピン！',col='#fff';
   if(A&&!stopped(2))msg='くるくる…';
-  else if(A&&A.win){msg=(A.r[0].k==='7'?'だいあたり！！ ':'あたり！ ')+`×${A.r[0].pay}　${A.win}まい`;col=Math.floor(f/6)%2?'#ffd23f':'#fff';}
+  else if(A&&A.win){msg=(A.mul>=500?'だいあたり！！ ':'あたり！ ')+`×${A.mul}　${A.win}まい`;col=Math.floor(f/6)%2?'#ffd23f':'#fff';}
   else if(A)msg='ざんねん…';
   ctx.fillStyle=col;ctx.fillText(msg,116,171);ctx.textAlign='left';ctx.textBaseline='top';
   if(A&&f>A.stop[2]+45){SLOTA=null;SLOTR.forEach(R=>R.done=false);
     const lines=[`［ ${A.r.map(t=>t.name).join(' ｜ ')} ］`];
-    if(A.win){lines.push((A.r[0].k==='7'?'だいあたり！！ ':'あたり！ ')+`コインを ${A.win}まい てにいれた！`);LOG.ev('スロット',A.win);}
+    if(A.win){lines.push((A.mul>=500?'だいあたり！！ ':A.mul===SLOT_PAIR&&A.r[2]!==A.r[0]?'スライム 2つ！ ':'あたり！ ')+`コインを ${A.win}まい てにいれた！`);LOG.ev('スロット',A.win);}
     else lines.push('ざんねん… はずれ。');
     say(lines,casinoSlot);}}
+
+
+/* ══════════════════════════════════════════════
+   ver 8.3　うんこルーレット
+   0〜36 の 37マス。あか・くろ・ぐうすう・きすう（×2）／12こずつ（×3）／すうじ 1つ（×36）
+   ×は かけた コインも ふくめて もどってくる まいすう。0 は どれにも はいらない（もどり やく97%）
+   ══════════════════════════════════════════════ */
+const RL_WHEEL=[0,32,15,19,4,21,2,25,17,34,6,27,13,36,11,30,8,23,10,5,24,16,33,1,20,14,31,9,22,18,29,7,28,12,35,3,26];
+const RL_RED=[1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36];
+const RL_T=150;   // まわる じかん（コマ）
+let RL=null,RLIDLE=false,RLH=[];
+const rlCol=n=>n===0?'g':RL_RED.includes(n)?'r':'b';
+const rlColJ=n=>({g:'みどり',r:'あか',b:'くろ'})[rlCol(n)];
+// かけかた：{id,label,mul,hit(n)}
+function rlBet(id,v){
+  if(id==='r')return {label:'あか',mul:2,hit:n=>rlCol(n)==='r'};
+  if(id==='b')return {label:'くろ',mul:2,hit:n=>rlCol(n)==='b'};
+  if(id==='e')return {label:'ぐうすう',mul:2,hit:n=>n>0&&n%2===0};
+  if(id==='o')return {label:'きすう',mul:2,hit:n=>n%2===1};
+  if(id==='d')return {label:`${v*12+1}〜${v*12+12}`,mul:3,hit:n=>n>0&&Math.floor((n-1)/12)===v};
+  return {label:`すうじ ${v}`,mul:36,hit:n=>n===v};}
+// カジノの ながれ（1〜7）で ほんの すこしだけ ボールの きげんが かわる
+const RL_Q=[0,-0.08,-0.04,0,0.03,0.06,0.1,0.15];
+function rlSpin(b){let n=RL_WHEEL[Math.floor(Math.random()*37)];const q=RL_Q[casLevel('rl')]||0;
+  if(q>0&&!b.hit(n)&&Math.random()<q)n=RL_WHEEL[Math.floor(Math.random()*37)];
+  if(q<0&&b.hit(n)&&Math.random()<-q)n=RL_WHEEL[Math.floor(Math.random()*37)];
+  return n;}
+function casinoRoulette(){RLIDLE=true;if(!CAS)casRoll();mode='shop';G.coins=G.coins||0;
+  const l=[{id:'r',label:'あか　×2'},{id:'b',label:'くろ　×2'},{id:'e',label:'ぐうすう　×2'},{id:'o',label:'きすう　×2'},
+    {id:'d',label:'12こ まとめて　×3'},{id:'n',label:'すうじ 1つ　×36'},{id:'h',label:'あそびかた'},{id:'x',label:'やめる'}];
+  l.title=coinTitle('ルーレット');
+  menu(null,l,id=>{
+    if(id==='x'){RLIDLE=false;mode='field';return;}
+    if(id==='h'){mode='msg';say(["ディーラー「ボールが とまる マスを あてる ゲームだよ。」","「あか・くろ・ぐうすう・きすうは あたると 2ばい。」",
+      "「1〜12 みたいに 12こ まとめて かけると 3ばい。」","「すうじ 1つが あたれば なんと 36ばい！」",
+      "「0（みどり）に とまったら すうじ 0 いがいは みんな はずれ。」"],casinoRoulette);return;}
+    if(id==='d'){const g=[0,1,2].map(v=>({id:v,label:`${v*12+1}〜${v*12+12}`}));g.push({id:'x',label:'もどる'});g.title='どの 12こ？　×3';
+      menu(null,g,v=>{if(v==='x'){casinoRoulette();return;}rlBetCoins('d',v);});return;}
+    if(id==='n'){rlPickNum(0);return;}
+    rlBetCoins(id,0);});}
+// すうじは 0〜36 を 3つの ページで えらぶ
+function rlPickNum(pg){mode='shop';const lo=pg===0?0:pg*12+1,hi=pg*12+12,l=[];
+  for(let n=lo;n<=hi;n++)l.push({id:n,label:`${n}（${rlColJ(n)}）`});
+  if(pg<2)l.push({id:'next',label:'つぎの すうじ ▶'});if(pg>0)l.push({id:'prev',label:'◀ まえの すうじ'});
+  l.push({id:'x',label:'もどる'});l.title='どの すうじ？　×36';
+  menu(null,l,v=>{if(v==='x'){casinoRoulette();return;}if(v==='next'){rlPickNum(pg+1);return;}if(v==='prev'){rlPickNum(pg-1);return;}rlBetCoins('n',v);});}
+function rlBetCoins(id,v){const b=rlBet(id,v);
+  betMenu('ルーレット',bet=>{
+    G.coins-=bet;const n=rlSpin(b);casPlayed();
+    const win=b.hit(n)?bet*b.mul:0;G.coins+=win;casResult('rl',win>0);save();
+    RL={b,bet,n,win,t0:anim,a0:Math.random()*Math.PI*2};mode='roulette';},casinoRoulette);}
+function rlColor(n){return {g:'#2a9a4a',r:'#c82828',b:'#1a1a22'}[rlCol(n)];}
+function drawRoulette(){
+  const A=RL,f=A?Math.min(anim-A.t0,RL_T):0,cx=116,cy=78,R1=64,R2=50,seg=Math.PI*2/37;
+  ctx.fillStyle='#0e2a18';ctx.fillRect(0,0,232,196);
+  // ホイール
+  const e=A?1-Math.pow(1-f/RL_T,3):0,wa=(A?A.a0:anim*0.004)+e*Math.PI*2*3;
+  ctx.beginPath();ctx.arc(cx,cy,R1+5,0,Math.PI*2);ctx.fillStyle='#6a3a1a';ctx.fill();
+  ctx.beginPath();ctx.arc(cx,cy,R1+5,0,Math.PI*2);ctx.strokeStyle='#d8a03c';ctx.lineWidth=2;ctx.stroke();
+  for(let i=0;i<37;i++){const a=wa+i*seg-Math.PI/2-seg/2;
+    ctx.beginPath();ctx.moveTo(cx,cy);ctx.arc(cx,cy,R1,a,a+seg);ctx.closePath();ctx.fillStyle=rlColor(RL_WHEEL[i]);ctx.fill();}
+  ctx.strokeStyle='#d8a03c';ctx.lineWidth=0.6;
+  for(let i=0;i<37;i++){const a=wa+i*seg-Math.PI/2-seg/2;ctx.beginPath();ctx.moveTo(cx+Math.cos(a)*R2,cy+Math.sin(a)*R2);ctx.lineTo(cx+Math.cos(a)*R1,cy+Math.sin(a)*R1);ctx.stroke();}
+  // すうじ
+  ctx.fillStyle='#fff';ctx.font='6px sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';
+  for(let i=0;i<37;i++){const a=wa+i*seg-Math.PI/2,r=(R1+R2)/2+3;
+    ctx.save();ctx.translate(cx+Math.cos(a)*r,cy+Math.sin(a)*r);ctx.rotate(a+Math.PI/2);ctx.fillText(RL_WHEEL[i],0,0);ctx.restore();}
+  ctx.beginPath();ctx.arc(cx,cy,R2,0,Math.PI*2);ctx.fillStyle='#8a5a2a';ctx.fill();
+  ctx.beginPath();ctx.arc(cx,cy,R2-10,0,Math.PI*2);ctx.fillStyle='#5a3a1a';ctx.fill();
+  // まんなか：うんこ（ホイールと いっしょに まわる）
+  ctx.save();ctx.translate(cx,cy);ctx.rotate(wa);drawArt('e1',-12,-12,2);ctx.restore();
+  // ボール
+  if(A){const idx=RL_WHEEL.indexOf(A.n),end=wa+idx*seg-Math.PI/2+Math.PI*2*3*(0),
+      ba=end-(1-e)*Math.PI*2*5,br=e<0.75?R1-3:R1-3-(R1-R2-6)*Math.min(1,(e-0.75)/0.2),
+      bump=e>0.75&&e<0.95?Math.sin(f*0.9)*1.5:0;
+    ctx.beginPath();ctx.arc(cx+Math.cos(ba)*(br+bump),cy+Math.sin(ba)*(br+bump),3,0,Math.PI*2);ctx.fillStyle='#fff';ctx.fill();
+    ctx.strokeStyle='#888';ctx.lineWidth=0.5;ctx.stroke();}
+  // ひだり：コイン と かけ
+  rr(4,8,40,46,5,'#102a1a','#fff');ctx.fillStyle='#fff';ctx.font='8px sans-serif';ctx.textAlign='center';
+  ctx.fillText('コイン',24,17);ctx.fillStyle='#ffd23f';ctx.font='bold 10px sans-serif';ctx.fillText(G.coins,24,29);
+  ctx.fillStyle='#fff';ctx.font='8px sans-serif';ctx.fillText(A?`かけ ${A.bet}`:'かけて',24,42);
+  // みぎ：でた すうじ
+  rr(188,34,40,112,5,'#102a1a','#fff');ctx.fillStyle='#fff';ctx.font='8px sans-serif';ctx.fillText('でた かず',208,43);
+  RLH.slice(0,7).forEach((n,i)=>{rr(196,50+i*13,24,10,3,rlColor(n));ctx.fillStyle='#fff';ctx.font='8px sans-serif';ctx.fillText(n,208,55+i*13);});
+  // した：メッセージ
+  rr(20,154,192,26,6,'#102a1a','#fff');ctx.font='10px sans-serif';ctx.textAlign='center';
+  let msg='どこに かける？',col='#fff';
+  if(A){const done=f>=RL_T;
+    if(!done)msg=`${A.b.label}に ${A.bet}まい … くるくる`;
+    else{msg=`${A.n}（${rlColJ(A.n)}）`+(A.win?`　あたり！ ${A.win}まい`:'　はずれ…');col=A.win?(Math.floor(anim/6)%2?'#ffd23f':'#fff'):'#fff';
+      // まんなかに おおきく
+      ctx.beginPath();ctx.arc(cx,cy,15,0,Math.PI*2);ctx.fillStyle=rlColor(A.n);ctx.fill();ctx.strokeStyle='#fff';ctx.lineWidth=1.5;ctx.stroke();
+      ctx.fillStyle='#fff';ctx.font='bold 13px sans-serif';ctx.fillText(A.n,cx,cy+1);ctx.font='10px sans-serif';}}
+  ctx.fillStyle=col;ctx.fillText(msg,116,167);ctx.textAlign='left';ctx.textBaseline='top';
+  if(A&&anim-A.t0>RL_T+50){RL=null;RLH.unshift(A.n);RLH=RLH.slice(0,8);
+    const l=[`ボールは ${A.n}（${rlColJ(A.n)}）に とまった！`];
+    if(A.win){l.push(A.b.mul===36?`だいあたり！！ すうじ ${A.n}！ コインを ${A.win}まい てにいれた！`:`${A.b.label}の あたり！ コインを ${A.win}まい てにいれた！`);LOG.ev('ルーレット',A.win);}
+    else l.push(`${A.b.label}は はずれ… ざんねん。`);
+    mode='msg';say(l,casinoRoulette);}}
 
 /* ブラックジャック：21に ちかいほうが かち。こえたら まけ */
 let BJ=null;
@@ -4959,7 +5078,7 @@ function fieldMenu(){
           :G.ch2?`せいなる かみ ${paperCount()}／5　（カオスには Ｌｖ44は ほしい）`
           :G.lv>=20?"りゅうおうと たたかえる ちからが ある！"
           :`りゅうおうに いどむなら Ｌｖ20は ほしい。`,
-        `うんこクエスト ver 8.2`].concat(G.q&&G.q.start&&!G.q.done?["【すいどう ふっかつ】"].concat(qProgress()):[]));return;}
+        `うんこクエスト ver 8.3`].concat(G.q&&G.q.start&&!G.q.done?["【すいどう ふっかつ】"].concat(qProgress()):[]));return;}
     if(id==='it'){itemMenu(false);return;}
     if(id==='sp'){spellMenu(false);return;}});}
 function itemMenu(inBattle){
@@ -5303,7 +5422,7 @@ function trueEnd(){
     ${HN()}の なは しんの ゆうしゃとして かたりつがれる――</p>
     <p style="color:#ffd23f;font-size:5cqw;">Ｌｖ${G.lv}　しんの クリア！</p>
     <p style="font-size:3cqw;">げんさく・ドットえ：トシ　／　プログラム：くろちゃん<br>そして あそんでくれた あなた</p>
-    <p id="ver">ver 8.2</p>
+    <p id="ver">ver 8.3</p>
     <div class="tmenu cl"><button class="tm sel" onclick="afterTrueEnd()">せかいを さんぽする</button>
     <button class="tm" onclick="if(confirm('セーブを けして はじめから あそぶ？')){localStorage.removeItem(slotKey(SAVE_SLOT));location.reload()}">はじめから</button></div>`;
   t.classList.remove('hide');
@@ -5963,7 +6082,7 @@ function onB(){
   if(mode==='msg'||mode==='bmsg'){nextMsg();return;}
   if(mode==='map'){mode='field';return;}
   if(mode==='menu'){closeMenu();mode='field';return;}
-  if(mode==='shop'){closeMenu();mode='field';BJ=null;SLOTIDLE=false;RACEIDLE=false;MBIDLE=false;return;}
+  if(mode==='shop'){closeMenu();mode='field';BJ=null;SLOTIDLE=false;RACEIDLE=false;MBIDLE=false;RLIDLE=false;return;}
   if(mode==='field')fieldMenu();}
 function onDir(d){
   if(mode==='kuro')return;
